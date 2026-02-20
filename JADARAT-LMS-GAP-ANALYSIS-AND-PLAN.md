@@ -801,11 +801,56 @@ CREATE TABLE quiz_analytics (
 
 ### 4.4 Course Status Tracking
 
-**Current State:** The `user_courses` table tracks enrollment. Progress percentage is updated via the SCORM player's `update_course_percentage` RPC. Status is effectively binary: enrolled or completed (at 100%).
+**Current State:** The `user_courses` table tracks enrollment. Progress percentage is updated via the SCORM player's `update_course_percentage` RPC. Status is effectively binary: enrolled or completed (at 100%). Courses themselves have no publishing lifecycle — they are either visible or not.
 
 **What to Build:**
 
-Granular course lifecycle status with automatic transitions based on learner activity.
+Two distinct status systems:
+1. **Course Publishing Status** (admin-side): Controls course visibility and availability
+2. **Learner Enrollment Status** (learner-side): Tracks individual learner progress through a course
+
+---
+
+#### A. Course Publishing Status (Draft / Private / Published)
+
+The admin-side course lifecycle that controls who can see and access a course.
+
+**Publishing Lifecycle:**
+```
+Draft → Private → Published
+  ↑        ↓         ↓
+  └── (unpublish) ←──┘
+```
+
+**Status Definitions:**
+| Status | Definition | Badge Color | Visibility |
+|--------|-----------|-------------|------------|
+| `draft` | Course is being created/edited, incomplete | Gray | Only visible to course creator and LMS admins |
+| `private` | Course is complete but restricted — only accessible via direct enrollment by admin | Yellow | Visible to LMS admins; learners see it only if explicitly enrolled |
+| `published` | Course is live and available in the catalog | Green | Visible to all learners in the organization |
+
+**Database Changes:**
+
+```sql
+-- Add publishing status to courses table
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS publishing_status TEXT DEFAULT 'draft'
+    CHECK (publishing_status IN ('draft', 'private', 'published'));
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ;
+ALTER TABLE courses ADD COLUMN IF NOT EXISTS published_by UUID REFERENCES auth.users(id);
+```
+
+**Admin UI:**
+- `PublishingStatusBadge` — Colored pill on course cards and course list: gray (Draft), yellow (Private), green (Published)
+- `PublishingStatusDropdown` — Status change dropdown on course edit page with confirmation dialog
+- `CoursePublishingFilter` — Filter courses by publishing status in admin course list
+- `PublishConfirmModal` — "Are you sure you want to publish this course? It will be visible to all learners." confirmation
+- Only `published` courses appear in the learner catalog; `private` courses appear only for directly enrolled learners; `draft` courses are admin-only
+
+---
+
+#### B. Learner Enrollment Status
+
+Granular learner-side status with automatic transitions based on learner activity.
 
 **Status Lifecycle:**
 ```
@@ -842,7 +887,7 @@ ALTER TABLE user_courses ADD COLUMN IF NOT EXISTS score NUMERIC;
 **UI Components:**
 - `CourseStatusBadge` — Colored pill component: `<Badge variant={statusColor}>{statusLabel}</Badge>`
 - `CourseStatusFilter` — Multi-select dropdown for filtering by status on all course listing pages
-- `CourseStatusPieChart` — Donut chart on LMS admin dashboard showing status distribution
+- `CourseStatusPieChart` — Donut chart on LMS admin dashboard showing status distribution (both publishing + enrollment)
 - `OverdueCourseAlert` — Warning banner on learner dashboard when courses are overdue
 - `StatusTimeline` — Visual timeline showing when status changed (enrollment → started → completed)
 - `CourseStatusSummary` — Admin widget: "X enrolled, Y in progress, Z completed, W overdue"
@@ -852,6 +897,7 @@ ALTER TABLE user_courses ADD COLUMN IF NOT EXISTS score NUMERIC;
 - SCORM player: on `LMSFinish()` with `passed`, update status to `completed` and set `completed_at`
 - Vercel Cron (`/api/cron/overdue-courses`): daily check for enrollments past deadline → set `overdue`
 - Existing `update_course_percentage` RPC: also update `progress_percentage` and `last_accessed_at`
+- Course catalog query: filter by `publishing_status = 'published'` for learner views
 
 ---
 
@@ -1865,7 +1911,30 @@ The certificate builder replaces the current Placid.io dependency with an in-hou
 4. **Compliance & Audit Trails** -- Log every admin action (user CRUD, enrollment changes, course publish/unpublish, settings changes) with actor, timestamp, IP address, and before/after state; implement PDPL compliance (consent management, data export endpoint, right-to-erasure workflow); add Saudization tracking (nationality field, Saudi ratio dashboards, Nitaqat-aligned reporting)
 5. **HRIS Integrations** -- Build connector framework with OAuth token management and event logging; implement Jisr connector (Saudi HR: sync users, departments, job titles), ZenHR connector (pan-MENA: similar sync), SAP SuccessFactors connector (enterprise: bidirectional training record sync); add sync status dashboard for Org Admins
 6. **Hijri Calendar** -- Integrate Hijri calendar library (e.g., `hijri-converter` or `moment-hijri`), add dual calendar mode to all `react-day-picker` instances (toggle between Gregorian and Hijri), display Hijri dates in reports and certificates when enabled per organization
-7. **Authoring Tool Phase 3** -- Full drag-and-drop course authoring with interactive elements (hotspots, branching scenarios, embedded quizzes), multimedia support (video recording, screen capture, audio narration), SCORM export capability; this is a separate product timeline and may warrant its own dedicated development track
+
+### Phase 6: Authoring Tool (Dedicated Product Initiative)
+> **Focus: Building a full course authoring platform — this is a standalone product-level effort with its own team and timeline**
+>
+> **Why a separate phase:** Authoring tools like Coassemble, Articulate Storyline, and Adobe Captivate each represent years of dedicated product development with specialized teams. This cannot be squeezed into a sprint alongside other features. It deserves its own dedicated phase, budget, and engineering track.
+
+**Phase 6A — Enhanced Coassemble Integration (Quick wins):**
+1. **Coassemble API Sync** -- Better metadata sync from Coassemble back to Jadarat (course structure, quiz data, completion events)
+2. **Coassemble Reporting Integration** -- Extract quiz/assessment data from Coassemble Reporting API for local analytics (feeds into Quiz Results feature in Phase 1)
+3. **AI Content Suggestions** -- AI-assisted content outlines and suggestions that feed into Coassemble authoring workflow
+
+**Phase 6B — Simple Native Authoring (Reduce Coassemble dependency):**
+1. **Document-Based Course Builder** -- Upload PDF/DOCX, AI auto-structures into lessons with module/lesson hierarchy
+2. **Rich Text Lesson Editor** -- TipTap-based editor for text lessons with images, embedded video, and code blocks
+3. **Native Quiz Builder** -- Question creation UI (MCQ, true/false, fill-blank, matching, essay) with question bank, tagging, difficulty levels, configurable grading
+4. **Template-Based Course Creation** -- Generate course structure from learning objectives using AI
+
+**Phase 6C — Full Authoring Tool (Standalone product):**
+1. **Drag-and-Drop Lesson Builder** -- Visual editor with interactive elements (hotspots, click-to-reveal, tabs, accordions)
+2. **Rich Media** -- In-browser video recording, screen capture, image annotation, audio narration
+3. **Interactive Elements** -- Drag-and-drop activities, branching scenarios, simulations, embedded H5P content
+4. **Collaborative Authoring** -- Multiple authors on same course with real-time co-editing, review/approval workflow, version history
+5. **SCORM/xAPI Export** -- Package authored content as SCORM 1.2/2004 or xAPI packages for use in other LMS platforms
+6. **AI-Powered Course Generation** -- Full end-to-end course generation from learning objectives: AI generates content, quizzes, images, and interactive elements
 
 ---
 
@@ -1915,27 +1984,11 @@ No competitor in the LMS market offers all four pillars together. The strategic 
 
 > **Use this section to add your own features, priorities, and notes.**
 
-### Custom Features to Add
-
 | Feature Name | Description | Priority (P0/P1/P2) | Target Phase |
 |--------------|-------------|---------------------|--------------|
 | | | | |
 | | | | |
 | | | | |
-| | | | |
-| | | | |
-
-### Client-Specific Requirements
-
--
--
--
-
-### Notes & Decisions
-
--
--
--
 
 ---
 
