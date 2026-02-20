@@ -517,9 +517,6 @@ CREATE TABLE nationalization_records (
 
 ---
 
-
----
-
 ## 4. Priority Feature Specifications
 
 ### 4.1 AI Chatbot with Per-Organization Configuration
@@ -970,7 +967,7 @@ LEFT JOIN leaderboard_preferences lp ON up.user_id = lp.user_id AND up.organizat
 
 **What to Build:**
 
-A unified gamification system that ties together points (3.2), badges (3.7), leaderboards (3.5), and adds levels, streaks, and challenges.
+A unified gamification system that ties together points (4.2), badges (4.7), leaderboards (4.5), and adds levels, streaks, and challenges.
 
 **Level System:**
 | Level | Title (EN) | Title (AR) | Points Required |
@@ -1868,7 +1865,7 @@ The certificate builder replaces the current Placid.io dependency with an in-hou
 > **Focus: The 13 priority features that define Jadarat's differentiator in the MENA LMS market**
 
 1. **Learning Points System** -- Create `points_config` table (action types, base points, multipliers), `points_transactions` ledger table, `user_points` aggregate table; build admin UI for configuring point values per action; display points in learner dashboard stats row
-2. **Course Status Tracking** -- Implement granular course status lifecycle (`draft` -> `review` -> `published` -> `archived` -> `suspended`), add color-coded status badges in admin course list, add status filter/sort in DataTable, add status change audit trail
+2. **Course Status Tracking** -- Implement course publishing status (`draft` / `private` / `published`) for admin-side visibility control, and learner enrollment status (`not_started` / `in_progress` / `completed` / `failed` / `expired` / `overdue`) for progress tracking; add color-coded status badges, filters in DataTable, and status change audit trail
 3. **Gamification Engine** -- Build levels system (XP thresholds per level, level names), daily/weekly streaks with streak freeze mechanic, time-bound challenges with configurable goals, celebration animations on level-up and challenge completion
 4. **Leaderboard** -- Create materialized view for organization-wide and department-level rankings, build leaderboard page with time filters (weekly, monthly, all-time), add privacy controls (opt-out, anonymous mode), add leaderboard widget to learner dashboard
 5. **Learner Badges** -- Define system badges (First Course, Speed Learner, Perfect Quiz, 30-Day Streak) with automatic triggers, allow LMS admins to create custom badges with custom icons and trigger conditions, build badge gallery page, add LinkedIn sharing for earned badges
