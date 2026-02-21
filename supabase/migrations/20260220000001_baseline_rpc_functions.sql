@@ -912,7 +912,7 @@ AS $$
     AND c.organization_id = (SELECT organization_id FROM users WHERE id = auth.uid())
   WHERE cat.organization_id = (SELECT organization_id FROM users WHERE id = auth.uid())
   GROUP BY cat.name
-  ORDER BY value DESC;
+  ORDER BY 2 DESC;
 $$;
 
 -- 48. get_courses_per_month
