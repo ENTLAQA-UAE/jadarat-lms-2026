@@ -1,6 +1,3 @@
-// server-actions/authenticateUser.ts
-'use server';
-
 import { fetchUserData } from '@/action/authAction';
 import InactiveEmail from '@/components/InactiveEmail';
 import { Toaster } from '@/components/ui/sonner';
@@ -18,8 +15,9 @@ export default async function Layout({
   org_admin: React.ReactNode;
   super_admin: React.ReactNode;
 }) {
-  const { user_role, is_active } = await fetchUserData();
-
+  const userData = await fetchUserData();
+  const user_role = userData?.user_role;
+  const is_active = userData?.is_active;
 
   if (!user_role) {
     return null;

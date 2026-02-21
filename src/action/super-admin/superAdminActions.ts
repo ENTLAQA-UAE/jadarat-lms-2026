@@ -14,7 +14,12 @@ export const getSummaryData = async () => {
     let { data, error } = await supabase.rpc(
       'get_summary_data_for_super_admin'
     );
-    dashboardData = data;
+    if (error) {
+      errorMessage = error.message;
+      console.error('RPC error:', errorMessage);
+    } else {
+      dashboardData = data;
+    }
   } catch (error: any) {
     errorMessage = error.message;
     console.error(errorMessage);
