@@ -20,6 +20,7 @@ const nextConfig = {
             "images.unsplash.com",
             "brfxdvhnrvldmtbldmzl.supabase.co",
             "dlglrlznszcrgjxwviwb.supabase.co",
+            "rvfsdurjdrdbirlbbjcv.supabase.co",
             "s3-placid.s3.eu-central-1.amazonaws.com",
             "www.ti.com",
             "c0.wallpaperflare.com",
