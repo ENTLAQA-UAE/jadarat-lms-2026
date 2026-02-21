@@ -88,7 +88,7 @@ SELECT
   now()
 FROM auth.users au
 WHERE au.email = 'm.ibrahem@entlaqa.com'
-ON CONFLICT DO NOTHING;
+ON CONFLICT (provider_id, provider) DO NOTHING;
 
 -- Verify
 SELECT 'Auth user created' AS step, au.id, au.email
