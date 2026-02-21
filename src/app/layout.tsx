@@ -111,10 +111,16 @@ export default async function RootLayout({
         <Script strategy="beforeInteractive" src="https://player.vimeo.com/api/player.js" />
         <Script id="Weglot" strategy="beforeInteractive">
           {`setTimeout(() => {
-            Weglot.initialize({
-              api_key: "wg_6ed8ff3cee7ad29ea2def8ac2f08adfa8",
-              hide_switcher: true,
-            });
+            try {
+              if (typeof Weglot !== 'undefined') {
+                Weglot.initialize({
+                  api_key: "wg_6ed8ff3cee7ad29ea2def8ac2f08adfa8",
+                  hide_switcher: true,
+                });
+              }
+            } catch (e) {
+              console.warn('Weglot initialization failed:', e);
+            }
           }, 400)`}
         </Script>
       </head>
