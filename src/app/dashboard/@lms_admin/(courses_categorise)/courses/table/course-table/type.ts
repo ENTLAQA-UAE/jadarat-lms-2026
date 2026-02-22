@@ -1,3 +1,5 @@
+export type CoursePublishStatus = 'draft' | 'private' | 'published';
+
 export type Course = {
     course_id: number;
     name: string;
@@ -6,6 +8,7 @@ export type Course = {
     thumbnail: string;
     category: string;
     category_image: string;
-    category_id: number;    // Add this line
-    category_name: string;  // Add this line
+    category_id: number;
+    category_name: string;
+    status: CoursePublishStatus | null;
 }

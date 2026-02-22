@@ -13,6 +13,17 @@ import { EnrollmentsType } from './type';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { EnrollmentStatusBadge } from '@/components/shared/StatusBadge';
+
+const ENROLLMENT_STATUS_OPTIONS = [
+    { value: null as string | null, label: 'All Statuses' },
+    { value: 'not_started', label: 'Not Started' },
+    { value: 'in_progress', label: 'In Progress' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'failed', label: 'Failed' },
+    { value: 'expired', label: 'Expired' },
+    { value: 'overdue', label: 'Overdue' },
+];
 
 interface EnrollmentsFilterProps {
     table: Table<EnrollmentsType>;
@@ -128,6 +139,8 @@ function EnrollmentsFilter({ table }: EnrollmentsFilterProps) {
         </Popover>
     );
 
+    const currentStatusFilter = searchParams.get('enrollment_status');
+
     return (
         <div className="flex flex-col lg:flex-row gap-2 items-center">
             <Input
@@ -142,10 +155,37 @@ function EnrollmentsFilter({ table }: EnrollmentsFilterProps) {
 
             {isFilterOpen && (
                 <>
-                    <div className='flex gap-2'>
+                    <div className='flex gap-2 flex-wrap'>
                         <FilterDropdown title="Course" options={courseOptions} columnId="course" />
                         <FilterDropdown title="Department" options={departmentOptions} columnId="department" />
                         <FilterDropdown title="Group" options={groupOptions} columnId="group_name" />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="flex min-w-[150px] justify-between">
+                                    {currentStatusFilter ? (
+                                        <EnrollmentStatusBadge status={currentStatusFilter} />
+                                    ) : (
+                                        'All Statuses'
+                                    )}
+                                    <ChevronDown className="ml-2 h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="min-w-[150px]">
+                                {ENROLLMENT_STATUS_OPTIONS.map((option) => (
+                                    <DropdownMenuItem
+                                        key={option.label}
+                                        onClick={() => handleDebouncedFilterChange('enrollment_status', option.value)}
+                                        className="flex items-center gap-2"
+                                    >
+                                        {option.value ? (
+                                            <EnrollmentStatusBadge status={option.value} />
+                                        ) : (
+                                            option.label
+                                        )}
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
 
                     <div className="flex items-center gap-2">

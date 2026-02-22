@@ -21,6 +21,7 @@ async function fetchData(rpcName: string, page: number, pageSize: number, filter
       _group_name: filters._group_name ?? null,
       _start_date: filters._start_date ?? null,
       _end_date: filters._end_date ?? null,
+      _enrollment_status: filters._enrollment_status ?? null,
     }, {
       count: 'exact',
     }).range(start, end);
@@ -52,6 +53,7 @@ export const getAllEnrollments = async () => {
     _group_name: null,
     _start_date: null,
     _end_date: null,
+    _enrollment_status: null,
   });
   if (error) {
     throw new Error(`Error fetching all enrollments: ${error.message}`);

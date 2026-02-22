@@ -1,14 +1,23 @@
+export type EnrollmentStatusType =
+    | 'not_started'
+    | 'in_progress'
+    | 'completed'
+    | 'failed'
+    | 'expired'
+    | 'overdue';
+
 export interface EnrollmentsType {
     enrollment_id: number;
-    user_id: string; // Changed from number to string for consistency
+    user_id: string;
     name: string;
     course: string;
-    thumbnail?: string; // Made optional as it's not in the other interface
+    thumbnail?: string;
     enrollment_date: string;
     progress_percentage: number;
-    completion_date?: string; // Made optional as it's not in the other interface
-    course_id?: number; // Made optional as it's not in the other interface
-    email?: string; // Added to match the other interface
-    department?: string; // Added to match the other interface
-    group_name?: string; // Added to match the other interface
+    completion_date?: string;
+    course_id?: number;
+    email?: string;
+    department?: string;
+    group_name?: string;
+    enrollment_status?: EnrollmentStatusType;
 }

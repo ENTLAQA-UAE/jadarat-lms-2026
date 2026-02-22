@@ -5,6 +5,7 @@ interface SearchParams {
   page?: string;
   category?: string;
   name?: string;
+  status?: string;
 }
 
 export default async function CoursesDataTablePage({ searchParams ,userRole}: { searchParams: SearchParams , userRole: string }) {
@@ -14,6 +15,7 @@ export default async function CoursesDataTablePage({ searchParams ,userRole}: { 
   const filters = {
     category: searchParams.category ?? null,
     name: searchParams.name ?? null,
+    status: searchParams.status ?? null,
   };
 
   const result = await fetchAllCourses(page, pageSize, filters);

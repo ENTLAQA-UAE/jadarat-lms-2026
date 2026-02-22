@@ -1,15 +1,11 @@
 'use client';
 import { ColumnDef } from '@tanstack/react-table';
 import { Course } from '../type';
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { Edit } from 'lucide-react';
 import PlaceholderImage from '@/../public/placeholder.png';
-import Link from 'next/link';
-import { DeleteButton } from './DeleteButton';
 import { ActionsCell } from './ActionsCell';
+import { CourseStatusBadge } from '@/components/shared/StatusBadge';
 
-// Assuming you have the user's role as a prop or from context
 export const getColumns = (userRole: string): ColumnDef<Course>[] => {
 
   const columns: ColumnDef<Course>[] = [
@@ -61,6 +57,17 @@ export const getColumns = (userRole: string): ColumnDef<Course>[] => {
       },
     },
     {
+      accessorKey: 'status',
+      header: 'Status',
+      filterFn: (row, columnId, filterValue) => {
+        const status = row.original.status ?? 'draft';
+        return status === filterValue || filterValue === null;
+      },
+      cell: ({ row }) => (
+        <CourseStatusBadge status={row.original.status} />
+      ),
+    },
+    {
       accessorKey: 'created_at',
       header: 'Created At',
       cell: ({ row }) => <div>{new Date(row.original.created_at).toLocaleDateString()}</div>,
@@ -75,9 +82,9 @@ export const getColumns = (userRole: string): ColumnDef<Course>[] => {
   // Conditionally add the "Actions" column if the user is not a 'learnerManager'
   if (userRole === 'LMSAdmin') {
     columns.push({
-      accessorKey: 'course_id',
+      id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => <ActionsCell course={row.original} />, // Use the new component
+      cell: ({ row }) => <ActionsCell course={row.original} />,
     });
   }
 
