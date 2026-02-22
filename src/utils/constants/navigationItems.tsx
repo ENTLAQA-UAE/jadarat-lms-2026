@@ -70,6 +70,10 @@ const lmsAdminRoutes = [
     name: "Gamification",
     href: "/dashboard/gamification-config",
   },
+  {
+    name: "Leaderboard",
+    href: "/dashboard/leaderboard-config",
+  },
 ];
 
 const learningManagerRoutes = [
@@ -113,6 +117,10 @@ const learnerRoutes = [
   {
     name: "Achievements",
     href: "/dashboard/achievements",
+  },
+  {
+    name: "Leaderboard",
+    href: "/dashboard/leaderboard",
   },
 ];
 
