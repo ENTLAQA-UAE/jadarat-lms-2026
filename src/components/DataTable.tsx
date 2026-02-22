@@ -42,9 +42,10 @@ interface DataTableProps<TData> {
   headerLinks?: () => React.ReactNode
   controls?: () => React.ReactNode
   pagination?: boolean;
+  renderMobileCard?: (row: TData) => React.ReactNode;
 }
 
-export function DataTableComponent<TData>({ columns, data, renderToolbar, actionTable, headerLinks, controls, pagination = false }: DataTableProps<TData>) {
+export function DataTableComponent<TData>({ columns, data, renderToolbar, actionTable, headerLinks, controls, pagination = false, renderMobileCard }: DataTableProps<TData>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const { isRTL } = useLanguage()
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -83,7 +84,24 @@ export function DataTableComponent<TData>({ columns, data, renderToolbar, action
           {headerLinks && headerLinks()}
         </div>
       </div>
-      <div className="rounded-md border grid ">
+
+      {/* Mobile card layout */}
+      {renderMobileCard && (
+        <div className="md:hidden space-y-3">
+          {data.length > 0 ? (
+            table.getRowModel().rows.map((row) => (
+              <React.Fragment key={row.id}>
+                {renderMobileCard(row.original)}
+              </React.Fragment>
+            ))
+          ) : (
+            <p className="text-center text-muted-foreground py-8">No data available</p>
+          )}
+        </div>
+      )}
+
+      {/* Desktop table layout */}
+      <div className={`rounded-md border grid ${renderMobileCard ? 'hidden md:grid' : ''}`}>
         <ScrollArea className="h-[80vh]" dir={isRTL ? 'rtl' : "ltr"}>
           <Table>
             <TableHeader className='bg-primary sticky top-0 z-[3]'>

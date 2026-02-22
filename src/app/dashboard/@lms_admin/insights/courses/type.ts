@@ -39,5 +39,6 @@ export interface InsightsCourseProps {
   pieChartDataLoading: boolean
   barChartError: string
   pieChartError: string
+  courseStatusData?: CategoryData[];
 }
 
