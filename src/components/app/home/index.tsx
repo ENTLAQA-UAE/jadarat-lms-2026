@@ -32,7 +32,7 @@ function PerformanceSection({ data }: PerformanceSectionProps) {
       completionRate={data.avgCompletionRate}
       enrollementsCount={data.activeEnrollments?.toLocaleString()}
       avgCompletionDays={data.avgCompletionDays}
-      progressBarFillClassName="bg-green-300"
+      progressBarFillClassName="bg-success"
     />
   );
 }

@@ -139,7 +139,7 @@ const CertificateButton: React.FC<CertificateButtonProps> = ({
   return (
     <Button
       className={cn(`w-full px-4 py-2 text-base flex justify-center items-center gap-2
-    ${variant === "share" ? "bg-[#0072b1] hover:bg-[#005a8f] text-white" : ""}
+    ${variant === "share" ? "bg-[#0072b1] hover:bg-[#005a8f] text-primary-foreground" : ""}
     sm:px-3 sm:text-sm  // Smaller padding and font size for small screens
     md:px-2 md:text-xs  // Even smaller for medium screens or reduced width
   `, className)}

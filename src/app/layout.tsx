@@ -4,10 +4,10 @@ import localFont from 'next/font/local';
 import { Toaster } from '@/components/ui/sonner';
 import { Toaster as Toast } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import Navbar from '@/components/nav';
 import NextTopLoader from 'nextjs-toploader';
 import SetupProvider from '@/context/setup.context';
 import LangugageProvider from '@/context/language.context';
+import AppThemeProvider from '@/context/theme.context';
 import { Suspense } from 'react';
 import Script from 'next/script';
 import { headers } from 'next/headers';
@@ -132,11 +132,12 @@ export default async function RootLayout({
               organizationSubscription={organizationSubscription}
               userDetails={userDetails}
             >
-              <Navbar />
-              <NextTopLoader showSpinner={false} />
-              {children}
-              <Toaster />
-              <Toast />
+              <AppThemeProvider>
+                <NextTopLoader showSpinner={false} />
+                {children}
+                <Toaster />
+                <Toast />
+              </AppThemeProvider>
             </SetupProvider>
           </LangugageProvider>
         </Suspense>

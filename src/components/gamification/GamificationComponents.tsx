@@ -42,16 +42,16 @@ export interface ChallengeData {
 // ============================================================
 
 export const DEFAULT_LEVELS: LevelDefinition[] = [
-  { level: 1, name: "Newcomer", xpThreshold: 0, color: "bg-slate-400" },
-  { level: 2, name: "Explorer", xpThreshold: 100, color: "bg-blue-500" },
-  { level: 3, name: "Learner", xpThreshold: 300, color: "bg-cyan-500" },
-  { level: 4, name: "Achiever", xpThreshold: 600, color: "bg-green-500" },
-  { level: 5, name: "Scholar", xpThreshold: 1000, color: "bg-emerald-500" },
-  { level: 6, name: "Expert", xpThreshold: 1500, color: "bg-yellow-500" },
-  { level: 7, name: "Master", xpThreshold: 2500, color: "bg-orange-500" },
-  { level: 8, name: "Grand Master", xpThreshold: 4000, color: "bg-red-500" },
-  { level: 9, name: "Legend", xpThreshold: 6000, color: "bg-purple-500" },
-  { level: 10, name: "Mythic", xpThreshold: 10000, color: "bg-amber-400" },
+  { level: 1, name: "Newcomer", xpThreshold: 0, color: "bg-muted-foreground" },
+  { level: 2, name: "Explorer", xpThreshold: 100, color: "bg-info" },
+  { level: 3, name: "Learner", xpThreshold: 300, color: "bg-info" },
+  { level: 4, name: "Achiever", xpThreshold: 600, color: "bg-success" },
+  { level: 5, name: "Scholar", xpThreshold: 1000, color: "bg-success" },
+  { level: 6, name: "Expert", xpThreshold: 1500, color: "bg-warning" },
+  { level: 7, name: "Master", xpThreshold: 2500, color: "bg-warning" },
+  { level: 8, name: "Grand Master", xpThreshold: 4000, color: "bg-destructive" },
+  { level: 9, name: "Legend", xpThreshold: 6000, color: "bg-accent" },
+  { level: 10, name: "Mythic", xpThreshold: 10000, color: "bg-warning" },
 ];
 
 // ============================================================
@@ -107,7 +107,7 @@ export function LevelBadge({
   return (
     <div
       className={cn(
-        "rounded-full flex items-center justify-center font-bold text-white shadow-md",
+        "rounded-full flex items-center justify-center font-bold text-primary-foreground shadow-md",
         current.color,
         sizeClasses[size]
       )}
@@ -167,7 +167,7 @@ export function LevelProgress({
 
 export function StreakDisplay({ streak }: { streak: StreakData }) {
   const flameColors = streak.isActive
-    ? "text-orange-500"
+    ? "text-warning"
     : "text-muted-foreground";
 
   return (
@@ -181,7 +181,7 @@ export function StreakDisplay({ streak }: { streak: StreakData }) {
           <path d="M12 23c-3.866 0-7-3.134-7-7 0-3.037 2.346-6.44 4.95-8.85a.75.75 0 0 1 1.1.05c.83 1.06 1.66 1.98 2.3 2.6.2.19.5.19.7 0 .94-.9 1.83-2.1 2.3-3.3a.75.75 0 0 1 1.35-.1C19.36 9.39 21 12.65 21 16c0 3.866-3.134 7-7 7z" />
         </svg>
         {streak.isActive && (
-          <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-tiny font-bold text-white">
+          <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-warning text-tiny font-bold text-primary-foreground">
             {streak.currentStreak}
           </span>
         )}
@@ -192,7 +192,7 @@ export function StreakDisplay({ streak }: { streak: StreakData }) {
             {streak.currentStreak} {streak.streakType === "daily" ? "day" : "week"} streak
           </span>
           {streak.isActive && (
-            <span className="inline-flex items-center rounded-full bg-orange-100 px-1.5 py-0.5 text-tiny font-medium text-orange-700">
+            <span className="inline-flex items-center rounded-full bg-warning/10 px-1.5 py-0.5 text-tiny font-medium text-warning">
               Active
             </span>
           )}
@@ -203,7 +203,7 @@ export function StreakDisplay({ streak }: { streak: StreakData }) {
           <span className="flex items-center gap-1">
             Freezes: {streak.streakFreezes}/{streak.maxStreakFreezes}
             {streak.streakFreezes > 0 && (
-              <svg className="h-3 w-3 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
+              <svg className="h-3 w-3 text-info" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z" />
               </svg>
             )}
@@ -244,9 +244,9 @@ export function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
       className={cn(
         "rounded-lg border p-4 transition-all",
         challenge.isCompleted
-          ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950"
+          ? "border-success bg-success/10 dark:border-success dark:bg-success/90"
           : isExpired
-            ? "border-red-200 bg-red-50 opacity-60 dark:border-red-800 dark:bg-red-950"
+            ? "border-destructive bg-destructive/10 opacity-60 dark:border-destructive dark:bg-destructive/90"
             : "border-border hover:shadow-sm"
       )}
     >
@@ -272,9 +272,9 @@ export function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
           </span>
           <span className="font-medium">
             {challenge.isCompleted ? (
-              <span className="text-green-600">Completed!</span>
+              <span className="text-success">Completed!</span>
             ) : isExpired ? (
-              <span className="text-red-500">Expired</span>
+              <span className="text-destructive">Expired</span>
             ) : (
               `${progressPercent}%`
             )}
@@ -285,9 +285,9 @@ export function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
           className="h-1.5"
           progressClassName={cn(
             challenge.isCompleted
-              ? "bg-green-500"
+              ? "bg-success"
               : isExpired
-                ? "bg-red-400"
+                ? "bg-destructive"
                 : "bg-primary"
           )}
         />

@@ -75,32 +75,32 @@ export function CelebrationOverlay({
     level_up: (
       <div className="relative">
         <div className="animate-bounce">
-          <svg className="h-16 w-16 text-yellow-400 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="h-16 w-16 text-warning drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.5L5.7 21l2.3-7-6-4.6h7.6z" />
           </svg>
         </div>
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 animate-ping">
-          <div className="h-3 w-3 rounded-full bg-yellow-300" />
+          <div className="h-3 w-3 rounded-full bg-warning" />
         </div>
       </div>
     ),
     challenge_complete: (
       <div className="animate-bounce">
-        <svg className="h-16 w-16 text-green-400 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="h-16 w-16 text-success drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
         </svg>
       </div>
     ),
     streak_milestone: (
       <div className="animate-bounce">
-        <svg className="h-16 w-16 text-orange-400 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="h-16 w-16 text-warning drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 23c-3.866 0-7-3.134-7-7 0-3.037 2.346-6.44 4.95-8.85a.75.75 0 0 1 1.1.05c.83 1.06 1.66 1.98 2.3 2.6.2.19.5.19.7 0 .94-.9 1.83-2.1 2.3-3.3a.75.75 0 0 1 1.35-.1C19.36 9.39 21 12.65 21 16c0 3.866-3.134 7-7 7z" />
         </svg>
       </div>
     ),
     badge_earned: (
       <div className="animate-bounce">
-        <svg className="h-16 w-16 text-purple-400 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="h-16 w-16 text-accent drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
         </svg>
       </div>
@@ -108,10 +108,10 @@ export function CelebrationOverlay({
   };
 
   const bgGradient = {
-    level_up: "from-yellow-500/20 via-transparent to-amber-500/20",
-    challenge_complete: "from-green-500/20 via-transparent to-emerald-500/20",
-    streak_milestone: "from-orange-500/20 via-transparent to-red-500/20",
-    badge_earned: "from-purple-500/20 via-transparent to-indigo-500/20",
+    level_up: "from-warning/20 via-transparent to-warning/20",
+    challenge_complete: "from-success/20 via-transparent to-success/20",
+    streak_milestone: "from-warning/20 via-transparent to-destructive/20",
+    badge_earned: "from-accent/20 via-transparent to-primary/20",
   };
 
   return (

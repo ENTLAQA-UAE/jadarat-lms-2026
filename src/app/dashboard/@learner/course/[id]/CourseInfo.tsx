@@ -103,7 +103,7 @@ async function CourseInfo({ courseInfo, organizationDetails, userData }: { cours
                 <EnrolButton courseInfo={courseInfo} />
               ) : (
                 <Alert className="mt-2">
-                  <CircleCheck className="w-5 h-5 text-orange-500 mr-2" />
+                  <CircleCheck className="w-5 h-5 text-warning mr-2" />
                   <AlertDescription>
                     Only the LMS manager can enroll you into courses.
                   </AlertDescription>
@@ -130,7 +130,7 @@ async function CourseInfo({ courseInfo, organizationDetails, userData }: { cours
               <>
                 <CertificateButton
                   className={
-                    'bg-white text-black border border-info !text-sm'
+                    'bg-card text-foreground border border-info !text-sm'
                   }
                   selectedCourse={{
                     id: courseInfo.course_id,
@@ -144,7 +144,7 @@ async function CourseInfo({ courseInfo, organizationDetails, userData }: { cours
 
                 <CertificateButton
                   className={
-                    'bg-white text-black border border-info !text-sm'
+                    'bg-card text-foreground border border-info !text-sm'
                   }
                   selectedCourse={{
                     id: courseInfo.course_id,
@@ -171,7 +171,7 @@ async function CourseInfo({ courseInfo, organizationDetails, userData }: { cours
             )}
             {courseInfo && courseInfo.user_course_created_at && (
               <Alert className="mt-2">
-                <CircleCheck className="w-5 h-5 text-green-500 mr-2" />
+                <CircleCheck className="w-5 h-5 text-success mr-2" />
                 <AlertDescription>
                   You&apos;re Already Enrolled since{' '}
                   {new Date(courseInfo?.user_course_created_at || Date.now()).toLocaleDateString('en-US', {

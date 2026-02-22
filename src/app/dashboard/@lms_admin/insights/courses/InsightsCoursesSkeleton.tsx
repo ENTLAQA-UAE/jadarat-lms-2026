@@ -49,21 +49,21 @@ export function CoursesByCategory() {
 
 export const CourseTableSkeleton = () => (
  <div className="w-full overflow-x-auto">
-  <table className="min-w-full divide-y divide-gray-200">
+  <table className="min-w-full divide-y divide-border">
    <thead>
     <tr>
-     <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+     <th className="px-6 py-3 bg-muted text-start text-xs font-medium text-muted-foreground uppercase tracking-wider">
       <Skeleton className="h-4 w-24" />
      </th>
-     <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+     <th className="px-6 py-3 bg-muted text-start text-xs font-medium text-muted-foreground uppercase tracking-wider">
       <Skeleton className="h-4 w-24" />
      </th>
-     <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+     <th className="px-6 py-3 bg-muted text-start text-xs font-medium text-muted-foreground uppercase tracking-wider">
       <Skeleton className="h-4 w-24" />
      </th>
     </tr>
    </thead>
-   <tbody className="bg-white divide-y divide-gray-200">
+   <tbody className="bg-card divide-y divide-border">
     {Array.from({ length: 5 }).map((_, index) => (
      <tr key={index}>
       <td className="px-6 py-4 whitespace-nowrap">

@@ -31,7 +31,7 @@ export default function SuperAdminDashboard({
     return (
       <div className="p-8 space-y-8">
         <h1 className="text-3xl font-bold">Super Admin Dashboard</h1>
-        <div className="text-red-500">{errorMessage || 'Failed to load dashboard data.'}</div>
+        <div className="text-destructive">{errorMessage || 'Failed to load dashboard data.'}</div>
       </div>
     );
   }

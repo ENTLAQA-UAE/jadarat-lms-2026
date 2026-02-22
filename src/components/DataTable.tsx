@@ -108,7 +108,7 @@ export function DataTableComponent<TData>({ columns, data, renderToolbar, action
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead className={`text-white rtl:text-start ${header.column.columnDef.meta?.headerClassName}`} key={header.id + Math.random()}>
+                    <TableHead className={`text-primary-foreground rtl:text-start ${header.column.columnDef.meta?.headerClassName}`} key={header.id + Math.random()}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(

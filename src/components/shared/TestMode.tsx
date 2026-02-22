@@ -17,7 +17,7 @@ function TestMode({ coassembleId, name }: { coassembleId: string | null, name?: 
 
 
     return (
-        <div className="absolute bg-[#FED141] text-black w-full z-[33] h-[8px] top-[2px] bottom-13">
+        <div className="absolute bg-warning text-warning-foreground w-full z-[33] h-[8px] top-[2px] bottom-13">
             <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger asChild>

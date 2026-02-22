@@ -30,13 +30,13 @@ export default function EmailConfirmed() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-muted flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 text-center">
         <div className="relative w-48 h-48 mx-auto">
           <motion.svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
-            className="w-full h-full text-green-500"
+            className="w-full h-full text-success"
           >
             <motion.path
               d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
@@ -62,8 +62,8 @@ export default function EmailConfirmed() {
             />
           </motion.svg>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900">Email Confirmed!</h1>
-        <p className="text-xl text-gray-600">
+        <h1 className="text-3xl font-bold text-foreground">Email Confirmed!</h1>
+        <p className="text-xl text-muted-foreground">
           Your email has been successfully confirmed.
         </p>
         <Button

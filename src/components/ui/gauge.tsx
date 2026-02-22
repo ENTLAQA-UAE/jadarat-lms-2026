@@ -36,7 +36,7 @@ export const Gauge = ({
     };
 
     return (
-        <div className="flex flex-col text-black items-center justify-center relative">
+        <div className="flex flex-col text-foreground items-center justify-center relative">
             <svg
                 fill="none"
                 shapeRendering="crispEdges"

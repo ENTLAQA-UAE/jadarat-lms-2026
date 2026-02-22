@@ -44,11 +44,11 @@ const MOCK_CHALLENGES: ChallengeData[] = [
 
 // Mock leaderboard — will be replaced with real data in Phase 2
 const MOCK_LEADERBOARD: LeaderboardEntry[] = [
-  { rank: 1, userId: "u1", displayName: "Sarah A.", totalXP: 4200, currentLevel: 8, levelName: "Grand Master", levelColor: "bg-red-500", currentStreak: 14 },
-  { rank: 2, userId: "u2", displayName: "Ahmed K.", totalXP: 3800, currentLevel: 7, levelName: "Master", levelColor: "bg-orange-500", currentStreak: 9 },
-  { rank: 3, userId: "u3", displayName: "Fatima H.", totalXP: 3100, currentLevel: 7, levelName: "Master", levelColor: "bg-orange-500", currentStreak: 5 },
-  { rank: 4, userId: "u4", displayName: "Omar M.", totalXP: 2400, currentLevel: 6, levelName: "Expert", levelColor: "bg-yellow-500", currentStreak: 3 },
-  { rank: 5, userId: "current", displayName: "You", totalXP: 1350, currentLevel: 4, levelName: "Achiever", levelColor: "bg-green-500", currentStreak: 7, isCurrentUser: true },
+  { rank: 1, userId: "u1", displayName: "Sarah A.", totalXP: 4200, currentLevel: 8, levelName: "Grand Master", levelColor: "bg-destructive", currentStreak: 14 },
+  { rank: 2, userId: "u2", displayName: "Ahmed K.", totalXP: 3800, currentLevel: 7, levelName: "Master", levelColor: "bg-warning", currentStreak: 9 },
+  { rank: 3, userId: "u3", displayName: "Fatima H.", totalXP: 3100, currentLevel: 7, levelName: "Master", levelColor: "bg-warning", currentStreak: 5 },
+  { rank: 4, userId: "u4", displayName: "Omar M.", totalXP: 2400, currentLevel: 6, levelName: "Expert", levelColor: "bg-warning", currentStreak: 3 },
+  { rank: 5, userId: "current", displayName: "You", totalXP: 1350, currentLevel: 4, levelName: "Achiever", levelColor: "bg-success", currentStreak: 7, isCurrentUser: true },
 ];
 
 export default function DashboardWidgets() {
@@ -75,7 +75,7 @@ export default function DashboardWidgets() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Trophy className="h-4 w-4 text-yellow-500" />
+            <Trophy className="h-4 w-4 text-warning" />
             {isRTL ? "لوحة المتصدرين" : "Leaderboard"}
           </CardTitle>
           <Link href="/dashboard/leaderboard">

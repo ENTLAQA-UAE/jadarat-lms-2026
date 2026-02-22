@@ -58,11 +58,11 @@ export default function UploadImageInput({ label, defaultValue, className, image
 
     return (
         <div>
-            <label htmlFor={label} className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor={label} className="block text-sm font-medium text-foreground">
                 {label}
             </label>
             <div
-                className={cn("mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer overflow-hidden", className)}
+                className={cn("mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-border border-dashed rounded-md cursor-pointer overflow-hidden", className)}
                 onClick={onClick}
             >
                 {file ? (
@@ -71,7 +71,7 @@ export default function UploadImageInput({ label, defaultValue, className, image
                         
 
                         <button
-                            className="absolute -top-4 ltr:-right-5 rtl:-left-5 bg-gray-800 text-white rounded-full p-1 hover:bg-gray-700 focus:outline-none focus:ring-0 focus:ring-offset-2 focus:ring-gray-500"
+                            className="absolute -top-4 ltr:-right-5 rtl:-left-5 bg-muted text-foreground rounded-full p-1 hover:bg-muted/80 focus:outline-none focus:ring-0 focus:ring-offset-2 focus:ring-ring"
                             onClick={handleRemoveLogo}
                         >
                             <X className="h-4 w-4" />
@@ -79,13 +79,13 @@ export default function UploadImageInput({ label, defaultValue, className, image
                     </div>
                 ) : (
                     <div className="space-y-1 text-center flex flex-col justify-center">
-                        <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                        <div className="flex text-sm text-gray-600 dark:text-gray-400">
+                        <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                        <div className="flex text-sm text-muted-foreground">
                             <span>Upload a file</span>
                             <input id={label} type="file" accept="image/*" className="sr-only" onChange={handleSelection} />
                             <p className="pl-1">or drag and drop</p>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 5MB</p>
+                        <p className="text-xs text-muted-foreground">PNG, JPG, GIF up to 5MB</p>
                     </div>
                 )}
             </div>

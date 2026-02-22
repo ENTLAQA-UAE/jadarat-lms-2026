@@ -86,7 +86,7 @@ export function AISearchResults({
     <div className="w-full" dir={isRTL ? "rtl" : "ltr"}>
       {/* Search Input */}
       <div className="relative mb-6">
-        <Search className="absolute top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" style={{ [isRTL ? "right" : "left"]: "0.75rem" }} />
+        <Search className="absolute top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" style={{ [isRTL ? "right" : "left"]: "0.75rem" }} />
         <input
           type="text"
           value={query}
@@ -98,7 +98,7 @@ export function AISearchResults({
               : "Search courses with AI..."
           }
           className={cn(
-            "w-full rounded-xl border border-gray-200 py-3 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100",
+            "w-full rounded-xl border border-border py-3 text-sm outline-none transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10",
             isRTL ? "pr-11 pl-24" : "pl-11 pr-24"
           )}
         />
@@ -106,7 +106,7 @@ export function AISearchResults({
           onClick={() => handleSearch(query)}
           disabled={isSearching || !query.trim()}
           className={cn(
-            "absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-40",
+            "absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40",
           )}
           style={{ [isRTL ? "left" : "right"]: "0.375rem" }}
         >
@@ -121,7 +121,7 @@ export function AISearchResults({
 
       {/* AI Search Badge */}
       {hasSemantic && results.length > 0 && (
-        <div className="mb-4 flex items-center gap-2 rounded-lg bg-indigo-50 px-3 py-2 text-xs text-indigo-700">
+        <div className="mb-4 flex items-center gap-2 rounded-lg bg-primary/5 px-3 py-2 text-xs text-primary">
           <Sparkles className="h-3.5 w-3.5" />
           {isRTL
             ? "نتائج البحث مدعومة بالذكاء الاصطناعي للبحث الدلالي"
@@ -131,7 +131,7 @@ export function AISearchResults({
 
       {/* Results */}
       {isSearching && (
-        <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
           <Loader2 className="mb-3 h-8 w-8 animate-spin" />
           <p className="text-sm">
             {isRTL ? "جارٍ البحث..." : "Searching..."}
@@ -140,7 +140,7 @@ export function AISearchResults({
       )}
 
       {!isSearching && hasSearched && results.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
           <Search className="mb-3 h-8 w-8 opacity-40" />
           <p className="text-sm">
             {isRTL
@@ -161,10 +161,10 @@ export function AISearchResults({
             <div
               key={result.course_id}
               onClick={() => onCourseClick?.(result.course_id)}
-              className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white transition-all hover:border-blue-200 hover:shadow-md"
+              className="group cursor-pointer overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/20 hover:shadow-md"
             >
               {/* Thumbnail */}
-              <div className="relative aspect-video bg-gray-100">
+              <div className="relative aspect-video bg-muted">
                 {result.thumbnail ? (
                   <img
                     src={result.thumbnail}
@@ -173,17 +173,17 @@ export function AISearchResults({
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center">
-                    <BookOpen className="h-8 w-8 text-gray-300" />
+                    <BookOpen className="h-8 w-8 text-muted-foreground/50" />
                   </div>
                 )}
                 {result.source === "semantic" && (
-                  <div className="absolute top-2 flex items-center gap-1 rounded-full bg-indigo-600/90 px-2 py-0.5 text-tiny font-medium text-white" style={{ [isRTL ? "right" : "left"]: "0.5rem" }}>
+                  <div className="absolute top-2 flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-tiny font-medium text-primary-foreground" style={{ [isRTL ? "right" : "left"]: "0.5rem" }}>
                     <Sparkles className="h-2.5 w-2.5" />
                     {isRTL ? "ذكي" : "AI Match"}
                   </div>
                 )}
                 {result.similarity > 0 && (
-                  <div className="absolute top-2 flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-tiny font-medium text-gray-700" style={{ [isRTL ? "left" : "right"]: "0.5rem" }}>
+                  <div className="absolute top-2 flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-tiny font-medium text-foreground" style={{ [isRTL ? "left" : "right"]: "0.5rem" }}>
                     <Star className="h-2.5 w-2.5 text-yellow-500" />
                     {Math.round(result.similarity * 100)}%
                   </div>
@@ -192,22 +192,22 @@ export function AISearchResults({
 
               {/* Content */}
               <div className="p-3">
-                <h3 className="text-sm font-semibold text-gray-900 line-clamp-1 group-hover:text-blue-700">
+                <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary">
                   {result.title}
                 </h3>
-                <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
                   {result.description}
                 </p>
                 <div className="mt-2.5 flex items-center gap-2">
                   {result.category_name && (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-tiny font-medium text-gray-600">
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-tiny font-medium text-muted-foreground">
                       {result.category_name}
                     </span>
                   )}
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-tiny font-medium",
-                      levelColors[result.level] || "bg-gray-100 text-gray-600"
+                      levelColors[result.level] || "bg-muted text-muted-foreground"
                     )}
                   >
                     <BarChart3 className="mr-0.5 inline h-2.5 w-2.5" />

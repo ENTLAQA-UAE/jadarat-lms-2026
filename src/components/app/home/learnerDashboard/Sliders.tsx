@@ -41,7 +41,7 @@ function Sliders({ sliders }: { sliders: SliderType[] }) {
         <Button
           variant="ghost"
           size="icon"
-          className="bg-white/50 hover:bg-white"
+          className="bg-card/50 hover:bg-card"
         >
           <ArrowLeft className="w-6 h-6" />
         </Button>
@@ -50,7 +50,7 @@ function Sliders({ sliders }: { sliders: SliderType[] }) {
         <Button
           variant="ghost"
           size="icon"
-          className="bg-white/50 hover:bg-white"
+          className="bg-card/50 hover:bg-card"
         >
           <ArrowRight className="w-6 h-6" />
         </Button>

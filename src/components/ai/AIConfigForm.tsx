@@ -125,7 +125,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -136,14 +136,14 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
     <div className="mx-auto max-w-3xl space-y-8" dir={isRTL ? "rtl" : "ltr"}>
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent text-primary-foreground">
           <Bot className="h-5 w-5" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-900">
+          <h1 className="text-xl font-bold text-foreground">
             {t("AI Configuration", "إعدادات الذكاء الاصطناعي")}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {t(
               "Configure AI features for your organization",
               "تكوين ميزات الذكاء الاصطناعي لمنظمتك"
@@ -153,10 +153,10 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
       </div>
 
       {/* Provider & Model */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
+      <section className="rounded-xl border border-border bg-card p-6">
         <div className="mb-4 flex items-center gap-2">
-          <Settings2 className="h-4 w-4 text-gray-500" />
-          <h2 className="font-semibold text-gray-900">
+          <Settings2 className="h-4 w-4 text-muted-foreground" />
+          <h2 className="font-semibold text-foreground">
             {t("AI Provider", "مزود الذكاء الاصطناعي")}
           </h2>
         </div>
@@ -164,13 +164,13 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Provider */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
               {t("Provider", "المزود")}
             </label>
             <select
               value={provider}
               onChange={(e) => handleProviderChange(e.target.value as AIProvider)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             >
               {Object.entries(AI_PROVIDERS).map(([key, prov]) => (
                 <option key={key} value={key}>
@@ -182,14 +182,14 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
 
           {/* Model */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
               {t("Model", "النموذج")}
             </label>
             {AI_PROVIDERS[provider]?.models.length > 0 ? (
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                className="w-full rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
               >
                 {AI_PROVIDERS[provider].models.map((m) => (
                   <option key={m} value={m}>
@@ -203,7 +203,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 placeholder={t("Enter model name", "أدخل اسم النموذج")}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+                className="w-full rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
               />
             )}
           </div>
@@ -211,7 +211,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
 
         {/* API Key */}
         <div className="mt-4">
-          <label className="mb-1.5 block text-sm font-medium text-gray-700">
+          <label className="mb-1.5 block text-sm font-medium text-foreground">
             {t("API Key", "مفتاح API")}
           </label>
           <div className="relative">
@@ -224,14 +224,14 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
                 "أدخل مفتاح API (اتركه فارغاً للحفاظ على الحالي)"
               )}
               className={cn(
-                "w-full rounded-lg border border-gray-200 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400",
+                "w-full rounded-lg border border-border py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary",
                 isRTL ? "pl-10 pr-3" : "pl-3 pr-10"
               )}
             />
             <button
               type="button"
               onClick={() => setShowApiKey(!showApiKey)}
-              className="absolute top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               style={{ [isRTL ? "left" : "right"]: "0.75rem" }}
             >
               {showApiKey ? (
@@ -241,7 +241,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               )}
             </button>
           </div>
-          <p className="mt-1 flex items-center gap-1 text-xs text-gray-400">
+          <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
             <Shield className="h-3 w-3" />
             {t(
               "API keys are encrypted at rest",
@@ -252,24 +252,24 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
       </section>
 
       {/* Features Toggle */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
+      <section className="rounded-xl border border-border bg-card p-6">
         <div className="mb-4 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-gray-500" />
-          <h2 className="font-semibold text-gray-900">
+          <Sparkles className="h-4 w-4 text-muted-foreground" />
+          <h2 className="font-semibold text-foreground">
             {t("AI Features", "ميزات الذكاء الاصطناعي")}
           </h2>
         </div>
 
         <div className="space-y-4">
           {/* Chat */}
-          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-100 p-4 transition-colors hover:bg-gray-50">
+          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-muted p-4 transition-colors hover:bg-muted/50">
             <div className="flex items-center gap-3">
-              <MessageSquare className="h-5 w-5 text-blue-500" />
+              <MessageSquare className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-foreground">
                   {t("AI Chat Assistant", "مساعد الدردشة الذكي")}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {t(
                     "Learners can chat with AI about courses",
                     "يمكن للمتعلمين الدردشة مع الذكاء الاصطناعي حول الدورات"
@@ -281,19 +281,19 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               type="checkbox"
               checked={chatEnabled}
               onChange={(e) => setChatEnabled(e.target.checked)}
-              className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-5 w-5 rounded border-border text-primary focus:ring-primary"
             />
           </label>
 
           {/* Search */}
-          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-100 p-4 transition-colors hover:bg-gray-50">
+          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-muted p-4 transition-colors hover:bg-muted/50">
             <div className="flex items-center gap-3">
               <Search className="h-5 w-5 text-green-500" />
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-foreground">
                   {t("AI-Powered Search", "البحث المدعوم بالذكاء الاصطناعي")}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {t(
                     "Semantic search with Arabic & English support",
                     "البحث الدلالي مع دعم العربية والإنجليزية"
@@ -305,22 +305,22 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               type="checkbox"
               checked={searchEnabled}
               onChange={(e) => setSearchEnabled(e.target.checked)}
-              className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+              className="h-5 w-5 rounded border-border text-primary focus:ring-primary"
             />
           </label>
 
           {/* Recommendations */}
-          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-100 p-4 transition-colors hover:bg-gray-50">
+          <label className="flex cursor-pointer items-center justify-between rounded-lg border border-muted p-4 transition-colors hover:bg-muted/50">
             <div className="flex items-center gap-3">
-              <Sparkles className="h-5 w-5 text-purple-500" />
+              <Sparkles className="h-5 w-5 text-accent" />
               <div>
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-foreground">
                   {t(
                     "AI Course Recommendations",
                     "توصيات الدورات بالذكاء الاصطناعي"
                   )}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {t(
                     "Personalized course suggestions for learners",
                     "اقتراحات دورات مخصصة للمتعلمين"
@@ -332,17 +332,17 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               type="checkbox"
               checked={recommendationsEnabled}
               onChange={(e) => setRecommendationsEnabled(e.target.checked)}
-              className="h-5 w-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+              className="h-5 w-5 rounded border-border text-primary focus:ring-primary"
             />
           </label>
         </div>
       </section>
 
       {/* System Prompt */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
+      <section className="rounded-xl border border-border bg-card p-6">
         <div className="mb-4 flex items-center gap-2">
-          <Bot className="h-4 w-4 text-gray-500" />
-          <h2 className="font-semibold text-gray-900">
+          <Bot className="h-4 w-4 text-muted-foreground" />
+          <h2 className="font-semibold text-foreground">
             {t("System Prompt", "تعليمات النظام")}
           </h2>
         </div>
@@ -354,9 +354,9 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
             "Instructions for the AI assistant...",
             "تعليمات للمساعد الذكي..."
           )}
-          className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+          className="w-full resize-none rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
         />
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs text-muted-foreground">
           {t(
             "Customize how the AI responds to learners in your organization",
             "خصص كيفية استجابة الذكاء الاصطناعي للمتعلمين في منظمتك"
@@ -365,10 +365,10 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
       </section>
 
       {/* Advanced Settings */}
-      <section className="rounded-xl border border-gray-200 bg-white p-6">
+      <section className="rounded-xl border border-border bg-card p-6">
         <div className="mb-4 flex items-center gap-2">
-          <Settings2 className="h-4 w-4 text-gray-500" />
-          <h2 className="font-semibold text-gray-900">
+          <Settings2 className="h-4 w-4 text-muted-foreground" />
+          <h2 className="font-semibold text-foreground">
             {t("Advanced Settings", "الإعدادات المتقدمة")}
           </h2>
         </div>
@@ -376,9 +376,9 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Temperature */}
           <div>
-            <label className="mb-1.5 flex items-center justify-between text-sm font-medium text-gray-700">
+            <label className="mb-1.5 flex items-center justify-between text-sm font-medium text-foreground">
               <span>{t("Temperature", "درجة الإبداعية")}</span>
-              <span className="text-xs font-normal text-gray-400">{temperature}</span>
+              <span className="text-xs font-normal text-muted-foreground">{temperature}</span>
             </label>
             <input
               type="range"
@@ -389,7 +389,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               onChange={(e) => setTemperature(parseFloat(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-tiny text-gray-400">
+            <div className="flex justify-between text-tiny text-muted-foreground">
               <span>{t("Precise", "دقيق")}</span>
               <span>{t("Creative", "إبداعي")}</span>
             </div>
@@ -397,7 +397,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
 
           {/* Max Tokens */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
               {t("Max Tokens", "الحد الأقصى للرموز")}
             </label>
             <input
@@ -406,13 +406,13 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               onChange={(e) => setMaxTokens(parseInt(e.target.value, 10))}
               min={256}
               max={16384}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Rate Limits */}
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
               {t("Rate Limit (per minute)", "حد المعدل (في الدقيقة)")}
             </label>
             <input
@@ -420,11 +420,11 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               value={rateLimitRpm}
               onChange={(e) => setRateLimitRpm(parseInt(e.target.value, 10))}
               min={1}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-700">
+            <label className="mb-1.5 block text-sm font-medium text-foreground">
               {t("Rate Limit (per day)", "حد المعدل (في اليوم)")}
             </label>
             <input
@@ -432,7 +432,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               value={rateLimitRpd}
               onChange={(e) => setRateLimitRpd(parseInt(e.target.value, 10))}
               min={1}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
+              className="w-full rounded-lg border border-border px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </div>
         </div>
@@ -455,7 +455,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
         <button
           onClick={handleSave}
           disabled={isSaving}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-60"
+          className="flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
         >
           {isSaving ? (
             <Loader2 className="h-4 w-4 animate-spin" />

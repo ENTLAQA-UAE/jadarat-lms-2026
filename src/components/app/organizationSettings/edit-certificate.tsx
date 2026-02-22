@@ -185,7 +185,7 @@ export default function EditCertificate({ selected }: { selected?: CertificateTe
                                                 if (file) setLogo(file);
                                             }}
                                         />
-                                        <span className="block w-full p-2  text-sm   font-semibold bg-white border border-gray-300 rounded cursor-pointer">
+                                        <span className="block w-full p-2  text-sm   font-semibold bg-card border border-border rounded cursor-pointer">
                                             {logo ? logo.name : 'Choose certificate'}
                                         </span>
                                     </div>
@@ -214,7 +214,7 @@ export default function EditCertificate({ selected }: { selected?: CertificateTe
                                                 const file = event?.target?.files?.[0];
                                                 if (file) setSign(file)
                                             }} />
-                                        <span className="block w-full p-2  text-sm   font-semibold bg-white border border-gray-300 rounded cursor-pointer">
+                                        <span className="block w-full p-2  text-sm   font-semibold bg-card border border-border rounded cursor-pointer">
                                             {sign ? sign.name : 'Choose signature'}
                                         </span>
                                     </div>

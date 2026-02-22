@@ -46,7 +46,7 @@ const renderCellWithImage = (row: EnrollmentsType) => (
         className="rounded"
       />
     ) : (
-      <div className="w-12 h-12 bg-gray-200 rounded" />
+      <div className="w-12 h-12 bg-muted rounded" />
     )}
     <span className='exclude-weglot'>{row.course}</span>
   </div>

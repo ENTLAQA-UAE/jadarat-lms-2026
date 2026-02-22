@@ -162,9 +162,9 @@ export const cols = ({ setSelectedUser, setShowDeleteUserModal, setShowDisableUs
 
           <div className="flex items-center gap-2">
             {row.original.is_active ? (
-              <div className="w-2 h-2 rounded-full bg-green-500" />
+              <div className="w-2 h-2 rounded-full bg-success" />
             ) : (
-              <div className="w-2 h-2 rounded-full bg-red-500" />
+              <div className="w-2 h-2 rounded-full bg-destructive" />
             )}
             <Badge variant="outline">
               {row.original.is_active ? "Active" : "Disabled"}

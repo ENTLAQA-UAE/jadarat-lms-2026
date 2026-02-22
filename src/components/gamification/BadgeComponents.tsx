@@ -109,7 +109,7 @@ export function BadgeIcon({
   return (
     <div
       className={cn(
-        "rounded-full flex items-center justify-center text-white shadow-md transition-all",
+        "rounded-full flex items-center justify-center text-primary-foreground shadow-md transition-all",
         badge.isEarned ? badge.color : "bg-muted",
         badge.isEarned ? "" : "opacity-40 grayscale",
         sizeClasses[size]

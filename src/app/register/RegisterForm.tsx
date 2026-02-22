@@ -358,7 +358,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-card flex flex-col items-center justify-center p-4">
       <LanguageSwitcher className="absolute top-10 left-10 rtl:right-10 rtl:left-0" />
       <div className="w-full max-w-md space-y-8">
         <div className="flex justify-center">
@@ -469,7 +469,7 @@ export default function RegisterForm() {
                               {field.value &&
                                 form.getFieldState('repeatPassword').invalid ===
                                 false && (
-                                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 h-5 w-5" />
+                                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-success h-5 w-5" />
                                 )}
                             </div>
                           </FormControl>
@@ -493,7 +493,7 @@ export default function RegisterForm() {
                               {field.value &&
                                 form.getFieldState('fullName').invalid ===
                                 false && (
-                                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 h-5 w-5" />
+                                  <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 text-success h-5 w-5" />
                                 )}
                             </div>
                           </FormControl>

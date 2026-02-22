@@ -30,22 +30,22 @@ export type TimePeriod = "all_time" | "this_week" | "this_month" | "this_quarter
 export function RankBadge({ rank }: { rank: number }) {
   if (rank === 1) {
     return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30">
-        <Trophy className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning/10 dark:bg-warning/30">
+        <Trophy className="h-4 w-4 text-warning" />
       </div>
     );
   }
   if (rank === 2) {
     return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-        <Medal className="h-4 w-4 text-slate-500" />
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+        <Medal className="h-4 w-4 text-muted-foreground" />
       </div>
     );
   }
   if (rank === 3) {
     return (
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
-        <Medal className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning/10 dark:bg-warning/30">
+        <Medal className="h-4 w-4 text-warning" />
       </div>
     );
   }
@@ -67,7 +67,7 @@ export function RankChange({ current, previous }: { current: number; previous?: 
 
   if (diff > 0) {
     return (
-      <span className="inline-flex items-center text-tiny font-medium text-green-600 dark:text-green-400">
+      <span className="inline-flex items-center text-tiny font-medium text-success">
         <ChevronUp className="h-3 w-3" />
         {diff}
       </span>
@@ -75,7 +75,7 @@ export function RankChange({ current, previous }: { current: number; previous?: 
   }
   if (diff < 0) {
     return (
-      <span className="inline-flex items-center text-tiny font-medium text-red-500">
+      <span className="inline-flex items-center text-tiny font-medium text-destructive">
         <ChevronDown className="h-3 w-3" />
         {Math.abs(diff)}
       </span>
@@ -201,7 +201,7 @@ export function LeaderboardRow({
 
       {/* Streak */}
       {showStreak && entry.currentStreak > 0 && (
-        <div className="flex items-center gap-1 text-xs text-orange-500 shrink-0">
+        <div className="flex items-center gap-1 text-xs text-warning shrink-0">
           <Flame className="h-3.5 w-3.5" />
           <span className="font-medium">{entry.currentStreak}</span>
         </div>
@@ -227,9 +227,9 @@ export function PodiumDisplay({ entries }: { entries: LeaderboardEntry[] }) {
   const podiumOrder = [top3[1], top3[0], top3[2]]; // 2nd, 1st, 3rd
   const podiumHeights = ["h-20", "h-28", "h-16"];
   const podiumColors = [
-    "bg-slate-200 dark:bg-slate-700",
-    "bg-yellow-200 dark:bg-yellow-800/50",
-    "bg-orange-200 dark:bg-orange-800/30",
+    "bg-muted",
+    "bg-warning/20 dark:bg-warning/50",
+    "bg-warning/10 dark:bg-warning/30",
   ];
 
   return (

@@ -22,9 +22,9 @@ const PerformanceCard: FC<{
                     <CardTitle>Performance Insights</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 gap-4">
-                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 flex items-center gap-4">
+                    <div className="bg-muted dark:bg-muted rounded-lg p-4 flex items-center gap-4">
                         <div className="bg-primary rounded-full p-2">
-                            <BarChartIcon className="w-6 h-6 text-white" />
+                            <BarChartIcon className="w-6 h-6 text-primary-foreground" />
                         </div>
                         <div className="w-full">
                             <h3 className="text-lg font-medium">Completion Rate</h3>
@@ -34,18 +34,18 @@ const PerformanceCard: FC<{
                             </div>
                         </div>
                     </div>
-                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 flex items-center gap-4">
+                    <div className="bg-muted dark:bg-muted rounded-lg p-4 flex items-center gap-4">
                         <div className="bg-primary rounded-full p-2">
-                            <ClockIcon className="w-6 h-6 text-white" />
+                            <ClockIcon className="w-6 h-6 text-primary-foreground" />
                         </div>
                         <div>
                             <h3 className="text-lg font-medium">Average Completion</h3>
                             <p className="text-2xl font-bold">{avgCompletionDays.toLocaleString()} Days</p>
                         </div>
                     </div>
-                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 flex items-center gap-4">
+                    <div className="bg-muted dark:bg-muted rounded-lg p-4 flex items-center gap-4">
                         <div className="bg-primary rounded-full p-2">
-                            <UserIcon className="w-6 h-6 text-white" />
+                            <UserIcon className="w-6 h-6 text-primary-foreground" />
                         </div>
                         <div>
                             <h3 className="text-lg font-medium">Active Enrollments</h3>

@@ -104,11 +104,11 @@ export function ScormSidebar({ data, slug, courseId }: ScormSidebarProps) {
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return <CheckCircle2 className="h-4 w-4 text-green-500" />
+        return <CheckCircle2 className="h-4 w-4 text-success" />
       case 'incomplete':
-        return <Circle className="h-4 w-4 text-yellow-500" />
+        return <Circle className="h-4 w-4 text-warning" />
       case 'failed':
-        return <AlertCircle className="h-4 w-4 text-red-500" />
+        return <AlertCircle className="h-4 w-4 text-destructive" />
       default:
         return <Circle className="h-4 w-4 text-muted-foreground" />
     }
@@ -117,11 +117,11 @@ export function ScormSidebar({ data, slug, courseId }: ScormSidebarProps) {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return 'bg-green-500/10 text-green-500 border-green-500/20'
+        return 'bg-success/10 text-success border-success/20'
       case 'incomplete':
-        return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+        return 'bg-warning/10 text-warning border-warning/20'
       case 'failed':
-        return 'bg-red-500/10 text-red-500 border-red-500/20'
+        return 'bg-destructive/10 text-destructive border-destructive/20'
       default:
         return 'bg-muted'
     }
