@@ -84,10 +84,14 @@ export const organizationSlice = createSlice({
         },
         updateLoading(state) {
             state.loading = false
+        },
+        setOrganizationColors(state, action: PayloadAction<{ primaryColor: string; secondaryColor: string }>) {
+            state.settings.primaryColor = action.payload.primaryColor
+            state.settings.secondaryColor = action.payload.secondaryColor
         }
     },
 });
 
-export const { setOrganizationSettings, setOrganizationSubscription, updateLoading, setOrganizationCourses } = organizationSlice.actions;
+export const { setOrganizationSettings, setOrganizationSubscription, updateLoading, setOrganizationCourses, setOrganizationColors } = organizationSlice.actions;
 
 export default organizationSlice.reducer;
