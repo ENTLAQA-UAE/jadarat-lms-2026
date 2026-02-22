@@ -14,7 +14,7 @@
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.gamification_config (
   id               SERIAL       PRIMARY KEY,
-  organization_id  INT          NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
+  organization_id  INT          NOT NULL REFERENCES public.organization(id) ON DELETE CASCADE,
   levels_enabled   BOOLEAN      NOT NULL DEFAULT true,
   streaks_enabled  BOOLEAN      NOT NULL DEFAULT true,
   challenges_enabled BOOLEAN    NOT NULL DEFAULT true,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.gamification_config (
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.level_definitions (
   id               SERIAL       PRIMARY KEY,
-  organization_id  INT          NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
+  organization_id  INT          NOT NULL REFERENCES public.organization(id) ON DELETE CASCADE,
   level            INT          NOT NULL,
   name             TEXT         NOT NULL,
   xp_threshold     INT          NOT NULL DEFAULT 0,
@@ -95,7 +95,7 @@ CREATE INDEX idx_streak_history_user ON public.streak_history(user_id, streak_da
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.challenge_templates (
   id               SERIAL       PRIMARY KEY,
-  organization_id  INT          NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
+  organization_id  INT          NOT NULL REFERENCES public.organization(id) ON DELETE CASCADE,
   title            TEXT         NOT NULL,
   description      TEXT,
   type             TEXT         NOT NULL CHECK (type IN ('courses_completed', 'quizzes_passed', 'login_streak', 'points_earned', 'time_spent')),
