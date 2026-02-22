@@ -380,7 +380,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               onChange={(e) => setTemperature(parseFloat(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-[10px] text-gray-400">
+            <div className="flex justify-between text-tiny text-gray-400">
               <span>{t("Precise", "دقيق")}</span>
               <span>{t("Creative", "إبداعي")}</span>
             </div>

@@ -143,16 +143,16 @@ export function BadgeCard({ badge }: { badge: BadgeData }) {
       </div>
       <h4 className="text-sm font-semibold">{badge.name}</h4>
       <p className="text-xs text-muted-foreground mt-1">{badge.description}</p>
-      <p className="text-[10px] text-muted-foreground mt-2">
+      <p className="text-tiny text-muted-foreground mt-2">
         {getTriggerLabel(badge.triggerType, badge.triggerValue)}
       </p>
       {badge.isEarned && badge.awardedAt && (
-        <p className="text-[10px] text-primary font-medium mt-1">
+        <p className="text-tiny text-primary font-medium mt-1">
           Earned {new Date(badge.awardedAt).toLocaleDateString()}
         </p>
       )}
       {badge.pointsReward > 0 && (
-        <p className="text-[10px] text-muted-foreground mt-1">
+        <p className="text-tiny text-muted-foreground mt-1">
           +{badge.pointsReward} pts reward
         </p>
       )}

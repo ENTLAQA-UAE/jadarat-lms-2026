@@ -99,7 +99,7 @@ export function LevelBadge({
   const current = getCurrentLevel(xp, levels);
 
   const sizeClasses = {
-    sm: "h-6 w-6 text-[10px]",
+    sm: "h-6 w-6 text-tiny",
     md: "h-10 w-10 text-sm",
     lg: "h-14 w-14 text-lg",
   };
@@ -181,7 +181,7 @@ export function StreakDisplay({ streak }: { streak: StreakData }) {
           <path d="M12 23c-3.866 0-7-3.134-7-7 0-3.037 2.346-6.44 4.95-8.85a.75.75 0 0 1 1.1.05c.83 1.06 1.66 1.98 2.3 2.6.2.19.5.19.7 0 .94-.9 1.83-2.1 2.3-3.3a.75.75 0 0 1 1.35-.1C19.36 9.39 21 12.65 21 16c0 3.866-3.134 7-7 7z" />
         </svg>
         {streak.isActive && (
-          <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+          <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-tiny font-bold text-white">
             {streak.currentStreak}
           </span>
         )}
@@ -192,7 +192,7 @@ export function StreakDisplay({ streak }: { streak: StreakData }) {
             {streak.currentStreak} {streak.streakType === "daily" ? "day" : "week"} streak
           </span>
           {streak.isActive && (
-            <span className="inline-flex items-center rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] font-medium text-orange-700">
+            <span className="inline-flex items-center rounded-full bg-orange-100 px-1.5 py-0.5 text-tiny font-medium text-orange-700">
               Active
             </span>
           )}
@@ -261,7 +261,7 @@ export function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
         <div className="text-right">
           <span className="text-xs font-medium text-primary">+{challenge.xpReward} pts</span>
           {!challenge.isCompleted && !isExpired && (
-            <p className="text-[10px] text-muted-foreground">{daysLeft}d left</p>
+            <p className="text-tiny text-muted-foreground">{daysLeft}d left</p>
           )}
         </div>
       </div>

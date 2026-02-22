@@ -87,7 +87,7 @@ export function RecommendedCourses({
           <h2 className="text-lg font-semibold text-gray-900">
             {isRTL ? "موصى لك" : "Recommended For You"}
           </h2>
-          <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-medium text-indigo-600">
+          <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-tiny font-medium text-indigo-600">
             AI
           </span>
         </div>
@@ -145,7 +145,7 @@ export function RecommendedCourses({
                   </div>
                 )}
                 {/* Match score */}
-                <div className="absolute bottom-2 rounded-full bg-indigo-600/90 px-2 py-0.5 text-[10px] font-medium text-white" style={{ [isRTL ? "right" : "left"]: "0.5rem" }}>
+                <div className="absolute bottom-2 rounded-full bg-indigo-600/90 px-2 py-0.5 text-tiny font-medium text-white" style={{ [isRTL ? "right" : "left"]: "0.5rem" }}>
                   {Math.round(rec.score * 100)}%{" "}
                   {isRTL ? "تطابق" : "match"}
                 </div>
@@ -161,7 +161,7 @@ export function RecommendedCourses({
                 </p>
 
                 {/* Reason */}
-                <p className="mt-2 flex items-start gap-1 text-[10px] text-indigo-600">
+                <p className="mt-2 flex items-start gap-1 text-tiny text-indigo-600">
                   <Sparkles className="mt-0.5 h-2.5 w-2.5 shrink-0" />
                   <span className="line-clamp-1">{rec.reason}</span>
                 </p>
@@ -169,13 +169,13 @@ export function RecommendedCourses({
                 {/* Meta */}
                 <div className="mt-2 flex items-center gap-2">
                   {rec.category_name && (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-tiny font-medium text-gray-600">
                       {rec.category_name}
                     </span>
                   )}
                   <span
                     className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                      "rounded-full px-2 py-0.5 text-tiny font-medium",
                       levelColors[rec.level] || "bg-gray-100 text-gray-600"
                     )}
                   >

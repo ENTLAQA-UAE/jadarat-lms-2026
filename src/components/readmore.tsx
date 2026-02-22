@@ -42,7 +42,7 @@ export const ReadMore = ({ id, text, amountOfWords = 36 }: ReadMoreProps) => {
                     {!isExpanded && <span>... </span>}
                     {isExpanded && <span>{endText}</span>}
                     <span
-                        className='text-[#1F48E8] ml-2'
+                        className='text-info ml-2'
                         role="button"
                         tabIndex={0}
                         aria-expanded={isExpanded}

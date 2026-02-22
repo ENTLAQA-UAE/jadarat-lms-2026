@@ -206,7 +206,7 @@ export default function GamificationHub() {
                 return (
                   <div
                     key={i}
-                    className={`h-6 rounded-sm text-center text-[10px] leading-6 font-medium ${
+                    className={`h-6 rounded-sm text-center text-tiny leading-6 font-medium ${
                       isActive
                         ? "bg-orange-500 text-white"
                         : "bg-muted text-muted-foreground"
@@ -375,7 +375,7 @@ export default function GamificationHub() {
                     {lvl.level}
                   </div>
                   <p className="text-xs font-semibold">{lvl.name}</p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-tiny text-muted-foreground">
                     {lvl.xpThreshold.toLocaleString()} pts
                   </p>
                 </div>

@@ -41,7 +41,7 @@ export function Insights({ courses }: InsightsProps) {
         <LevelBadge xp={mockPoints} size="sm" />
         <div>
          <p className="text-sm font-semibold">{currentLevel.name}</p>
-         <p className="text-[10px] text-muted-foreground">Level {currentLevel.level}</p>
+         <p className="text-tiny text-muted-foreground">Level {currentLevel.level}</p>
         </div>
        </div>
        <div className="flex items-center gap-1.5">
@@ -99,7 +99,7 @@ export function Insights({ courses }: InsightsProps) {
        </div>
        <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">4/12</span>
       </div>
-      <p className="text-[10px] text-muted-foreground mt-1">badges earned</p>
+      <p className="text-tiny text-muted-foreground mt-1">badges earned</p>
      </div>
     </Link>
 
@@ -113,7 +113,7 @@ export function Insights({ courses }: InsightsProps) {
        </div>
        <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">#5</span>
       </div>
-      <p className="text-[10px] text-muted-foreground mt-1">of 48 learners</p>
+      <p className="text-tiny text-muted-foreground mt-1">of 48 learners</p>
      </div>
     </Link>
 

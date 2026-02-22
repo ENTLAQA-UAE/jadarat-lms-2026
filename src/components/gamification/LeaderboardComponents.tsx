@@ -67,7 +67,7 @@ export function RankChange({ current, previous }: { current: number; previous?: 
 
   if (diff > 0) {
     return (
-      <span className="inline-flex items-center text-[10px] font-medium text-green-600 dark:text-green-400">
+      <span className="inline-flex items-center text-tiny font-medium text-green-600 dark:text-green-400">
         <ChevronUp className="h-3 w-3" />
         {diff}
       </span>
@@ -75,14 +75,14 @@ export function RankChange({ current, previous }: { current: number; previous?: 
   }
   if (diff < 0) {
     return (
-      <span className="inline-flex items-center text-[10px] font-medium text-red-500">
+      <span className="inline-flex items-center text-tiny font-medium text-red-500">
         <ChevronDown className="h-3 w-3" />
         {Math.abs(diff)}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center text-[10px] text-muted-foreground">
+    <span className="inline-flex items-center text-tiny text-muted-foreground">
       <Minus className="h-3 w-3" />
     </span>
   );
@@ -180,7 +180,7 @@ export function LeaderboardRow({
           >
             {entry.displayName}
             {entry.isCurrentUser && (
-              <span className="ml-1.5 text-[10px] font-medium text-primary">(You)</span>
+              <span className="ml-1.5 text-tiny font-medium text-primary">(You)</span>
             )}
           </span>
         </div>
@@ -192,7 +192,7 @@ export function LeaderboardRow({
                 entry.levelColor
               )}
             />
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-tiny text-muted-foreground">
               Lvl {entry.currentLevel} &middot; {entry.levelName}
             </span>
           </div>
@@ -210,7 +210,7 @@ export function LeaderboardRow({
       {/* Points */}
       <div className="text-right shrink-0 w-20">
         <p className="text-sm font-bold">{entry.totalXP.toLocaleString()}</p>
-        <p className="text-[10px] text-muted-foreground">pts</p>
+        <p className="text-tiny text-muted-foreground">pts</p>
       </div>
     </div>
   );
@@ -242,7 +242,7 @@ export function PodiumDisplay({ entries }: { entries: LeaderboardEntry[] }) {
             <p className="text-xs font-semibold truncate max-w-[100px]">
               {entry.displayName}
             </p>
-            <p className="text-[10px] text-muted-foreground font-medium">
+            <p className="text-tiny text-muted-foreground font-medium">
               {entry.totalXP.toLocaleString()} pts
             </p>
           </div>

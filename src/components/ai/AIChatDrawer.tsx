@@ -258,7 +258,7 @@ export function AIChatDrawer({ enabled = true, lang = "en" }: AIChatDrawerProps)
               )}
             </button>
           </div>
-          <p className="mt-1.5 text-center text-[10px] text-gray-300">
+          <p className="mt-1.5 text-center text-tiny text-gray-300">
             {isRTL
               ? "مدعوم بالذكاء الاصطناعي · قد تحتوي الإجابات على أخطاء"
               : "Powered by AI · Responses may contain errors"}

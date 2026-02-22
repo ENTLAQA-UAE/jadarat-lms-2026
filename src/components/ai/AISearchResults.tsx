@@ -177,13 +177,13 @@ export function AISearchResults({
                   </div>
                 )}
                 {result.source === "semantic" && (
-                  <div className="absolute top-2 flex items-center gap-1 rounded-full bg-indigo-600/90 px-2 py-0.5 text-[10px] font-medium text-white" style={{ [isRTL ? "right" : "left"]: "0.5rem" }}>
+                  <div className="absolute top-2 flex items-center gap-1 rounded-full bg-indigo-600/90 px-2 py-0.5 text-tiny font-medium text-white" style={{ [isRTL ? "right" : "left"]: "0.5rem" }}>
                     <Sparkles className="h-2.5 w-2.5" />
                     {isRTL ? "ذكي" : "AI Match"}
                   </div>
                 )}
                 {result.similarity > 0 && (
-                  <div className="absolute top-2 flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-gray-700" style={{ [isRTL ? "left" : "right"]: "0.5rem" }}>
+                  <div className="absolute top-2 flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-tiny font-medium text-gray-700" style={{ [isRTL ? "left" : "right"]: "0.5rem" }}>
                     <Star className="h-2.5 w-2.5 text-yellow-500" />
                     {Math.round(result.similarity * 100)}%
                   </div>
@@ -200,13 +200,13 @@ export function AISearchResults({
                 </p>
                 <div className="mt-2.5 flex items-center gap-2">
                   {result.category_name && (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
+                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-tiny font-medium text-gray-600">
                       {result.category_name}
                     </span>
                   )}
                   <span
                     className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                      "rounded-full px-2 py-0.5 text-tiny font-medium",
                       levelColors[result.level] || "bg-gray-100 text-gray-600"
                     )}
                   >

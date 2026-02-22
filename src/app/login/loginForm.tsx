@@ -119,7 +119,7 @@ function LoginButton() {
 
 
  return (
-  <Button className="w-full bg-[#2B4155] hover:bg-[#1e2e3c]" disabled={pending} aria-disabled={pending} type="submit" onClick={handleClick}>
+  <Button className="w-full bg-primary hover:bg-primary-700" disabled={pending} aria-disabled={pending} type="submit" onClick={handleClick}>
    {pending ? (
     <span className='flex items-center justify-center gap-2'>
      <span>Please wait</span>
