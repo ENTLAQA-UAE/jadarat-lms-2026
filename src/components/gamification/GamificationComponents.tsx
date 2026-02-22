@@ -242,17 +242,17 @@ export function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
   return (
     <div
       className={cn(
-        "rounded-lg border p-4 transition-all",
+        "group rounded-lg border p-4 transition-all card-hover",
         challenge.isCompleted
-          ? "border-success bg-success/10 dark:border-success dark:bg-success/90"
+          ? "border-success bg-gradient-to-br from-success/10 to-success/5 dark:border-success dark:bg-gradient-to-br dark:from-success/90 dark:to-success/80"
           : isExpired
-            ? "border-destructive bg-destructive/10 opacity-60 dark:border-destructive dark:bg-destructive/90"
-            : "border-border hover:shadow-sm"
+            ? "border-destructive bg-gradient-to-br from-destructive/10 to-destructive/5 opacity-60 dark:border-destructive dark:bg-gradient-to-br dark:from-destructive/90 dark:to-destructive/80"
+            : "border-border bg-gradient-to-br from-background to-muted/30 hover:shadow-sm"
       )}
     >
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-lg">{typeIcons[challenge.type] ?? "🎯"}</span>
+          <span className="text-lg transition-transform duration-300 group-hover:scale-110">{typeIcons[challenge.type] ?? "🎯"}</span>
           <div>
             <h4 className="text-sm font-semibold">{challenge.title}</h4>
             <p className="text-xs text-muted-foreground">{challenge.description}</p>
@@ -283,6 +283,7 @@ export function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
         <Progress
           value={progressPercent}
           className="h-1.5"
+          gradient={!challenge.isCompleted && !isExpired && progressPercent > 50}
           progressClassName={cn(
             challenge.isCompleted
               ? "bg-success"

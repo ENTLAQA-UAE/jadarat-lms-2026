@@ -99,11 +99,11 @@ export default function Courses() {
                         />
                     </div>
                     {selfEnrollmentEnabled ? (
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-muted-foreground">
                             Users will be able to Enroll directly to courses.
                         </div>
                     ) : (
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-muted-foreground">
                             LMS admin only will be able to Enroll users to courses.
                         </div>
                     )}

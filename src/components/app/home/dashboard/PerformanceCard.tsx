@@ -16,42 +16,60 @@ const PerformanceCard: FC<{
     progressBarFillClassName = "",
     avgCompletionDays= 0
 }) => {
+        const metrics = [
+            {
+                icon: <BarChartIcon className="w-5 h-5 text-primary-foreground" />,
+                iconBg: "bg-gradient-to-br from-primary to-primary-600",
+                title: "Completion Rate",
+                value: `${(completionRate)?.toLocaleString()}%`,
+                hasProgress: true,
+            },
+            {
+                icon: <ClockIcon className="w-5 h-5 text-primary-foreground" />,
+                iconBg: "bg-gradient-to-br from-info to-info/80",
+                title: "Average Completion",
+                value: `${avgCompletionDays.toLocaleString()} Days`,
+                hasProgress: false,
+            },
+            {
+                icon: <UserIcon className="w-5 h-5 text-primary-foreground" />,
+                iconBg: "bg-gradient-to-br from-success to-success/80",
+                title: "Active Enrollments",
+                value: enrollementsCount.toLocaleString(),
+                hasProgress: false,
+            },
+        ];
+
         return (
             <Card className="w-full max-w-4xl max-h-[420px]" x-chunk="dashboard-01-chunk-5">
                 <CardHeader>
                     <CardTitle>Performance Insights</CardTitle>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 gap-4">
-                    <div className="bg-muted dark:bg-muted rounded-lg p-4 flex items-center gap-4">
-                        <div className="bg-primary rounded-full p-2">
-                            <BarChartIcon className="w-6 h-6 text-primary-foreground" />
-                        </div>
-                        <div className="w-full">
-                            <h3 className="text-lg font-medium">Completion Rate</h3>
-                            <div className="flex items-center gap-2">
-                                <p className="text-2xl font-bold">{(completionRate)?.toLocaleString()}%</p>
-                                <Progress value={completionRate} className={progressBarContainerClassName} progressClassName={progressBarFillClassName} />
+                <CardContent className="grid grid-cols-1 gap-3">
+                    {metrics.map((metric) => (
+                        <div
+                            key={metric.title}
+                            className="group/metric rounded-xl border border-border/50 bg-muted/30 p-4 flex items-center gap-4 hover:bg-muted/50 hover:border-border transition-all duration-200"
+                        >
+                            <div className={`${metric.iconBg} rounded-xl p-2.5 shadow-sm`}>
+                                {metric.icon}
+                            </div>
+                            <div className="w-full min-w-0">
+                                <h3 className="text-sm font-medium text-muted-foreground">{metric.title}</h3>
+                                <div className="flex items-center gap-3 mt-1">
+                                    <p className="text-2xl font-bold tracking-tight">{metric.value}</p>
+                                    {metric.hasProgress && (
+                                        <Progress
+                                            value={completionRate}
+                                            className={`flex-1 h-2.5 ${progressBarContainerClassName}`}
+                                            progressClassName={progressBarFillClassName}
+                                            gradient
+                                        />
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="bg-muted dark:bg-muted rounded-lg p-4 flex items-center gap-4">
-                        <div className="bg-primary rounded-full p-2">
-                            <ClockIcon className="w-6 h-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-medium">Average Completion</h3>
-                            <p className="text-2xl font-bold">{avgCompletionDays.toLocaleString()} Days</p>
-                        </div>
-                    </div>
-                    <div className="bg-muted dark:bg-muted rounded-lg p-4 flex items-center gap-4">
-                        <div className="bg-primary rounded-full p-2">
-                            <UserIcon className="w-6 h-6 text-primary-foreground" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-medium">Active Enrollments</h3>
-                            <p className="text-2xl font-bold">{enrollementsCount.toLocaleString()}</p>
-                        </div>
-                    </div>
+                    ))}
                 </CardContent>
             </Card>
         )

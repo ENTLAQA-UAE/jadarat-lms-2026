@@ -111,7 +111,7 @@ export function BadgeIcon({
       className={cn(
         "rounded-full flex items-center justify-center text-primary-foreground shadow-md transition-all",
         badge.isEarned ? badge.color : "bg-muted",
-        badge.isEarned ? "" : "opacity-40 grayscale",
+        badge.isEarned ? "transition-transform duration-300 group-hover:scale-105" : "opacity-40 grayscale",
         sizeClasses[size]
       )}
     >
@@ -132,9 +132,9 @@ export function BadgeCard({ badge }: { badge: BadgeData }) {
   return (
     <div
       className={cn(
-        "rounded-lg border p-4 text-center transition-all",
+        "group rounded-lg border p-4 text-center transition-all",
         badge.isEarned
-          ? "border-primary/20 bg-primary/5 hover:shadow-md"
+          ? "border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 card-hover hover:shadow-md"
           : "border-border opacity-60"
       )}
     >

@@ -157,10 +157,13 @@ export function LeaderboardRow({
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-lg border px-4 py-3 transition-all",
+        "flex items-center gap-3 rounded-lg border px-4 py-3 transition-all duration-200",
         entry.isCurrentUser
-          ? "border-primary/30 bg-primary/5 ring-1 ring-primary/20"
-          : "border-border hover:bg-muted/50"
+          ? "border-primary/30 bg-gradient-to-r from-primary/10 to-transparent ring-1 ring-primary/20"
+          : "border-border hover:bg-muted/50",
+        entry.rank === 1 && "border-l-4 border-l-warning",
+        entry.rank === 2 && "border-l-4 border-l-muted-foreground",
+        entry.rank === 3 && "border-l-4 border-l-warning/60"
       )}
     >
       {/* Rank */}

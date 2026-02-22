@@ -3,8 +3,9 @@
 import { CoursesType, FullCourseTypes } from "@/app/home/types";
 import { ReadMore } from "@/components/readmore";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import React, { useMemo } from "react";
+import React from "react";
 import { Progress } from "@/components/ui/progress";
 import CourseButtonActions from "./CourseButtonActions";
 import { useLanguage } from "@/context/language.context";
@@ -22,42 +23,72 @@ function Course({
     return (course as FullCourseTypes).title !== undefined;
   }
 
-
   const { isRTL } = useLanguage()
+  const percentage = course?.percentage ?? -1;
 
   return (
     <>
-      <Card key={course?.id} className="">
+      <Card key={course?.id} className="group overflow-hidden card-hover">
         <CardHeader className="exclude-weglot p-0 mb-4">
-          <Image
-            src={course?.thumbnail || ""}
-            width={400}
-            height={225}
-            alt={course?.name || "course"}
-            layout="responsive"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" // Define image sizes for responsiveness
-            loading="lazy" // Prioritize loading for above-the-fold content
-            className="aspect-video w-full rounded-t-lg object-cover"
-          />
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm text-muted-foreground exclude-weglot">
-            {isRTL ? course?.category_ar_name : course?.category_name}
+          {/* Image with hover zoom + gradient overlay */}
+          <div className="relative overflow-hidden rounded-t-xl">
+            <Image
+              src={course?.thumbnail || ""}
+              width={400}
+              height={225}
+              alt={course?.name || "course"}
+              layout="responsive"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              loading="lazy"
+              className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            {/* Gradient overlay on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+            {/* Category badge floating on image */}
+            <div className="absolute top-3 start-3 z-10">
+              <Badge variant="secondary" className="bg-card/90 backdrop-blur-sm text-xs font-medium shadow-sm">
+                {isRTL ? course?.category_ar_name : course?.category_name}
+              </Badge>
+            </div>
+
+            {/* Progress badge on image (if in progress) */}
+            {percentage >= 0 && (
+              <div className="absolute top-3 end-3 z-10">
+                <Badge
+                  variant={completed ? "success" : "secondary"}
+                  className={completed
+                    ? "shadow-sm"
+                    : "bg-card/90 backdrop-blur-sm shadow-sm"
+                  }
+                >
+                  {completed ? "Completed" : `${percentage}%`}
+                </Badge>
+              </div>
+            )}
           </div>
-          <h1 dir="auto" className="mb-2  font-semibold exclude-weglot">
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <h3 dir="auto" className="font-semibold leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200 exclude-weglot">
             {isFullCourseType(course) ? course.title : course.name}
-          </h1>
-          {(course?.percentage ?? -1) < 0 ? (
+          </h3>
+
+          {percentage < 0 ? (
             <ReadMore
               id={course?.id?.toString() ?? ''}
               text={course?.description as string}
               amountOfWords={17}
             />
           ) : (
-            <div className="text-sm text-muted-foreground exclude-weglot">
-              <div className="flex items-center justify-between">
-                <Progress value={course.percentage} className="h-2 w-full" />
-                <span className="ms-2">{course.percentage}%</span>
+            <div className="space-y-1.5">
+              <Progress
+                value={percentage}
+                className="h-2 w-full"
+                gradient={percentage > 50}
+                progressClassName={completed ? "bg-success" : undefined}
+              />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{percentage}% complete</span>
               </div>
             </div>
           )}

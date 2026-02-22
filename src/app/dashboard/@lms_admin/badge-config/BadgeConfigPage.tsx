@@ -61,29 +61,29 @@ const ICON_OPTIONS = [
 ];
 
 const COLOR_OPTIONS = [
-  { value: "bg-blue-500", label: "Blue" },
+  { value: "bg-primary", label: "Primary" },
   { value: "bg-yellow-500", label: "Yellow" },
   { value: "bg-orange-500", label: "Orange" },
   { value: "bg-green-500", label: "Green" },
   { value: "bg-emerald-500", label: "Emerald" },
   { value: "bg-red-500", label: "Red" },
-  { value: "bg-purple-500", label: "Purple" },
+  { value: "bg-accent", label: "Accent" },
   { value: "bg-cyan-500", label: "Cyan" },
   { value: "bg-amber-500", label: "Amber" },
-  { value: "bg-indigo-500", label: "Indigo" },
+  { value: "bg-info", label: "Info" },
 ];
 
 const defaultBadgeTemplates: BadgeTemplate[] = [
-  { id: "b1", name: "First Steps", description: "Complete your first course", icon: "book", color: "bg-blue-500", triggerType: "courses_completed", triggerValue: 1, pointsReward: 50, enabled: true },
+  { id: "b1", name: "First Steps", description: "Complete your first course", icon: "book", color: "bg-primary", triggerType: "courses_completed", triggerValue: 1, pointsReward: 50, enabled: true },
   { id: "b2", name: "Quiz Whiz", description: "Pass 5 quizzes", icon: "star", color: "bg-yellow-500", triggerType: "quizzes_passed", triggerValue: 5, pointsReward: 75, enabled: true },
   { id: "b3", name: "Streak Starter", description: "Reach a 7-day streak", icon: "flame", color: "bg-orange-500", triggerType: "streak_reached", triggerValue: 7, pointsReward: 100, enabled: true },
   { id: "b4", name: "Scholar", description: "Reach level 5", icon: "award", color: "bg-emerald-500", triggerType: "level_reached", triggerValue: 5, pointsReward: 150, enabled: true },
   { id: "b5", name: "Course Collector", description: "Complete 10 courses", icon: "book", color: "bg-green-500", triggerType: "courses_completed", triggerValue: 10, pointsReward: 200, enabled: true },
   { id: "b6", name: "Perfect Score", description: "Score 100% on 3 quizzes", icon: "trophy", color: "bg-amber-500", triggerType: "perfect_quizzes", triggerValue: 3, pointsReward: 100, enabled: true },
   { id: "b7", name: "Consistency King", description: "Reach a 30-day streak", icon: "flame", color: "bg-red-500", triggerType: "streak_reached", triggerValue: 30, pointsReward: 250, enabled: true },
-  { id: "b8", name: "Point Master", description: "Earn 5,000 points", icon: "zap", color: "bg-purple-500", triggerType: "points_reached", triggerValue: 5000, pointsReward: 500, enabled: true },
+  { id: "b8", name: "Point Master", description: "Earn 5,000 points", icon: "zap", color: "bg-accent", triggerType: "points_reached", triggerValue: 5000, pointsReward: 500, enabled: true },
   { id: "b9", name: "Certified Pro", description: "Earn 5 certificates", icon: "award", color: "bg-cyan-500", triggerType: "certificates_earned", triggerValue: 5, pointsReward: 200, enabled: true },
-  { id: "b10", name: "Challenge Champion", description: "Complete 10 challenges", icon: "target", color: "bg-indigo-500", triggerType: "challenges_completed", triggerValue: 10, pointsReward: 300, enabled: true },
+  { id: "b10", name: "Challenge Champion", description: "Complete 10 challenges", icon: "target", color: "bg-info", triggerType: "challenges_completed", triggerValue: 10, pointsReward: 300, enabled: true },
   { id: "b11", name: "Grand Master", description: "Reach level 8", icon: "crown", color: "bg-red-600", triggerType: "level_reached", triggerValue: 8, pointsReward: 400, enabled: false },
   { id: "b12", name: "Legend", description: "Earn 10,000 points", icon: "crown", color: "bg-amber-400", triggerType: "points_reached", triggerValue: 10000, pointsReward: 1000, enabled: false },
 ];
@@ -117,7 +117,7 @@ export default function BadgeConfigPage() {
         name: "New Badge",
         description: "Description",
         icon: "trophy",
-        color: "bg-yellow-500",
+        color: "bg-primary",
         triggerType: "courses_completed",
         triggerValue: 1,
         pointsReward: 50,
@@ -158,25 +158,25 @@ export default function BadgeConfigPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Badges</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Badges</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{badges.length}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Active Badges</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Active Badges</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalEnabled}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Reward Points</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Reward Points</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalRewardPoints.toLocaleString()}</div>
