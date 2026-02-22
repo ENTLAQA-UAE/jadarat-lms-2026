@@ -91,6 +91,61 @@ const BarChartCard = ({
   </Card>
 );
 
+const STATUS_COLORS: Record<string, string> = {
+  Published: '#4BB543',
+  Draft: '#F59E0B',
+  Archived: '#9CA3AF',
+};
+
+const CourseStatusPieChart = ({ data }: { data: { name: string; value: number }[] }) => {
+  if (!data || data.length === 0) return null;
+
+  const colors = data.map((d) => STATUS_COLORS[d.name] || '#8884d8');
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Course Status Distribution</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[200px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`status-${index}`} fill={colors[index]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex flex-wrap justify-center gap-3 mt-4">
+          {data.map((entry, index) => (
+            <div key={`status-legend-${index}`} className="flex items-center gap-1.5">
+              <div
+                className="h-3 w-3 rounded-full"
+                style={{ backgroundColor: colors[index] }}
+              />
+              <span className="text-xs sm:text-sm">
+                {entry.name} ({entry.value})
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 const PieChartCard = ({
   pieChartData,
   dynamicColors,
@@ -152,6 +207,7 @@ export default function InsightsCourse({
   pieChartDataLoading,
   pieChartError,
   barChartError,
+  courseStatusData,
 }: InsightsCourseProps) {
   const dynamicColors = generateDynamicColors(
     Math.max(barChartData.length, pieChartData.length)
@@ -186,6 +242,13 @@ export default function InsightsCourse({
           />
         )}
       </div>
+
+      {/* Course Status Pie Chart */}
+      {courseStatusData && courseStatusData.length > 0 && (
+        <div className="mb-4">
+          <CourseStatusPieChart data={courseStatusData} />
+        </div>
+      )}
     </div>
   );
 }

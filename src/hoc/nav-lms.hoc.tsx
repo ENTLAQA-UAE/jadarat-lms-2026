@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import {
   Book,
   BookOpen,
+  ClipboardCheck,
   FileIcon,
 
   Home,
@@ -56,6 +57,7 @@ const navigationItems = [
   { name: 'Enrollments', href: '/dashboard/insights/enrollments', icon: Book },
   { name: 'Completions', href: '/dashboard/insights/completions', icon: FileIcon },
   { name: 'Courses', href: '/dashboard/insights/courses', icon: BookOpen },
+  { name: 'Quiz Results', href: '/dashboard/insights/quiz-results', icon: ClipboardCheck },
 ]
 
 export default function NavLMS<T extends Data>({ children, data }: NavLMSProps<T>) {

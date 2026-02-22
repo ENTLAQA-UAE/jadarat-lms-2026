@@ -53,6 +53,27 @@ export const fetchAllCourses = async (page: number, pageSize: number, filters: a
     }
 }
 
+export const fetchCourseStatusCounts = async () => {
+    const supabase = await createClient();
+    try {
+        const { data, error } = await supabase.rpc('get_all_courses', {
+            _name_filter: null,
+            _category_filter: null,
+            _status_filter: null,
+        });
+        if (error) throw error;
+        const counts: Record<string, number> = {};
+        for (const course of data || []) {
+            const status = course.status || 'Unknown';
+            counts[status] = (counts[status] || 0) + 1;
+        }
+        return Object.entries(counts).map(([name, value]) => ({ name, value }));
+    } catch (error: any) {
+        console.error('Error fetching course status counts:', error.message);
+        return [];
+    }
+};
+
 export const exportCourses = async () => {
     const supabase = await createClient();
     const { data, error } = await supabase.rpc('get_all_courses', {
