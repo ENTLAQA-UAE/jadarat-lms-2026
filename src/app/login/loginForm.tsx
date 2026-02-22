@@ -99,7 +99,7 @@ function LoginForm({ domain, registerationEnabled }: { domain: string, registera
      )}
     />
     <LoginButton />
-    {errorMessage && <div className="text-red-500">{errorMessage}</div>}
+    {errorMessage && <div className="text-sm text-destructive">{errorMessage}</div>}
    </form>
    {RegistrationLink}
   </Form>

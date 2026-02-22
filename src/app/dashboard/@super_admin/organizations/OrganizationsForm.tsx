@@ -130,7 +130,7 @@ export function OrganizationForm({
             <FormItem>
               <FormLabel>
                 Name
-                <span className="text-red-500 text-base">*</span>
+                <span className="text-destructive text-base">*</span>
               </FormLabel>
               <FormControl>
                 <Input placeholder="Organization name" {...field} />
@@ -146,7 +146,7 @@ export function OrganizationForm({
             <FormItem>
               <FormLabel>
                 Domain
-                <span className="text-red-500 text-base">*</span>
+                <span className="text-destructive text-base">*</span>
               </FormLabel>
               <FormControl>
                 <Input placeholder="example.com" {...field} />
@@ -188,7 +188,7 @@ export function OrganizationForm({
                 Upload a PNG or JPG file (max 3 MB)
               </FormDescription>
               {logoError && (
-                <p className="text-sm font-medium text-red-500">{logoError}</p>
+                <p className="text-sm font-medium text-destructive">{logoError}</p>
               )}
             </FormItem>
           )}
@@ -200,7 +200,7 @@ export function OrganizationForm({
             <FormItem>
               <FormLabel>
                 Subscription Package
-                <span className="text-red-500 text-base">*</span>
+                <span className="text-destructive text-base">*</span>
               </FormLabel>
               <Select
                 defaultValue={field.value}

@@ -47,14 +47,14 @@ function hslToHex(h: number, s: number, l: number): string {
 }
 
 const ErrorCard = ({ title, error }: { title: string; error: string }) => (
-  <Card className="w-full">
+  <Card className="w-full hover:shadow-md transition-shadow duration-200">
     <CardHeader>
-      <CardTitle className="text-red-500 flex items-center">
+      <CardTitle className="text-destructive flex items-center">
         {title} <CircleX className="ml-2" />
       </CardTitle>
     </CardHeader>
     <CardContent>
-      <p className="text-red-500">{error}</p>
+      <p className="text-destructive">{error}</p>
     </CardContent>
   </Card>
 );
@@ -66,7 +66,7 @@ const BarChartCard = ({
   barChartData: any[];
   dynamicColors: string[];
 }) => (
-  <Card className="w-full flex flex-col justify-between">
+  <Card className="w-full flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
     <CardHeader>
       <CardTitle>New Courses per Month</CardTitle>
     </CardHeader>
@@ -76,7 +76,7 @@ const BarChartCard = ({
           <BarChart data={barChartData}>
             <XAxis dataKey="month" />
             <Tooltip />
-            <Bar dataKey="course_count" fill="#8884d8">
+            <Bar dataKey="course_count" fill="hsl(var(--primary))">
               {barChartData.map((data, index) => (
                 <Cell
                   key={index}
@@ -92,18 +92,18 @@ const BarChartCard = ({
 );
 
 const STATUS_COLORS: Record<string, string> = {
-  Published: '#4BB543',
-  Draft: '#F59E0B',
-  Archived: '#9CA3AF',
+  Published: 'hsl(var(--success))',
+  Draft: 'hsl(var(--warning, 45 93% 47%))',
+  Archived: 'hsl(var(--muted-foreground))',
 };
 
 const CourseStatusPieChart = ({ data }: { data: { name: string; value: number }[] }) => {
   if (!data || data.length === 0) return null;
 
-  const colors = data.map((d) => STATUS_COLORS[d.name] || '#8884d8');
+  const colors = data.map((d) => STATUS_COLORS[d.name] || 'hsl(var(--primary))');
 
   return (
-    <Card className="w-full">
+    <Card className="w-full hover:shadow-md transition-shadow duration-200">
       <CardHeader>
         <CardTitle>Course Status Distribution</CardTitle>
       </CardHeader>
@@ -117,7 +117,7 @@ const CourseStatusPieChart = ({ data }: { data: { name: string; value: number }[
                 cy="50%"
                 labelLine={false}
                 outerRadius={80}
-                fill="#8884d8"
+                fill="hsl(var(--primary))"
                 dataKey="value"
               >
                 {data.map((entry, index) => (
@@ -153,7 +153,7 @@ const PieChartCard = ({
   pieChartData: any[];
   dynamicColors: string[];
 }) => (
-  <Card className="w-full">
+  <Card className="w-full hover:shadow-md transition-shadow duration-200">
     <CardHeader>
       <CardTitle>Courses by Category</CardTitle>
     </CardHeader>
@@ -167,7 +167,7 @@ const PieChartCard = ({
               cy="50%"
               labelLine={false}
               outerRadius={80}
-              fill="#8884d8"
+              fill="hsl(var(--primary))"
               dataKey="value"
             >
               {pieChartData.map((entry, index) => (
@@ -185,7 +185,7 @@ const PieChartCard = ({
         {pieChartData.map((entry, index) => (
           <div key={`legend-${index}`} className="flex items-center">
             <div
-              className="w-3 h-3 mr-1"
+              className="w-3 h-3 mr-1 rounded-full"
               style={{
                 backgroundColor: dynamicColors[index % dynamicColors.length],
               }}

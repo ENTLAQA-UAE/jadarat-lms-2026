@@ -207,7 +207,7 @@ export default function GamificationConfigPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Levels</CardTitle>
           </CardHeader>
@@ -215,21 +215,21 @@ export default function GamificationConfigPage() {
             <div className="text-2xl font-bold">{totalEnabledLevels}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Streaks</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {streakConfig.enabled ? (
-                <span className="text-green-600">Active</span>
+                <span className="text-success">Active</span>
               ) : (
                 <span className="text-muted-foreground">Disabled</span>
               )}
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Active Challenges</CardTitle>
           </CardHeader>
@@ -237,7 +237,7 @@ export default function GamificationConfigPage() {
             <div className="text-2xl font-bold">{totalActiveChallenges}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Max Points / Level</CardTitle>
           </CardHeader>
@@ -456,7 +456,7 @@ export default function GamificationConfigPage() {
                       key={i}
                       className="flex items-center gap-1 rounded-full border px-3 py-1 text-sm"
                     >
-                      <Flame className="h-3 w-3 text-orange-500" />
+                      <Flame className="h-3 w-3 text-warning" />
                       {m} {streakConfig.streakType === "daily" ? "days" : "weeks"}
                     </div>
                   ))}

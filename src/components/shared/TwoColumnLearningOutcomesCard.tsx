@@ -23,7 +23,7 @@ export default function TwoColumnLearningOutcomesCard({ outcomes }: { outcomes: 
         <ul className="md:space-y-2">
             {items.map((outcome) => (
                 <li key={outcome.id} className="flex items-center gap-2 mt-3">
-                    <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    <Check className="w-5 h-5 text-success flex-shrink-0" />
                     <span className="text-foreground text-sm exclude-weglot">{outcome.text}</span>
                 </li>
             ))}

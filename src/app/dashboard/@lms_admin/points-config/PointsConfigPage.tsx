@@ -24,7 +24,7 @@ const defaultActions: PointAction[] = [
     description: "Awarded when a learner finishes a course",
     points: 100,
     enabled: true,
-    icon: <BookOpen className="h-4 w-4 text-green-600" />,
+    icon: <BookOpen className="h-4 w-4 text-success" />,
   },
   {
     id: "quiz_passed",
@@ -110,7 +110,7 @@ export default function PointsConfigPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Actions</CardTitle>
           </CardHeader>
@@ -118,7 +118,7 @@ export default function PointsConfigPage() {
             <div className="text-2xl font-bold">{actions.length}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Active Actions</CardTitle>
           </CardHeader>
@@ -126,7 +126,7 @@ export default function PointsConfigPage() {
             <div className="text-2xl font-bold">{totalEnabledActions}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Max Earnable / Course</CardTitle>
           </CardHeader>

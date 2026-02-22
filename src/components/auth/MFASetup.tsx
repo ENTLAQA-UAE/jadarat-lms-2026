@@ -291,8 +291,8 @@ export function MFASetup() {
         className="text-center space-y-4"
        >
         <div className="flex justify-center">
-         <div className="rounded-full bg-green-100 p-3">
-          <Check className="w-6 h-6 text-green-600" />
+         <div className="rounded-full bg-success/10 p-3">
+          <Check className="w-6 h-6 text-success" />
          </div>
         </div>
         <h3 className="text-lg font-semibold">Setup Complete!</h3>

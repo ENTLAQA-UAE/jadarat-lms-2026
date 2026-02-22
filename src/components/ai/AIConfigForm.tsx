@@ -288,7 +288,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
           {/* Search */}
           <label className="flex cursor-pointer items-center justify-between rounded-lg border border-muted p-4 transition-colors hover:bg-muted/50">
             <div className="flex items-center gap-3">
-              <Search className="h-5 w-5 text-green-500" />
+              <Search className="h-5 w-5 text-success" />
               <div>
                 <p className="text-sm font-medium text-foreground">
                   {t("AI-Powered Search", "البحث المدعوم بالذكاء الاصطناعي")}
@@ -441,13 +441,13 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
       {/* Save Button */}
       <div className="flex items-center justify-end gap-3 pb-8">
         {saveStatus === "success" && (
-          <span className="flex items-center gap-1 text-sm text-green-600">
+          <span className="flex items-center gap-1 text-sm text-success">
             <CheckCircle2 className="h-4 w-4" />
             {t("Saved successfully", "تم الحفظ بنجاح")}
           </span>
         )}
         {saveStatus === "error" && (
-          <span className="flex items-center gap-1 text-sm text-red-600">
+          <span className="flex items-center gap-1 text-sm text-destructive">
             <AlertCircle className="h-4 w-4" />
             {t("Failed to save", "فشل في الحفظ")}
           </span>
