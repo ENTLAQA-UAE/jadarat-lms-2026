@@ -10,7 +10,14 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { getCategoriesOptions } from '@/action/lms-admin/categories/categoriesActions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppSelector } from '@/hooks/redux.hook';
+import { CourseStatusBadge } from '@/components/shared/StatusBadge';
 
+const STATUS_OPTIONS = [
+    { value: null as string | null, label: 'All Statuses' },
+    { value: 'draft', label: 'Draft' },
+    { value: 'private', label: 'Private' },
+    { value: 'published', label: 'Published' },
+];
 
 function CoursesFilter() {
     const { settings } = useAppSelector(state => state.organization);
@@ -72,6 +79,8 @@ function CoursesFilter() {
         </DropdownMenu>
     );
 
+    const currentStatusFilter = searchParams.get('status');
+
     return (
         <div className="flex flex-col lg:flex-row gap-2 items-center">
             <Input
@@ -89,6 +98,33 @@ function CoursesFilter() {
                     <div className='flex gap-2'>
                         <FilterDropdown title="Category" options={categoryOptions.map(category => category.name)} columnId="category" />
                     </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="flex min-w-[150px] justify-between">
+                                {currentStatusFilter ? (
+                                    <CourseStatusBadge status={currentStatusFilter} />
+                                ) : (
+                                    'All Statuses'
+                                )}
+                                <ChevronDown className="ml-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="min-w-[150px]">
+                            {STATUS_OPTIONS.map((option) => (
+                                <DropdownMenuItem
+                                    key={option.label}
+                                    onClick={() => handleDebouncedFilterChange('status', option.value)}
+                                    className="flex items-center gap-2"
+                                >
+                                    {option.value ? (
+                                        <CourseStatusBadge status={option.value} />
+                                    ) : (
+                                        option.label
+                                    )}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </>
             )}
         </div>

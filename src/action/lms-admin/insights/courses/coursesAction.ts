@@ -39,6 +39,7 @@ export const fetchAllCourses = async (page: number, pageSize: number, filters: a
         const { data, error, count } = await supabase.rpc('get_all_courses', {
             _name_filter: filters.name ?? null,
             _category_filter: filters.category ?? null,
+            _status_filter: filters.status ?? null,
         }, { count: 'exact' }).range(start, end)
         if (error) {
             throw new Error(`Error fetching get_all_courses: ${error.message}`);
@@ -57,6 +58,7 @@ export const exportCourses = async () => {
     const { data, error } = await supabase.rpc('get_all_courses', {
         _name_filter: null,
         _category_filter: null,
+        _status_filter: null,
     });
 
     if (error) {

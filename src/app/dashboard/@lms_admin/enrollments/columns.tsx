@@ -7,6 +7,7 @@ import { Gauge } from '@/components/ui/gauge';
 import Image from 'next/image';
 import { EyeIcon } from 'lucide-react';
 import CertificateButton from '@/components/shared/CertificateButton';
+import { EnrollmentStatusBadge } from '@/components/shared/StatusBadge';
 
 const formatDate = (dateString: string | null) => {
   if (!dateString) return '-';
@@ -58,7 +59,7 @@ const renderCompletionGauge = (completionRate: number) => (
 );
 
 const renderActions = (row: EnrollmentsType) =>  (
-  
+
   <div className="flex flex-col gap-2">
     <Button size={'sm'} variant={'outline'} asChild className="w-[80%]">
       <Link
@@ -80,11 +81,6 @@ const renderActions = (row: EnrollmentsType) =>  (
 );
 
 export const columns: ColumnDef<EnrollmentsType>[] = [
-  // {
-  //     accessorKey: 'user_id',
-  //     header: 'ID',
-  //     cell: ({ row }) => <div className="exclude-weglot w-4">{row.original.user_id}</div>,
-  // },
   {
     accessorKey: 'name',
     header: 'Name',
@@ -96,6 +92,16 @@ export const columns: ColumnDef<EnrollmentsType>[] = [
     accessorKey: 'course',
     header: 'Course',
     cell: ({ row }) => renderCellWithImage(row.original),
+  },
+  {
+    id: 'enrollment_status',
+    header: 'Status',
+    cell: ({ row }) => (
+      <EnrollmentStatusBadge
+        status={row.original.enrollment_status}
+        progress={row.original.progress_percentage}
+      />
+    ),
   },
   {
     accessorKey: 'enrollment_date',
