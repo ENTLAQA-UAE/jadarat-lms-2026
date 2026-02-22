@@ -5,7 +5,7 @@ import React from 'react';
 
 function SentEmail({ email }: { email: string }) {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-muted flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 text-center">
         <Mail className="mx-auto h-24 w-24 text-primary" />
         <h1 className="text-3xl font-bold">Check your email</h1>

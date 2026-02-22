@@ -130,8 +130,8 @@ export function MFASetup() {
     <CardContent>
      <div className="flex flex-col items-center space-y-4">
       <div className="flex items-center justify-center space-x-2 text-center">
-       <div className="rounded-full bg-green-100 p-3">
-        <Check className="w-6 h-6 text-green-600" />
+       <div className="rounded-full bg-success/10 p-3">
+        <Check className="w-6 h-6 text-success" />
        </div>
        <p className="text-sm text-muted-foreground">
         Two-factor authentication is enabled
@@ -222,7 +222,7 @@ export function MFASetup() {
         exit={{ opacity: 0, y: -20 }}
         className="flex flex-col items-center space-y-6"
        >
-        <div className="p-4 bg-white rounded-lg">
+        <div className="p-4 bg-card rounded-lg">
          <QRCode
           value={setupData.uri}
           aria-label="QR Code for authenticator app"

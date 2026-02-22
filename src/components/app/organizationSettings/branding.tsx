@@ -98,12 +98,12 @@ export default function Branding() {
 
     return (
         <Card className="w-full">
-            <CardContent className="w-full px-6 py-12 rounded-lg dark:bg-gray-800">
+            <CardContent className="w-full px-6 py-12 rounded-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 2xl:gap-20">
                     <div className="h-[400px] flex flex-col gap-4">
                         <div className="text-left space-y-2">
-                            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 ltr:text-left rtl:text-right" dir="auto">Branding Section</h1>
-                            <p className="text-gray-600 dark:text-gray-400 ltr:text-left rtl:text-right">
+                            <h1 className="text-3xl font-bold tracking-tight text-foreground ltr:text-left rtl:text-right" dir="auto">Branding Section</h1>
+                            <p className="text-muted-foreground ltr:text-left rtl:text-right">
                                 Upload your logo, organization name, and login page background to create a cohesive brand identity.
                             </p>
                         </div>
@@ -114,7 +114,7 @@ export default function Branding() {
                             <div>
                                 <label
                                     htmlFor="organization-name"
-                                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                    className="block text-sm font-medium text-foreground"
                                 >
                                     Organization Name
                                 </label>
@@ -124,7 +124,7 @@ export default function Branding() {
                                         type="text"
                                         value={orgName}
                                         placeholder="Enter your organization name"
-                                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                        className="block w-full rounded-md border-border shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
                                         onChange={(e) => {
                                             setOrgName(e.target.value);
                                         }}

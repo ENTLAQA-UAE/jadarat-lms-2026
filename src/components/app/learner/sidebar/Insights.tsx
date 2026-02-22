@@ -20,10 +20,10 @@ const mockRecentPoints = [
 ]
 
 const transactionIcon: Record<string, React.ReactNode> = {
- book: <BookOpen className="h-3.5 w-3.5 text-green-600" />,
- award: <Award className="h-3.5 w-3.5 text-orange-500" />,
- star: <Star className="h-3.5 w-3.5 text-yellow-500" />,
- login: <LogIn className="h-3.5 w-3.5 text-blue-500" />,
+ book: <BookOpen className="h-3.5 w-3.5 text-success" />,
+ award: <Award className="h-3.5 w-3.5 text-warning" />,
+ star: <Star className="h-3.5 w-3.5 text-warning" />,
+ login: <LogIn className="h-3.5 w-3.5 text-primary" />,
 }
 
 export function Insights({ courses }: InsightsProps) {
@@ -45,7 +45,7 @@ export function Insights({ courses }: InsightsProps) {
         </div>
        </div>
        <div className="flex items-center gap-1.5">
-        <Flame className="h-4 w-4 text-orange-500" />
+        <Flame className="h-4 w-4 text-warning" />
         <span className="text-sm font-bold">{mockStreak}</span>
        </div>
       </div>
@@ -91,13 +91,13 @@ export function Insights({ courses }: InsightsProps) {
 
     {/* Badges Card */}
     <Link href="/dashboard/achievements" className="block">
-     <div className="rounded-lg bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 border border-purple-200 dark:border-purple-800 p-4 shadow-sm hover:shadow-md transition-shadow">
+     <div className="rounded-lg bg-gradient-to-br from-accent/10 to-primary/10 dark:from-accent/10 dark:to-primary/10 border border-accent/20 dark:border-accent/20 p-4 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
        <div className="flex items-center gap-2">
-        <Award className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+        <Award className="h-4 w-4 text-accent dark:text-accent" />
         <span className="text-sm font-medium">Badges</span>
        </div>
-       <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">4/12</span>
+       <span className="text-2xl font-bold text-accent dark:text-accent">4/12</span>
       </div>
       <p className="text-tiny text-muted-foreground mt-1">badges earned</p>
      </div>
@@ -105,13 +105,13 @@ export function Insights({ courses }: InsightsProps) {
 
     {/* Leaderboard Rank */}
     <Link href="/dashboard/leaderboard" className="block">
-     <div className="rounded-lg bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border border-yellow-200 dark:border-yellow-800 p-4 shadow-sm hover:shadow-md transition-shadow">
+     <div className="rounded-lg bg-gradient-to-br from-warning/10 to-warning/20 dark:from-warning/10 dark:to-warning/20 border border-warning/20 dark:border-warning/20 p-4 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
        <div className="flex items-center gap-2">
-        <BarChart3 className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+        <BarChart3 className="h-4 w-4 text-warning dark:text-warning" />
         <span className="text-sm font-medium">Leaderboard Rank</span>
        </div>
-       <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">#5</span>
+       <span className="text-2xl font-bold text-warning dark:text-warning">#5</span>
       </div>
       <p className="text-tiny text-muted-foreground mt-1">of 48 learners</p>
      </div>

@@ -104,10 +104,10 @@ const mockChallenges: ChallengeData[] = [
 ];
 
 const mockLeaderboardPreview: LeaderboardEntry[] = [
-  { rank: 1, userId: "u1", displayName: "Sarah Al-Rashidi", totalXP: 4250, currentLevel: 8, levelName: "Grand Master", levelColor: "bg-red-500", currentStreak: 21 },
-  { rank: 2, userId: "u2", displayName: "Mohammed Al-Harbi", totalXP: 3890, currentLevel: 7, levelName: "Master", levelColor: "bg-orange-500", currentStreak: 14 },
-  { rank: 3, userId: "u3", displayName: "Fatima Al-Dosari", totalXP: 3520, currentLevel: 7, levelName: "Master", levelColor: "bg-orange-500", currentStreak: 9 },
-  { rank: 5, userId: "current", displayName: "You (Demo User)", totalXP: 1350, currentLevel: 5, levelName: "Scholar", levelColor: "bg-emerald-500", currentStreak: 7, isCurrentUser: true },
+  { rank: 1, userId: "u1", displayName: "Sarah Al-Rashidi", totalXP: 4250, currentLevel: 8, levelName: "Grand Master", levelColor: "bg-destructive", currentStreak: 21 },
+  { rank: 2, userId: "u2", displayName: "Mohammed Al-Harbi", totalXP: 3890, currentLevel: 7, levelName: "Master", levelColor: "bg-warning", currentStreak: 14 },
+  { rank: 3, userId: "u3", displayName: "Fatima Al-Dosari", totalXP: 3520, currentLevel: 7, levelName: "Master", levelColor: "bg-warning", currentStreak: 9 },
+  { rank: 5, userId: "current", displayName: "You (Demo User)", totalXP: 1350, currentLevel: 5, levelName: "Scholar", levelColor: "bg-success", currentStreak: 7, isCurrentUser: true },
 ];
 
 const mockRecentPoints = [
@@ -119,18 +119,18 @@ const mockRecentPoints = [
 ];
 
 const mockBadges: BadgeData[] = [
-  { id: 1, name: "First Steps", description: "Complete your first course", icon: "book", color: "bg-blue-500", triggerType: "courses_completed", triggerValue: 1, pointsReward: 50, isEarned: true, awardedAt: "2026-01-15T10:00:00Z" },
-  { id: 2, name: "Quiz Whiz", description: "Pass 5 quizzes", icon: "star", color: "bg-yellow-500", triggerType: "quizzes_passed", triggerValue: 5, pointsReward: 75, isEarned: true, awardedAt: "2026-01-20T14:30:00Z" },
-  { id: 3, name: "Streak Starter", description: "Reach a 7-day streak", icon: "flame", color: "bg-orange-500", triggerType: "streak_reached", triggerValue: 7, pointsReward: 100, isEarned: true, awardedAt: "2026-02-10T09:00:00Z" },
-  { id: 4, name: "Scholar", description: "Reach level 5", icon: "award", color: "bg-emerald-500", triggerType: "level_reached", triggerValue: 5, pointsReward: 150, isEarned: true, awardedAt: "2026-02-18T16:00:00Z" },
-  { id: 5, name: "Course Collector", description: "Complete 10 courses", icon: "book", color: "bg-green-500", triggerType: "courses_completed", triggerValue: 10, pointsReward: 200, isEarned: false },
-  { id: 6, name: "Perfect Score", description: "Score 100% on 3 quizzes", icon: "trophy", color: "bg-amber-500", triggerType: "perfect_quizzes", triggerValue: 3, pointsReward: 100, isEarned: false },
-  { id: 7, name: "Consistency King", description: "Reach a 30-day streak", icon: "flame", color: "bg-red-500", triggerType: "streak_reached", triggerValue: 30, pointsReward: 250, isEarned: false },
-  { id: 8, name: "Point Master", description: "Earn 5,000 points", icon: "zap", color: "bg-purple-500", triggerType: "points_reached", triggerValue: 5000, pointsReward: 500, isEarned: false },
-  { id: 9, name: "Certified Pro", description: "Earn 5 certificates", icon: "award", color: "bg-cyan-500", triggerType: "certificates_earned", triggerValue: 5, pointsReward: 200, isEarned: false },
-  { id: 10, name: "Challenge Champion", description: "Complete 10 challenges", icon: "target", color: "bg-indigo-500", triggerType: "challenges_completed", triggerValue: 10, pointsReward: 300, isEarned: false },
-  { id: 11, name: "Grand Master", description: "Reach level 8", icon: "crown", color: "bg-red-600", triggerType: "level_reached", triggerValue: 8, pointsReward: 400, isEarned: false },
-  { id: 12, name: "Legend", description: "Earn 10,000 points", icon: "crown", color: "bg-amber-400", triggerType: "points_reached", triggerValue: 10000, pointsReward: 1000, isEarned: false },
+  { id: 1, name: "First Steps", description: "Complete your first course", icon: "book", color: "bg-info", triggerType: "courses_completed", triggerValue: 1, pointsReward: 50, isEarned: true, awardedAt: "2026-01-15T10:00:00Z" },
+  { id: 2, name: "Quiz Whiz", description: "Pass 5 quizzes", icon: "star", color: "bg-warning", triggerType: "quizzes_passed", triggerValue: 5, pointsReward: 75, isEarned: true, awardedAt: "2026-01-20T14:30:00Z" },
+  { id: 3, name: "Streak Starter", description: "Reach a 7-day streak", icon: "flame", color: "bg-warning", triggerType: "streak_reached", triggerValue: 7, pointsReward: 100, isEarned: true, awardedAt: "2026-02-10T09:00:00Z" },
+  { id: 4, name: "Scholar", description: "Reach level 5", icon: "award", color: "bg-success", triggerType: "level_reached", triggerValue: 5, pointsReward: 150, isEarned: true, awardedAt: "2026-02-18T16:00:00Z" },
+  { id: 5, name: "Course Collector", description: "Complete 10 courses", icon: "book", color: "bg-success", triggerType: "courses_completed", triggerValue: 10, pointsReward: 200, isEarned: false },
+  { id: 6, name: "Perfect Score", description: "Score 100% on 3 quizzes", icon: "trophy", color: "bg-warning", triggerType: "perfect_quizzes", triggerValue: 3, pointsReward: 100, isEarned: false },
+  { id: 7, name: "Consistency King", description: "Reach a 30-day streak", icon: "flame", color: "bg-destructive", triggerType: "streak_reached", triggerValue: 30, pointsReward: 250, isEarned: false },
+  { id: 8, name: "Point Master", description: "Earn 5,000 points", icon: "zap", color: "bg-accent", triggerType: "points_reached", triggerValue: 5000, pointsReward: 500, isEarned: false },
+  { id: 9, name: "Certified Pro", description: "Earn 5 certificates", icon: "award", color: "bg-info", triggerType: "certificates_earned", triggerValue: 5, pointsReward: 200, isEarned: false },
+  { id: 10, name: "Challenge Champion", description: "Complete 10 challenges", icon: "target", color: "bg-primary", triggerType: "challenges_completed", triggerValue: 10, pointsReward: 300, isEarned: false },
+  { id: 11, name: "Grand Master", description: "Reach level 8", icon: "crown", color: "bg-destructive", triggerType: "level_reached", triggerValue: 8, pointsReward: 400, isEarned: false },
+  { id: 12, name: "Legend", description: "Earn 10,000 points", icon: "crown", color: "bg-warning", triggerType: "points_reached", triggerValue: 10000, pointsReward: 1000, isEarned: false },
 ];
 
 // ============================================================
@@ -174,7 +174,7 @@ export default function GamificationHub() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Star className="h-4 w-4 text-yellow-500" />
+              <Star className="h-4 w-4 text-warning" />
               Current Level
             </CardTitle>
           </CardHeader>
@@ -194,7 +194,7 @@ export default function GamificationHub() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Flame className="h-4 w-4 text-orange-500" />
+              <Flame className="h-4 w-4 text-warning" />
               Learning Streak
             </CardTitle>
           </CardHeader>
@@ -208,7 +208,7 @@ export default function GamificationHub() {
                     key={i}
                     className={`h-6 rounded-sm text-center text-tiny leading-6 font-medium ${
                       isActive
-                        ? "bg-orange-500 text-white"
+                        ? "bg-warning text-primary-foreground"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
@@ -365,12 +365,12 @@ export default function GamificationHub() {
                     isCurrent
                       ? "border-primary bg-primary/5 ring-2 ring-primary/20"
                       : isReached
-                        ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950"
+                        ? "border-success bg-success/10 dark:border-success dark:bg-success/90"
                         : "opacity-50"
                   }`}
                 >
                   <div
-                    className={`mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white ${lvl.color}`}
+                    className={`mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-primary-foreground ${lvl.color}`}
                   >
                     {lvl.level}
                   </div>
@@ -431,7 +431,7 @@ export default function GamificationHub() {
                 celebrate("level_up", "Level Up!", "You reached Expert (Level 6)")
               }
             >
-              <Star className="mr-1 h-4 w-4 text-yellow-500" />
+              <Star className="mr-1 h-4 w-4 text-warning" />
               Level Up
             </Button>
             <Button
@@ -445,7 +445,7 @@ export default function GamificationHub() {
                 )
               }
             >
-              <Target className="mr-1 h-4 w-4 text-green-500" />
+              <Target className="mr-1 h-4 w-4 text-success" />
               Challenge Done
             </Button>
             <Button
@@ -459,7 +459,7 @@ export default function GamificationHub() {
                 )
               }
             >
-              <Flame className="mr-1 h-4 w-4 text-orange-500" />
+              <Flame className="mr-1 h-4 w-4 text-warning" />
               Streak Milestone
             </Button>
             <Button
@@ -473,7 +473,7 @@ export default function GamificationHub() {
                 )
               }
             >
-              <Award className="mr-1 h-4 w-4 text-purple-500" />
+              <Award className="mr-1 h-4 w-4 text-accent" />
               Badge Earned
             </Button>
           </div>

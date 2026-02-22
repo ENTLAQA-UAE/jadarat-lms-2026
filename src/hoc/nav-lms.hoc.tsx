@@ -96,31 +96,24 @@ export default function NavLMS<T extends Data>({ children, data }: NavLMSProps<T
   )
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white">
-      <header className="sticky top-[64px] md:top-0 z-30 w-full flex justify-between sm:flex-row items-center gap-4 border-b bg-background px-4 py-2 sm:py-4">
-        <NavigationMenu className="hidden lg:flex ">
-          <NavigationMenuList className="flex-wrap rtl:flex-row-reverse justify-start">
-            {navigation.map((item) => {
-              const isActive = pathname?.startsWith(item.href)
-              return (
-                <NavigationMenuLink key={item.name} asChild>
-                  <Link href={item.href} className="space-x-3" prefetch={false}>
-                    <Button
-                      className="flex items-center gap-1"
-                      variant={isActive ? 'default' : 'ghost'}
-                    >
-                      {item.icon}
-                      {item.name}
-                    </Button>
-                  </Link>
-                </NavigationMenuLink>
-              )
-            })}
-          </NavigationMenuList>
-        </NavigationMenu>
-        <div className="lg:hidden w-full">
-          <SideNavMobile navigation={navigation} />
-        </div>
+    <div className="flex min-h-0 w-full flex-col bg-background">
+      {/* Sub-navigation tabs for Insights */}
+      <header className="w-full flex flex-wrap items-center gap-2 border-b bg-card px-4 py-2 sm:py-3">
+        {navigation.map((item) => {
+          const isActive = pathname?.startsWith(item.href)
+          return (
+            <Link key={item.name} href={item.href} prefetch={false}>
+              <Button
+                className="flex items-center gap-1"
+                variant={isActive ? 'default' : 'ghost'}
+                size="sm"
+              >
+                {item.icon}
+                {item.name}
+              </Button>
+            </Link>
+          )
+        })}
       </header>
       <main className="flex-grow p-4 sm:p-6 overflow-x-hidden">
         <div

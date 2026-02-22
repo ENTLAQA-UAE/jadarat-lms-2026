@@ -83,18 +83,18 @@ export function RecommendedCourses({
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-indigo-600" />
-          <h2 className="text-lg font-semibold text-gray-900">
+          <Sparkles className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold text-foreground">
             {isRTL ? "موصى لك" : "Recommended For You"}
           </h2>
-          <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-tiny font-medium text-indigo-600">
+          <span className="rounded-full bg-primary/5 px-2 py-0.5 text-tiny font-medium text-primary">
             AI
           </span>
         </div>
         <button
           onClick={() => fetchRecommendations(true)}
           disabled={isRefreshing}
-          className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+          className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <RefreshCw
             className={cn("h-3.5 w-3.5", isRefreshing && "animate-spin")}
@@ -109,13 +109,13 @@ export function RecommendedCourses({
           {Array.from({ length: maxVisible }).map((_, i) => (
             <div
               key={i}
-              className="animate-pulse overflow-hidden rounded-xl border border-gray-100"
+              className="animate-pulse overflow-hidden rounded-xl border border-muted"
             >
-              <div className="aspect-video bg-gray-200" />
+              <div className="aspect-video bg-muted" />
               <div className="space-y-2 p-3">
-                <div className="h-4 w-3/4 rounded bg-gray-200" />
-                <div className="h-3 w-full rounded bg-gray-100" />
-                <div className="h-3 w-1/2 rounded bg-gray-100" />
+                <div className="h-4 w-3/4 rounded bg-muted" />
+                <div className="h-3 w-full rounded bg-muted/50" />
+                <div className="h-3 w-1/2 rounded bg-muted/50" />
               </div>
             </div>
           ))}
@@ -129,10 +129,10 @@ export function RecommendedCourses({
             <div
               key={rec.course_id}
               onClick={() => onCourseClick?.(rec.course_id)}
-              className="group cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white transition-all hover:border-indigo-200 hover:shadow-md"
+              className="group cursor-pointer overflow-hidden rounded-xl border border-border bg-card transition-all hover:border-primary/20 hover:shadow-md"
             >
               {/* Thumbnail */}
-              <div className="relative aspect-video bg-gray-100">
+              <div className="relative aspect-video bg-muted">
                 {rec.thumbnail ? (
                   <img
                     src={rec.thumbnail}
@@ -141,11 +141,11 @@ export function RecommendedCourses({
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center">
-                    <BookOpen className="h-8 w-8 text-gray-300" />
+                    <BookOpen className="h-8 w-8 text-muted-foreground/50" />
                   </div>
                 )}
                 {/* Match score */}
-                <div className="absolute bottom-2 rounded-full bg-indigo-600/90 px-2 py-0.5 text-tiny font-medium text-white" style={{ [isRTL ? "right" : "left"]: "0.5rem" }}>
+                <div className="absolute bottom-2 rounded-full bg-primary/90 px-2 py-0.5 text-tiny font-medium text-primary-foreground" style={{ [isRTL ? "right" : "left"]: "0.5rem" }}>
                   {Math.round(rec.score * 100)}%{" "}
                   {isRTL ? "تطابق" : "match"}
                 </div>
@@ -153,15 +153,15 @@ export function RecommendedCourses({
 
               {/* Content */}
               <div className="p-3">
-                <h3 className="text-sm font-semibold text-gray-900 line-clamp-1 group-hover:text-indigo-700">
+                <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary">
                   {rec.title}
                 </h3>
-                <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
                   {rec.description}
                 </p>
 
                 {/* Reason */}
-                <p className="mt-2 flex items-start gap-1 text-tiny text-indigo-600">
+                <p className="mt-2 flex items-start gap-1 text-tiny text-primary">
                   <Sparkles className="mt-0.5 h-2.5 w-2.5 shrink-0" />
                   <span className="line-clamp-1">{rec.reason}</span>
                 </p>
@@ -169,14 +169,14 @@ export function RecommendedCourses({
                 {/* Meta */}
                 <div className="mt-2 flex items-center gap-2">
                   {rec.category_name && (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-tiny font-medium text-gray-600">
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-tiny font-medium text-muted-foreground">
                       {rec.category_name}
                     </span>
                   )}
                   <span
                     className={cn(
                       "rounded-full px-2 py-0.5 text-tiny font-medium",
-                      levelColors[rec.level] || "bg-gray-100 text-gray-600"
+                      levelColors[rec.level] || "bg-muted text-muted-foreground"
                     )}
                   >
                     <BarChart3 className="mr-0.5 inline h-2.5 w-2.5" />
@@ -192,7 +192,7 @@ export function RecommendedCourses({
       {/* View All Link */}
       {recommendations.length > maxVisible && (
         <div className="mt-3 flex justify-end">
-          <button className="flex items-center gap-1 text-xs font-medium text-indigo-600 transition-colors hover:text-indigo-800">
+          <button className="flex items-center gap-1 text-xs font-medium text-primary transition-colors hover:text-primary/80">
             {isRTL ? "عرض الكل" : "View all"}
             {isRTL ? (
               <ChevronLeft className="h-3.5 w-3.5" />

@@ -28,7 +28,7 @@ export default function CertificatesCardPage({ userCertificates }: { userCertifi
 
         {userCertificates.map(async (certificate) => {
           return (
-            <div key={certificate.id} className="bg-white cursor-pointer rounded-lg shadow-md overflow-hidden">
+            <div key={certificate.id} className="bg-card cursor-pointer rounded-lg shadow-md overflow-hidden">
               <Dialog>
                 <DialogTrigger asChild>
                   <div className="h-48 bg-cover bg-center overflow-hidden">
@@ -54,8 +54,8 @@ export default function CertificatesCardPage({ userCertificates }: { userCertifi
                 <h2 className="text-xl font-bold mb-2">{certificate.title}</h2>
                 <ReadMore text={certificate.description} amountOfWords={14} id={certificate.id.toString()} />
                 <Separator className="my-2 bg-transparent border-transparent" />
-                <p className="text-gray-500 text-sm" dir="auto">Issued: {new Date(certificate.created_at).toDateString()}</p>
-                {certificate.updated_at && <p className="text-gray-500 text-sm" dir="auto">Updated: {new Date(certificate.updated_at).toDateString()}</p>}
+                <p className="text-muted-foreground text-sm" dir="auto">Issued: {new Date(certificate.created_at).toDateString()}</p>
+                {certificate.updated_at && <p className="text-muted-foreground text-sm" dir="auto">Updated: {new Date(certificate.updated_at).toDateString()}</p>}
               </div>
               <div className="px-4 pb-4 flex flex-col gap-2">
                 <Button className="flex items-center gap-2" onClick={() => DownloadFile(certificate.certificate)}><DownloadIcon className="w-5 h-5" />

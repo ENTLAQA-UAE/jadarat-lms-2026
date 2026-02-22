@@ -89,12 +89,12 @@ export default function Registeration() {
                             id="enableRegistration"
                             checked={enableRegistration}
                             onCheckedChange={setEnableRegistration}
-                            className={`${enableRegistration ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
+                            className={`${enableRegistration ? "bg-success" : "bg-muted"
                                 } relative inline-flex h-6 w-11 items-center rounded-full`}
                         >
                             <span
                                 className={`${enableRegistration ? "translate-x-6" : "translate-x-1"
-                                    } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                                    } inline-block h-4 w-4 transform rounded-full bg-card transition`}
                             />
                         </Switch>
                     </div>
@@ -106,12 +106,12 @@ export default function Registeration() {
                                     id="requireApproval"
                                     checked={requireApproval}
                                     onCheckedChange={setRequireApproval}
-                                    className={`${requireApproval ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
+                                    className={`${requireApproval ? "bg-success" : "bg-muted"
                                         } relative inline-flex h-6 w-11 items-center rounded-full`}
                                 >
                                     <span
                                         className={`${requireApproval ? "translate-x-6" : "translate-x-1"
-                                            } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                                            } inline-block h-4 w-4 transform rounded-full bg-card transition`}
                                     />
                                 </Switch>
                             </div>
@@ -121,12 +121,12 @@ export default function Registeration() {
                                     id="allowAnyDomain"
                                     checked={allowAnyDomain}
                                     onCheckedChange={setAllowAnyDomain}
-                                    className={`${allowAnyDomain ? "bg-green-500" : "bg-gray-200 dark:bg-gray-700"
+                                    className={`${allowAnyDomain ? "bg-success" : "bg-muted"
                                         } relative inline-flex h-6 w-11 items-center rounded-full`}
                                 >
                                     <span
                                         className={`${allowAnyDomain ? "translate-x-6" : "translate-x-1"
-                                            } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                                            } inline-block h-4 w-4 transform rounded-full bg-card transition`}
                                     />
                                 </Switch>
                             </div>

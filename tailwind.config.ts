@@ -74,6 +74,24 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Sidebar tokens
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          muted: "hsl(var(--sidebar-muted))",
+          "muted-foreground": "hsl(var(--sidebar-muted-foreground))",
+        },
+        // Chart palette
+        chart: {
+          1: "hsl(var(--chart-1))",
+          2: "hsl(var(--chart-2))",
+          3: "hsl(var(--chart-3))",
+          4: "hsl(var(--chart-4))",
+          5: "hsl(var(--chart-5))",
+        },
       },
       fontSize: {
         "display":  ["2.25rem", { lineHeight: "2.5rem", fontWeight: "700" }],
@@ -82,6 +100,10 @@ const config = {
         "body":     ["0.875rem",{ lineHeight: "1.25rem", fontWeight: "400" }],
         "caption":  ["0.75rem", { lineHeight: "1rem",    fontWeight: "400" }],
         "tiny":     ["0.625rem",{ lineHeight: "0.875rem",fontWeight: "400" }],
+      },
+      width: {
+        sidebar: "var(--sidebar-width)",
+        "sidebar-collapsed": "var(--sidebar-width-collapsed)",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -106,8 +128,6 @@ const config = {
           to: { opacity: "1" },
         },
       },
-
-
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",

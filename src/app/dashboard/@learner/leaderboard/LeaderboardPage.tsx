@@ -36,7 +36,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 4250,
     currentLevel: 8,
     levelName: "Grand Master",
-    levelColor: "bg-red-500",
+    levelColor: "bg-destructive",
     currentStreak: 21,
     previousRank: 1,
   },
@@ -47,7 +47,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 3890,
     currentLevel: 7,
     levelName: "Master",
-    levelColor: "bg-orange-500",
+    levelColor: "bg-warning",
     currentStreak: 14,
     previousRank: 3,
   },
@@ -58,7 +58,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 3520,
     currentLevel: 7,
     levelName: "Master",
-    levelColor: "bg-orange-500",
+    levelColor: "bg-warning",
     currentStreak: 9,
     previousRank: 2,
   },
@@ -69,7 +69,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 2870,
     currentLevel: 7,
     levelName: "Master",
-    levelColor: "bg-orange-500",
+    levelColor: "bg-warning",
     currentStreak: 5,
     previousRank: 5,
   },
@@ -80,7 +80,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 1350,
     currentLevel: 5,
     levelName: "Scholar",
-    levelColor: "bg-emerald-500",
+    levelColor: "bg-success",
     currentStreak: 7,
     previousRank: 6,
     isCurrentUser: true,
@@ -92,7 +92,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 1200,
     currentLevel: 5,
     levelName: "Scholar",
-    levelColor: "bg-emerald-500",
+    levelColor: "bg-success",
     currentStreak: 3,
     previousRank: 4,
   },
@@ -103,7 +103,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 980,
     currentLevel: 4,
     levelName: "Achiever",
-    levelColor: "bg-green-500",
+    levelColor: "bg-success",
     currentStreak: 0,
     previousRank: 7,
   },
@@ -114,7 +114,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 750,
     currentLevel: 4,
     levelName: "Achiever",
-    levelColor: "bg-green-500",
+    levelColor: "bg-success",
     currentStreak: 2,
     previousRank: 9,
   },
@@ -125,7 +125,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 520,
     currentLevel: 3,
     levelName: "Learner",
-    levelColor: "bg-cyan-500",
+    levelColor: "bg-info",
     currentStreak: 0,
     previousRank: 8,
   },
@@ -136,7 +136,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 310,
     currentLevel: 3,
     levelName: "Learner",
-    levelColor: "bg-cyan-500",
+    levelColor: "bg-info",
     currentStreak: 1,
     previousRank: 10,
   },
@@ -147,7 +147,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 180,
     currentLevel: 2,
     levelName: "Explorer",
-    levelColor: "bg-blue-500",
+    levelColor: "bg-info",
     currentStreak: 0,
     previousRank: 12,
   },
@@ -158,7 +158,7 @@ const mockLeaderboard: LeaderboardEntry[] = [
     totalXP: 90,
     currentLevel: 1,
     levelName: "Newcomer",
-    levelColor: "bg-slate-400",
+    levelColor: "bg-muted-foreground",
     currentStreak: 1,
     previousRank: 11,
   },
@@ -187,7 +187,7 @@ export default function LeaderboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-yellow-500" />
+            <Trophy className="h-6 w-6 text-warning" />
             Leaderboard
           </h1>
           <p className="text-muted-foreground">
@@ -224,12 +224,12 @@ export default function LeaderboardPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-green-500" />
+              <TrendingUp className="h-4 w-4 text-success" />
               Your Progress
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-green-600">
+            <p className="text-3xl font-bold text-success">
               +1
             </p>
             <p className="text-xs text-muted-foreground mt-1">

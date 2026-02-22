@@ -1,5 +1,6 @@
 import { fetchUserData } from '@/action/authAction';
 import InactiveEmail from '@/components/InactiveEmail';
+import SidebarLayout from '@/components/sidebar-layout';
 import { Toaster } from '@/components/ui/sonner';
 import { createClient } from '@/utils/supabase/server';
 
@@ -55,17 +56,18 @@ export default async function Layout({
   }
 
   return (
-
-    <>
-      {!is_active && <div className='w-[calc(100vw-64px)] h-[calc(100vh-64px)] flex items-center justify-center'>
-        <InactiveEmail />
-      </div>}
+    <SidebarLayout>
+      {!is_active && (
+        <div className="flex min-h-screen items-center justify-center">
+          <InactiveEmail />
+        </div>
+      )}
       {children}
       {user_role === 'learner' && is_active && learner}
       {(user_role === 'LMSAdmin' || user_role === 'learningManager') && is_active && lms_admin}
       {user_role === 'organizationAdmin' && is_active && org_admin}
       {user_role === 'superAdmin' && is_active && super_admin}
       <Toaster richColors />
-    </>
+    </SidebarLayout>
   );
 }

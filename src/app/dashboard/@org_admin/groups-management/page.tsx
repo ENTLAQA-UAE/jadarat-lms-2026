@@ -239,7 +239,7 @@ export default function GroupsPage() {
 
     return (
         <div className="flex lg:flex-row flex-col gap-4">
-            <div className="bg-white dark:bg-gray-950 p-6 w-full rounded-none">
+            <div className="bg-card p-6 w-full rounded-none">
                 {!loading ? <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-4">
                         <h2 className="text-2xl font-bold">Groups Management</h2>

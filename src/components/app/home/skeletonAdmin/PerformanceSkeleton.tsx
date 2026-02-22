@@ -14,9 +14,9 @@ function PerformanceSkeleton() {
           return (
             <div
               key={i}
-              className="bg-gray-100 rounded-lg p-4 flex items-center gap-4"
+              className="bg-muted rounded-lg p-4 flex items-center gap-4"
             >
-              <div className="bg-gray-300 w-[20px] h-[20px] rounded-full p-2"></div>
+              <div className="bg-muted-foreground/30 w-[20px] h-[20px] rounded-full p-2"></div>
               <div className="w-full">
                 <Skeleton className="w-[80px] h-[18px]"></Skeleton>
                 <div className="flex items-center gap-2">

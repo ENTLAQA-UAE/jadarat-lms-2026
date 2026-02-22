@@ -33,7 +33,7 @@ export default function MobileCourseDrawer({
     <Sheet>
       <SheetTrigger asChild>
         <button
-          className='w-11 h-11 cursor-pointer  text-gray-200 flex justify-center items-center rounded-full bg-purple-600'
+          className='w-11 h-11 cursor-pointer  text-primary-foreground flex justify-center items-center rounded-full bg-accent'
         >
           <ArrowRight className="h-5 w-5" />
         </button>

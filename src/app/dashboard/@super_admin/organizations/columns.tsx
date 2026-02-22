@@ -8,11 +8,11 @@ import { Organization } from "./type"
 
 const ProgressBar = ({ current, allowed }: { current: number; allowed: number }) => {
     const percentage = Math.min((current / allowed) * 100, 100)
-    const color = percentage > 90 ? "bg-red-500" : percentage > 75 ? "bg-yellow-500" : "bg-green-500"
+    const color = percentage > 90 ? "bg-destructive" : percentage > 75 ? "bg-warning" : "bg-success"
 
     return (
         <div className="flex items-center space-x-2">
-            <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
                 <div
                     className={`h-full ${color}`}
                     style={{ width: `${percentage}%` }}
@@ -211,7 +211,7 @@ export const columns: ColumnDef<Organization>[] = [
             <div className="flex items-center justify-center exclude-weglot ">
                 {row.original.subscriptionExpirationDate.toLocaleDateString()}
                 <span
-                    className={`ms-2 w-2 h-2 rounded-full ${row.original.status === "Active" ? "bg-green-500" : "bg-red-500"
+                    className={`ms-2 w-2 h-2 rounded-full ${row.original.status === "Active" ? "bg-success" : "bg-destructive"
                         }`}
                 />
                 <span className="ms-1 text-sm">

@@ -78,8 +78,8 @@ export function CourseOutcome({ outcomes, setOutcomes }: CourseOutcomeProps) {
    <p className="text-sm font-medium *">What you&apos;ll learn</p>
    <div className="space-y-4">
     {localOutcomes.map((outcome) => (
-     <div key={outcome.id} className="flex items-start space-x-2 bg-gray-50 p-3 rounded-lg">
-      <Check className="w-5 h-5 mt-1 text-green-500 flex-shrink-0" />
+     <div key={outcome.id} className="flex items-start space-x-2 bg-muted p-3 rounded-lg">
+      <Check className="w-5 h-5 mt-1 text-success flex-shrink-0" />
       <div className="flex-grow">
        {editingId === outcome.id ? (
         <Input
@@ -107,7 +107,7 @@ export function CourseOutcome({ outcomes, setOutcomes }: CourseOutcomeProps) {
          <Button onClick={() => startEditing(outcome.id)} type='button' size="icon" variant="ghost">
           <Edit className="w-4 h-4" />
          </Button>
-         <Button onClick={() => removeOutcome(outcome.id)} type='button' size="icon" variant="ghost" className="text-red-500">
+         <Button onClick={() => removeOutcome(outcome.id)} type='button' size="icon" variant="ghost" className="text-destructive">
           <X className="w-4 h-4" />
          </Button>
         </>

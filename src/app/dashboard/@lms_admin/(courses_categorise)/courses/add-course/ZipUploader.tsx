@@ -52,30 +52,30 @@ export function ZipUploader({ onFileUpdate }: ZipUploaderProps) {
   };
 
   return (
-    <div className="w-full p-6 bg-white rounded-lg shadow-md">
+    <div className="w-full p-6 bg-card rounded-lg shadow-md">
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-gray-300 hover:border-primary'
+        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/10' : 'border-border hover:border-primary'
           }`}
       >
         <input {...getInputProps()} />
-        <Upload className="mx-auto h-12 w-12 text-gray-400" />
-        <p className="mt-2 text-sm text-gray-600">
+        <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+        <p className="mt-2 text-sm text-muted-foreground">
           Drag & drop a .zip file here, or click to select one
         </p>
       </div>
 
       {error && (
-        <div className="mt-4 p-2 bg-red-100 text-red-700 rounded flex items-center">
+        <div className="mt-4 p-2 bg-destructive/10 text-destructive rounded flex items-center">
           <AlertCircle className="mr-2 h-4 w-4" />
           {error}
         </div>
       )}
 
       {file && (
-        <div className="mt-4 p-4 bg-gray-100 rounded">
+        <div className="mt-4 p-4 bg-muted rounded">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-900">{file.name}</span>
+            <span className="text-sm font-medium text-foreground">{file.name}</span>
             <Button variant="ghost" size="sm" onClick={handleRemove}>
               <X className="h-4 w-4" />
             </Button>
@@ -84,7 +84,7 @@ export function ZipUploader({ onFileUpdate }: ZipUploaderProps) {
             <Progress value={uploadProgress} className="mt-2" />
           )}
           {uploadProgress === 100 && (
-            <div className="mt-2 text-green-600 flex items-center">
+            <div className="mt-2 text-success flex items-center">
               <CheckCircle className="mr-2 h-4 w-4" />
               Upload complete!
             </div>
