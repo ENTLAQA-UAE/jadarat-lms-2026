@@ -46,7 +46,8 @@ function hexToHSL(hex: string): string | null {
 
 /**
  * Generate a full primary shade scale from a single hex color.
- * Returns HSL values for 50-900 shades.
+ * Preserves the actual lightness of the input color as the base (500),
+ * then derives lighter (50-400) and darker (600-900) shades proportionally.
  */
 function generatePrimaryScale(hex: string): Record<string, string> | null {
   const hsl = hexToHSL(hex);
@@ -57,25 +58,26 @@ function generatePrimaryScale(hex: string): Record<string, string> | null {
 
   const h = parseInt(match[1]);
   const s = parseInt(match[2]);
+  const l = parseInt(match[3]);
 
   return {
-    "--primary": `${h} ${s}% 55%`,
+    "--primary": `${h} ${s}% ${l}%`,
     "--primary-foreground": "0 0% 100%",
     "--primary-50": `${h} ${Math.min(s + 5, 100)}% 97%`,
     "--primary-100": `${h} ${s}% 93%`,
     "--primary-200": `${h} ${Math.max(s - 3, 0)}% 84%`,
     "--primary-300": `${h} ${Math.max(s - 5, 0)}% 72%`,
-    "--primary-400": `${h} ${s}% 62%`,
-    "--primary-500": `${h} ${s}% 55%`,
-    "--primary-600": `${h} ${Math.min(s + 2, 100)}% 48%`,
-    "--primary-700": `${h} ${s}% 40%`,
-    "--primary-800": `${h} ${Math.max(s - 3, 0)}% 32%`,
-    "--primary-900": `${h} ${Math.max(s - 8, 0)}% 22%`,
+    "--primary-400": `${h} ${s}% ${Math.min(Math.round(l * 1.35), 62)}%`,
+    "--primary-500": `${h} ${s}% ${l}%`,
+    "--primary-600": `${h} ${Math.min(s + 2, 100)}% ${Math.max(Math.round(l * 0.84), 15)}%`,
+    "--primary-700": `${h} ${s}% ${Math.max(Math.round(l * 0.68), 10)}%`,
+    "--primary-800": `${h} ${Math.max(s - 3, 0)}% ${Math.max(Math.round(l * 0.54), 8)}%`,
+    "--primary-900": `${h} ${Math.max(s - 8, 0)}% ${Math.max(Math.round(l * 0.38), 5)}%`,
     // Related tokens
-    "--ring": `${h} ${s}% 55%`,
-    "--sidebar-accent": `${h} ${s}% 55%`,
+    "--ring": `${h} ${s}% ${l}%`,
+    "--sidebar-accent": `${h} ${s}% ${l}%`,
     "--sidebar-accent-foreground": "0 0% 100%",
-    "--chart-1": `${h} ${s}% 55%`,
+    "--chart-1": `${h} ${s}% ${l}%`,
   };
 }
 
@@ -97,7 +99,7 @@ function TenantBranding() {
     const root = document.documentElement;
 
     // Apply primary color overrides
-    if (primaryColor && primaryColor !== "#706efa") {
+    if (primaryColor && primaryColor !== "#33658a") {
       const scale = generatePrimaryScale(primaryColor);
       if (scale) {
         Object.entries(scale).forEach(([prop, val]) => {

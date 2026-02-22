@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 /* ============================================================================
-   Jadarat LMS — Soft Modern Theme (Option A)
-   Primary: Indigo | Neutrals: Cool-warm blend | Radius: 12px
+   Jadarat LMS — Brand Theme
+   Primary: #33658a (Blue) | Accent: #f26419 (Orange) | Dark: #2f4858 (Teal)
 
    Tenant orgs can override --primary-* and --accent via ThemeProvider.
    ============================================================================ */
@@ -13,38 +13,38 @@
   :root {
     /* ── Surfaces ── */
     --background: 220 20% 97%;
-    --foreground: 225 20% 12%;
+    --foreground: 204 30% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 225 20% 12%;
+    --card-foreground: 204 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 225 20% 12%;
+    --popover-foreground: 204 30% 12%;
 
-    /* ── Primary (Indigo) — overridable by tenant ── */
-    --primary: 245 58% 55%;
+    /* ── Primary (#33658a Blue) — overridable by tenant ── */
+    --primary: 206 46% 37%;
     --primary-foreground: 0 0% 100%;
-    --primary-50:  245 60% 97%;
-    --primary-100: 245 55% 93%;
-    --primary-200: 245 52% 84%;
-    --primary-300: 245 50% 72%;
-    --primary-400: 245 55% 62%;
-    --primary-500: 245 58% 55%;
-    --primary-600: 245 60% 48%;
-    --primary-700: 245 58% 40%;
-    --primary-800: 245 55% 32%;
-    --primary-900: 245 50% 22%;
+    --primary-50:  206 51% 97%;
+    --primary-100: 206 46% 93%;
+    --primary-200: 206 43% 84%;
+    --primary-300: 206 41% 72%;
+    --primary-400: 206 46% 50%;
+    --primary-500: 206 46% 37%;
+    --primary-600: 206 48% 31%;
+    --primary-700: 206 46% 25%;
+    --primary-800: 206 43% 20%;
+    --primary-900: 206 38% 14%;
 
     /* ── Secondary ── */
-    --secondary: 220 15% 93%;
-    --secondary-foreground: 225 20% 25%;
+    --secondary: 206 15% 93%;
+    --secondary-foreground: 204 25% 25%;
 
     /* ── Muted ── */
-    --muted: 220 15% 93%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 206 15% 93%;
+    --muted-foreground: 206 10% 50%;
 
-    /* ── Accent (Soft purple) — overridable by tenant ── */
-    --accent: 280 55% 60%;
+    /* ── Accent (#f26419 Orange) — overridable by tenant ── */
+    --accent: 21 89% 52%;
     --accent-foreground: 0 0% 100%;
 
     /* ── Semantic ── */
@@ -61,67 +61,67 @@
     --warning-foreground: 0 0% 9%;
 
     /* ── Borders & Inputs ── */
-    --border: 220 12% 90%;
-    --input: 220 12% 90%;
-    --ring: 245 58% 55%;
+    --border: 206 12% 90%;
+    --input: 206 12% 90%;
+    --ring: 206 46% 37%;
 
     /* ── Radius ── */
     --radius: 0.75rem;
 
-    /* ── Sidebar ── */
-    --sidebar-background: 220 18% 96%;
-    --sidebar-foreground: 225 20% 25%;
-    --sidebar-border: 220 12% 90%;
-    --sidebar-accent: 245 58% 55%;
+    /* ── Sidebar (#2f4858 Dark Teal tinted) ── */
+    --sidebar-background: 206 18% 96%;
+    --sidebar-foreground: 204 30% 26%;
+    --sidebar-border: 206 12% 90%;
+    --sidebar-accent: 206 46% 37%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-muted: 220 12% 88%;
-    --sidebar-muted-foreground: 220 10% 50%;
+    --sidebar-muted: 206 12% 88%;
+    --sidebar-muted-foreground: 206 10% 50%;
     --sidebar-width: 280px;
     --sidebar-width-collapsed: 68px;
 
     /* ── Chart palette ── */
-    --chart-1: 245 58% 55%;
-    --chart-2: 280 55% 60%;
+    --chart-1: 206 46% 37%;
+    --chart-2: 21 89% 52%;
     --chart-3: 152 60% 40%;
     --chart-4: 38 90% 52%;
-    --chart-5: 210 85% 55%;
+    --chart-5: 204 30% 26%;
   }
 
   .dark {
     /* ── Surfaces ── */
-    --background: 225 15% 8%;
-    --foreground: 220 15% 92%;
+    --background: 204 20% 8%;
+    --foreground: 206 15% 92%;
 
-    --card: 225 15% 11%;
-    --card-foreground: 220 15% 92%;
+    --card: 204 18% 11%;
+    --card-foreground: 206 15% 92%;
 
-    --popover: 225 15% 11%;
-    --popover-foreground: 220 15% 92%;
+    --popover: 204 18% 11%;
+    --popover-foreground: 206 15% 92%;
 
-    /* ── Primary (Indigo — brighter in dark mode) ── */
-    --primary: 245 55% 65%;
+    /* ── Primary (brighter for dark backgrounds) ── */
+    --primary: 206 50% 55%;
     --primary-foreground: 0 0% 100%;
-    --primary-50:  245 30% 12%;
-    --primary-100: 245 30% 16%;
-    --primary-200: 245 35% 24%;
-    --primary-300: 245 40% 34%;
-    --primary-400: 245 45% 48%;
-    --primary-500: 245 50% 58%;
-    --primary-600: 245 55% 65%;
-    --primary-700: 245 50% 74%;
-    --primary-800: 245 45% 82%;
-    --primary-900: 245 40% 92%;
+    --primary-50:  206 25% 12%;
+    --primary-100: 206 28% 16%;
+    --primary-200: 206 32% 24%;
+    --primary-300: 206 38% 34%;
+    --primary-400: 206 44% 45%;
+    --primary-500: 206 48% 52%;
+    --primary-600: 206 50% 55%;
+    --primary-700: 206 46% 65%;
+    --primary-800: 206 42% 78%;
+    --primary-900: 206 38% 90%;
 
     /* ── Secondary ── */
-    --secondary: 225 12% 16%;
-    --secondary-foreground: 220 15% 85%;
+    --secondary: 204 15% 16%;
+    --secondary-foreground: 206 15% 85%;
 
     /* ── Muted ── */
-    --muted: 225 12% 16%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 204 15% 16%;
+    --muted-foreground: 206 10% 55%;
 
-    /* ── Accent ── */
-    --accent: 280 45% 55%;
+    /* ── Accent (Orange — slightly brighter in dark mode) ── */
+    --accent: 21 82% 55%;
     --accent-foreground: 0 0% 100%;
 
     /* ── Semantic ── */
@@ -138,22 +138,22 @@
     --warning-foreground: 0 0% 9%;
 
     /* ── Borders & Inputs ── */
-    --border: 225 12% 18%;
-    --input: 225 12% 18%;
-    --ring: 245 55% 65%;
+    --border: 204 15% 18%;
+    --input: 204 15% 18%;
+    --ring: 206 50% 55%;
 
     /* ── Sidebar ── */
-    --sidebar-background: 225 15% 10%;
-    --sidebar-foreground: 220 15% 85%;
-    --sidebar-border: 225 12% 18%;
-    --sidebar-accent: 245 55% 65%;
+    --sidebar-background: 204 25% 10%;
+    --sidebar-foreground: 206 15% 85%;
+    --sidebar-border: 204 20% 18%;
+    --sidebar-accent: 206 50% 55%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-muted: 225 12% 16%;
-    --sidebar-muted-foreground: 220 10% 55%;
+    --sidebar-muted: 204 15% 16%;
+    --sidebar-muted-foreground: 206 10% 55%;
 
     /* ── Chart palette ── */
-    --chart-1: 245 55% 65%;
-    --chart-2: 280 45% 55%;
+    --chart-1: 206 50% 55%;
+    --chart-2: 21 82% 55%;
     --chart-3: 152 50% 45%;
     --chart-4: 38 80% 48%;
     --chart-5: 210 75% 55%;
@@ -249,9 +249,41 @@
   background-size: 20px 20px;
 }
 
+/* ── Jadarat Brand Gradients ── */
+
+/* Primary gradient: dark teal → blue (headers, hero sections) */
+.gradient-primary {
+  background: linear-gradient(135deg, hsl(var(--primary-700)), hsl(var(--primary)));
+}
+
+/* Accent gradient: orange warm spectrum (CTAs, banners) */
+.gradient-accent {
+  background: linear-gradient(135deg, hsl(var(--accent)), hsl(28 90% 58%));
+}
+
+/* Full brand gradient: dark teal → blue → orange (hero, landing) */
+.gradient-brand {
+  background: linear-gradient(135deg, hsl(var(--primary-700)), hsl(var(--primary)) 50%, hsl(var(--accent)));
+}
+
+/* Subtle brand tint for card/section backgrounds */
+.gradient-brand-subtle {
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--accent) / 0.06));
+}
+
+/* Sidebar gradient: deep teal depth effect */
+.gradient-sidebar {
+  background: linear-gradient(180deg, hsl(var(--primary-700)), hsl(var(--primary-900)));
+}
+
 /* Glow effect for primary elements */
 .glow-primary {
   box-shadow: 0 0 20px hsl(var(--primary) / 0.3), 0 0 60px hsl(var(--primary) / 0.1);
+}
+
+/* Glow effect for accent elements */
+.glow-accent {
+  box-shadow: 0 0 20px hsl(var(--accent) / 0.3), 0 0 60px hsl(var(--accent) / 0.1);
 }
 
 /* Confetti animation for gamification celebrations */
