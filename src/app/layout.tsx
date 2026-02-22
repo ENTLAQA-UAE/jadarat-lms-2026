@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 import './globals.css';
-import localFont from 'next/font/local';
+import { Poppins, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import { Toaster as Toast } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
@@ -17,14 +17,18 @@ import {
   getUserDetails,
 } from '@/action/organization/organizationAction';
 
-const localFonts = localFont({
-  src: [
-    { path: '../../public/fonts/light.otf', weight: '300' },
-    { path: '../../public/fonts/regular.otf', weight: '400' },
-    { path: '../../public/fonts/medium.otf', weight: '500' },
-    { path: '../../public/fonts/bold.otf', weight: '700' },
-  ],
-  variable: '--font-ping-font-tlwen',
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
+
+const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
+  subsets: ['arabic'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-ibm-arabic',
+  display: 'swap',
 });
 
 export async function generateMetadata() {
@@ -77,7 +81,7 @@ export default async function RootLayout({
       logo: "/logo.png",
       authBackground: "/side.png",
       name: "Entlaqa",
-      primaryColor: "#706efa",
+      primaryColor: "#33658a",
       secondaryColor: "",
       courseExpirationEnabled: false,
       courseExpirationPeriod: 0,
@@ -124,7 +128,7 @@ export default async function RootLayout({
           }, 400)`}
         </Script>
       </head>
-      <body className={cn('min-h-screen bg-background', localFonts.className)}>
+      <body className={cn('min-h-screen bg-background', poppins.variable, ibmPlexSansArabic.variable)}>
         <Suspense>
           <LangugageProvider>
             <SetupProvider

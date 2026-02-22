@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, Target, ChevronRight, Sparkles } from "lucide-react";
+import { Trophy, Target, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/language.context";
 import {
@@ -14,7 +14,6 @@ import {
   type LeaderboardEntry,
 } from "@/components/gamification/LeaderboardComponents";
 
-// Mock challenges — will be replaced with real data in Phase 2
 const MOCK_CHALLENGES: ChallengeData[] = [
   {
     id: "ch-1",
@@ -42,7 +41,6 @@ const MOCK_CHALLENGES: ChallengeData[] = [
   },
 ];
 
-// Mock leaderboard — will be replaced with real data in Phase 2
 const MOCK_LEADERBOARD: LeaderboardEntry[] = [
   { rank: 1, userId: "u1", displayName: "Sarah A.", totalXP: 4200, currentLevel: 8, levelName: "Grand Master", levelColor: "bg-destructive", currentStreak: 14 },
   { rank: 2, userId: "u2", displayName: "Ahmed K.", totalXP: 3800, currentLevel: 7, levelName: "Master", levelColor: "bg-warning", currentStreak: 9 },
@@ -55,24 +53,24 @@ export default function DashboardWidgets() {
   const { isRTL } = useLanguage();
 
   return (
-    <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
       {/* Challenges Widget */}
-      <Card className="group overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
+      <Card className="overflow-hidden border border-border/50">
+        <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
+          <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Target className="h-4 w-4 text-primary" />
             </div>
             {isRTL ? "التحديات النشطة" : "Active Challenges"}
           </CardTitle>
           <Link href="/dashboard/achievements">
-            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-primary">
+            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-primary h-8">
               {isRTL ? "عرض الكل" : "View All"}
-              <ChevronRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </Link>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 px-5 pb-5">
           {MOCK_CHALLENGES.map((challenge) => (
             <ChallengeCard key={challenge.id} challenge={challenge} />
           ))}
@@ -80,22 +78,22 @@ export default function DashboardWidgets() {
       </Card>
 
       {/* Leaderboard Preview Widget */}
-      <Card className="group overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between pb-3">
-          <CardTitle className="flex items-center gap-2 text-base">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/10">
-              <Trophy className="h-4 w-4 text-warning" />
+      <Card className="overflow-hidden border border-border/50">
+        <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
+          <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
+              <Trophy className="h-4 w-4 text-amber-500" />
             </div>
             {isRTL ? "لوحة المتصدرين" : "Leaderboard"}
           </CardTitle>
           <Link href="/dashboard/leaderboard">
-            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-primary">
+            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-primary h-8">
               {isRTL ? "عرض الكل" : "View All"}
-              <ChevronRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </Link>
         </CardHeader>
-        <CardContent className="space-y-2">
+        <CardContent className="space-y-1.5 px-5 pb-5">
           {MOCK_LEADERBOARD.map((entry) => (
             <LeaderboardRow key={entry.userId} entry={entry} showStreak={false} />
           ))}
