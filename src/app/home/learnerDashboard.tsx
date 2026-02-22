@@ -8,6 +8,7 @@ import DropdownFilter from "@/components/DropdownFilter";
 import Link from "next/link";
 import { Category, SliderType } from "./types";
 import { useRouter } from "next/navigation";
+import { RecommendedCourses } from "@/components/ai/RecommendedCourses";
 
 export default function LearnerDashboard({
   categories,
@@ -63,6 +64,14 @@ export default function LearnerDashboard({
           </CourseGrid>
         </Section>
       ) : <p>No courses available</p>}
+
+      {/* AI Recommended Courses */}
+      <div className="mb-8">
+        <RecommendedCourses
+          maxVisible={3}
+          onCourseClick={(courseId) => router.push(`/dashboard/discover?course=${courseId}`)}
+        />
+      </div>
 
       {/* Discover Courses Section */}
       <Section
