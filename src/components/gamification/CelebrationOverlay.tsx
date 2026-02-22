@@ -44,7 +44,7 @@ function generateParticles(count: number): Particle[] {
 // ============================================================
 
 interface CelebrationOverlayProps {
-  type: "level_up" | "challenge_complete" | "streak_milestone";
+  type: "level_up" | "challenge_complete" | "streak_milestone" | "badge_earned";
   title: string;
   subtitle?: string;
   onClose?: () => void;
@@ -98,12 +98,20 @@ export function CelebrationOverlay({
         </svg>
       </div>
     ),
+    badge_earned: (
+      <div className="animate-bounce">
+        <svg className="h-16 w-16 text-purple-400 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+        </svg>
+      </div>
+    ),
   };
 
   const bgGradient = {
     level_up: "from-yellow-500/20 via-transparent to-amber-500/20",
     challenge_complete: "from-green-500/20 via-transparent to-emerald-500/20",
     streak_milestone: "from-orange-500/20 via-transparent to-red-500/20",
+    badge_earned: "from-purple-500/20 via-transparent to-indigo-500/20",
   };
 
   return (

@@ -143,7 +143,7 @@ export function LevelProgress({
         </div>
         {next ? (
           <span className="text-muted-foreground text-xs">
-            {xp} / {next.xpThreshold} XP
+            {xp.toLocaleString()} / {next.xpThreshold.toLocaleString()} pts
           </span>
         ) : (
           <span className="text-muted-foreground text-xs font-medium">
@@ -154,7 +154,7 @@ export function LevelProgress({
       <Progress value={progress} className="h-2" />
       {next && (
         <p className="text-xs text-muted-foreground">
-          {next.xpThreshold - xp} XP to {next.name}
+          {(next.xpThreshold - xp).toLocaleString()} pts to {next.name}
         </p>
       )}
     </div>
@@ -259,7 +259,7 @@ export function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
           </div>
         </div>
         <div className="text-right">
-          <span className="text-xs font-medium text-primary">+{challenge.xpReward} XP</span>
+          <span className="text-xs font-medium text-primary">+{challenge.xpReward} pts</span>
           {!challenge.isCompleted && !isExpired && (
             <p className="text-[10px] text-muted-foreground">{daysLeft}d left</p>
           )}

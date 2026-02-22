@@ -122,7 +122,7 @@ export function MyRankCard({
             <span className="text-sm font-medium">{entry.levelName}</span>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            {entry.totalXP.toLocaleString()} XP
+            {entry.totalXP.toLocaleString()} pts
           </p>
         </div>
       </div>
@@ -207,10 +207,10 @@ export function LeaderboardRow({
         </div>
       )}
 
-      {/* XP */}
+      {/* Points */}
       <div className="text-right shrink-0 w-20">
         <p className="text-sm font-bold">{entry.totalXP.toLocaleString()}</p>
-        <p className="text-[10px] text-muted-foreground">XP</p>
+        <p className="text-[10px] text-muted-foreground">pts</p>
       </div>
     </div>
   );
@@ -243,7 +243,7 @@ export function PodiumDisplay({ entries }: { entries: LeaderboardEntry[] }) {
               {entry.displayName}
             </p>
             <p className="text-[10px] text-muted-foreground font-medium">
-              {entry.totalXP.toLocaleString()} XP
+              {entry.totalXP.toLocaleString()} pts
             </p>
           </div>
           {/* Podium block */}

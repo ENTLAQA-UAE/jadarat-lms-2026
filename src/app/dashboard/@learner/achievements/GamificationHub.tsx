@@ -24,7 +24,11 @@ import {
   CelebrationOverlay,
   useCelebration,
 } from "@/components/gamification/CelebrationOverlay";
-import { Trophy, Flame, Target, Star, Zap, BarChart3 } from "lucide-react";
+import {
+  BadgeCard,
+  type BadgeData,
+} from "@/components/gamification/BadgeComponents";
+import { Trophy, Flame, Target, Star, Zap, BarChart3, Award } from "lucide-react";
 import Link from "next/link";
 import {
   LeaderboardRow,
@@ -33,9 +37,10 @@ import {
 
 // ============================================================
 // Mock Data (Phase 2 will replace with real API calls)
+// Points = XP (unified currency). Points drive levels, leaderboard, and progression.
 // ============================================================
 
-const mockXP = 1350;
+const mockPoints = 1350;
 
 const mockStreak: StreakData = {
   currentStreak: 7,
@@ -105,12 +110,27 @@ const mockLeaderboardPreview: LeaderboardEntry[] = [
   { rank: 5, userId: "current", displayName: "You (Demo User)", totalXP: 1350, currentLevel: 5, levelName: "Scholar", levelColor: "bg-emerald-500", currentStreak: 7, isCurrentUser: true },
 ];
 
-const mockRecentXP = [
-  { action: "Course Completed", xp: 100, date: "2h ago" },
-  { action: "Quiz Passed", xp: 50, date: "5h ago" },
-  { action: "Daily Login", xp: 5, date: "Today" },
-  { action: "Challenge Bonus", xp: 150, date: "Yesterday" },
-  { action: "Certificate Earned", xp: 75, date: "2d ago" },
+const mockRecentPoints = [
+  { action: "Course Completed", points: 100, date: "2h ago" },
+  { action: "Quiz Passed", points: 50, date: "5h ago" },
+  { action: "Daily Login", points: 5, date: "Today" },
+  { action: "Challenge Bonus", points: 150, date: "Yesterday" },
+  { action: "Certificate Earned", points: 75, date: "2d ago" },
+];
+
+const mockBadges: BadgeData[] = [
+  { id: 1, name: "First Steps", description: "Complete your first course", icon: "book", color: "bg-blue-500", triggerType: "courses_completed", triggerValue: 1, pointsReward: 50, isEarned: true, awardedAt: "2026-01-15T10:00:00Z" },
+  { id: 2, name: "Quiz Whiz", description: "Pass 5 quizzes", icon: "star", color: "bg-yellow-500", triggerType: "quizzes_passed", triggerValue: 5, pointsReward: 75, isEarned: true, awardedAt: "2026-01-20T14:30:00Z" },
+  { id: 3, name: "Streak Starter", description: "Reach a 7-day streak", icon: "flame", color: "bg-orange-500", triggerType: "streak_reached", triggerValue: 7, pointsReward: 100, isEarned: true, awardedAt: "2026-02-10T09:00:00Z" },
+  { id: 4, name: "Scholar", description: "Reach level 5", icon: "award", color: "bg-emerald-500", triggerType: "level_reached", triggerValue: 5, pointsReward: 150, isEarned: true, awardedAt: "2026-02-18T16:00:00Z" },
+  { id: 5, name: "Course Collector", description: "Complete 10 courses", icon: "book", color: "bg-green-500", triggerType: "courses_completed", triggerValue: 10, pointsReward: 200, isEarned: false },
+  { id: 6, name: "Perfect Score", description: "Score 100% on 3 quizzes", icon: "trophy", color: "bg-amber-500", triggerType: "perfect_quizzes", triggerValue: 3, pointsReward: 100, isEarned: false },
+  { id: 7, name: "Consistency King", description: "Reach a 30-day streak", icon: "flame", color: "bg-red-500", triggerType: "streak_reached", triggerValue: 30, pointsReward: 250, isEarned: false },
+  { id: 8, name: "Point Master", description: "Earn 5,000 points", icon: "zap", color: "bg-purple-500", triggerType: "points_reached", triggerValue: 5000, pointsReward: 500, isEarned: false },
+  { id: 9, name: "Certified Pro", description: "Earn 5 certificates", icon: "award", color: "bg-cyan-500", triggerType: "certificates_earned", triggerValue: 5, pointsReward: 200, isEarned: false },
+  { id: 10, name: "Challenge Champion", description: "Complete 10 challenges", icon: "target", color: "bg-indigo-500", triggerType: "challenges_completed", triggerValue: 10, pointsReward: 300, isEarned: false },
+  { id: 11, name: "Grand Master", description: "Reach level 8", icon: "crown", color: "bg-red-600", triggerType: "level_reached", triggerValue: 8, pointsReward: 400, isEarned: false },
+  { id: 12, name: "Legend", description: "Earn 10,000 points", icon: "crown", color: "bg-amber-400", triggerType: "points_reached", triggerValue: 10000, pointsReward: 1000, isEarned: false },
 ];
 
 // ============================================================
@@ -119,9 +139,11 @@ const mockRecentXP = [
 
 export default function GamificationHub() {
   const { celebration, celebrate, dismiss } = useCelebration();
-  const currentLevel = getCurrentLevel(mockXP);
+  const currentLevel = getCurrentLevel(mockPoints);
   const activeChallenges = mockChallenges.filter((c) => !c.isCompleted);
   const completedChallenges = mockChallenges.filter((c) => c.isCompleted);
+  const earnedBadges = mockBadges.filter((b) => b.isEarned);
+  const lockedBadges = mockBadges.filter((b) => !b.isEarned);
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -142,7 +164,7 @@ export default function GamificationHub() {
           Achievements
         </h1>
         <p className="text-muted-foreground">
-          Track your progress, maintain streaks, and complete challenges to earn XP
+          Track your progress, maintain streaks, and complete challenges to earn points
         </p>
       </div>
 
@@ -158,13 +180,13 @@ export default function GamificationHub() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-4 mb-4">
-              <LevelBadge xp={mockXP} size="lg" />
+              <LevelBadge xp={mockPoints} size="lg" />
               <div>
                 <p className="text-2xl font-bold">{currentLevel.name}</p>
                 <p className="text-sm text-muted-foreground">Level {currentLevel.level}</p>
               </div>
             </div>
-            <LevelProgress xp={mockXP} />
+            <LevelProgress xp={mockPoints} />
           </CardContent>
         </Card>
 
@@ -198,21 +220,21 @@ export default function GamificationHub() {
           </CardContent>
         </Card>
 
-        {/* XP Summary Card */}
+        {/* Points Summary Card */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Zap className="h-4 w-4 text-primary" />
-              Total XP
+              Total Points
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-primary">{mockXP.toLocaleString()}</p>
+            <p className="text-4xl font-bold text-primary">{mockPoints.toLocaleString()}</p>
             <div className="mt-3 space-y-1.5">
-              {mockRecentXP.slice(0, 3).map((entry, i) => (
+              {mockRecentPoints.slice(0, 3).map((entry, i) => (
                 <div key={i} className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">{entry.action}</span>
-                  <span className="font-medium text-primary">+{entry.xp} XP</span>
+                  <span className="font-medium text-primary">+{entry.points} pts</span>
                 </div>
               ))}
             </div>
@@ -228,7 +250,7 @@ export default function GamificationHub() {
             Challenges
           </CardTitle>
           <CardDescription>
-            Complete time-bound challenges to earn bonus XP rewards
+            Complete time-bound challenges to earn bonus point rewards
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -269,18 +291,72 @@ export default function GamificationHub() {
         </CardContent>
       </Card>
 
+      {/* Badges Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Award className="h-5 w-5 text-primary" />
+            Badges
+          </CardTitle>
+          <CardDescription>
+            Earn badges by reaching milestones. {earnedBadges.length} of {mockBadges.length} unlocked.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="earned">
+            <TabsList>
+              <TabsTrigger value="earned">
+                Earned ({earnedBadges.length})
+              </TabsTrigger>
+              <TabsTrigger value="locked">
+                Locked ({lockedBadges.length})
+              </TabsTrigger>
+              <TabsTrigger value="all">
+                All ({mockBadges.length})
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="earned" className="mt-4">
+              <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+                {earnedBadges.map((b) => (
+                  <BadgeCard key={b.id} badge={b} />
+                ))}
+                {earnedBadges.length === 0 && (
+                  <p className="text-sm text-muted-foreground col-span-4">
+                    No badges earned yet. Keep learning!
+                  </p>
+                )}
+              </div>
+            </TabsContent>
+            <TabsContent value="locked" className="mt-4">
+              <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+                {lockedBadges.map((b) => (
+                  <BadgeCard key={b.id} badge={b} />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="all" className="mt-4">
+              <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+                {mockBadges.map((b) => (
+                  <BadgeCard key={b.id} badge={b} />
+                ))}
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
       {/* Level Map */}
       <Card>
         <CardHeader>
           <CardTitle>Level Map</CardTitle>
           <CardDescription>
-            Your journey through all levels. Keep earning XP to advance!
+            Your journey through all levels. Keep earning points to advance!
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {DEFAULT_LEVELS.map((lvl) => {
-              const isReached = mockXP >= lvl.xpThreshold;
+              const isReached = mockPoints >= lvl.xpThreshold;
               const isCurrent = currentLevel.level === lvl.level;
               return (
                 <div
@@ -300,7 +376,7 @@ export default function GamificationHub() {
                   </div>
                   <p className="text-xs font-semibold">{lvl.name}</p>
                   <p className="text-[10px] text-muted-foreground">
-                    {lvl.xpThreshold.toLocaleString()} XP
+                    {lvl.xpThreshold.toLocaleString()} pts
                   </p>
                 </div>
               );
@@ -365,7 +441,7 @@ export default function GamificationHub() {
                 celebrate(
                   "challenge_complete",
                   "Challenge Complete!",
-                  'You completed "Quiz Ace" and earned 150 XP'
+                  'You completed "Quiz Ace" and earned 150 pts'
                 )
               }
             >
@@ -385,6 +461,20 @@ export default function GamificationHub() {
             >
               <Flame className="mr-1 h-4 w-4 text-orange-500" />
               Streak Milestone
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                celebrate(
+                  "badge_earned",
+                  "Badge Earned!",
+                  'You earned "Scholar" and received 150 pts'
+                )
+              }
+            >
+              <Award className="mr-1 h-4 w-4 text-purple-500" />
+              Badge Earned
             </Button>
           </div>
         </CardContent>
