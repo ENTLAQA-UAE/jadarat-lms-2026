@@ -24,7 +24,7 @@ function SetupProvider({
                 setOrganizationSettings({
                     authBackground: organizationDetails.auth_bg ?? '/side.png',
                     logo: organizationDetails.logo ?? '/logo.png',
-                    primaryColor: organizationDetails.primary_color ?? '#706efa',
+                    primaryColor: organizationDetails.primary_color ?? '#33658a',
                     secondaryColor: organizationDetails.secondary_color,
                     organization_id: organizationDetails.organization_id,
                     registerationEnabled: organizationDetails.registeration_enabled,
