@@ -86,21 +86,21 @@ export default function LeaderboardConfigPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Status</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {config.enabled ? (
-                <span className="text-green-600">Active</span>
+                <span className="text-success">Active</span>
               ) : (
                 <span className="text-muted-foreground">Disabled</span>
               )}
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Visible Entries</CardTitle>
           </CardHeader>
@@ -108,7 +108,7 @@ export default function LeaderboardConfigPage() {
             <div className="text-2xl font-bold">Top {config.showTopN}</div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="hover:shadow-md transition-shadow duration-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Reset Period</CardTitle>
           </CardHeader>

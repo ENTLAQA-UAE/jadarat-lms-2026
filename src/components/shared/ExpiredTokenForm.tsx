@@ -19,7 +19,7 @@ export default function ExpiredTokenForm() {
         <CardDescription>Your session has expired. Please log in again to continue.</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center space-x-2 text-yellow-600">
+        <div className="flex items-center space-x-2 text-amber-600 dark:text-amber-400">
           <AlertCircle className="h-5 w-5" />
           <p>Your authentication token has expired due to inactivity.</p>
         </div>

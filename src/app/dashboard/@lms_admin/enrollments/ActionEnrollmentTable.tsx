@@ -152,7 +152,7 @@ function ActionEnrollmentTable() {
                                 onChange={(e) => setLearnerSearch(e.target.value)}
                             />
                             {learnersLoading && <p>Loading learners...</p>}
-                            {learnersError && <p className="text-red-500">{learnersError}</p>}
+                            {learnersError && <p className="text-sm text-destructive">{learnersError}</p>}
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {selectedLearners.map(learner => (
                                     <Badge key={learner.id} variant="secondary">
@@ -168,7 +168,7 @@ function ActionEnrollmentTable() {
                                     {filteredLearners.map(learner => (
                                         <li
                                             key={learner.id}
-                                            className="cursor-pointer hover:bg-accent p-1"
+                                            className="cursor-pointer hover:bg-accent p-1 rounded-md transition-colors"
                                             onClick={() => handleSelectLearner(learner)}
                                         >
                                             {learner.name}
@@ -186,7 +186,7 @@ function ActionEnrollmentTable() {
                                 onChange={(e) => setCourseSearch(e.target.value)}
                             />
                             {coursesLoading && <p>Loading courses...</p>}
-                            {coursesError && <p className="text-red-500">{coursesError}</p>}
+                            {coursesError && <p className="text-sm text-destructive">{coursesError}</p>}
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {selectedCourses.map(course => (
                                     <Badge key={course.course_id} variant="secondary">
@@ -202,7 +202,7 @@ function ActionEnrollmentTable() {
                                     {filteredCourses.map(course => (
                                         <li
                                             key={course.course_id}
-                                            className="cursor-pointer hover:bg-accent p-1"
+                                            className="cursor-pointer hover:bg-accent p-1 rounded-md transition-colors"
                                             onClick={() => handleSelectCourse(course)}
                                         >
                                             {course.title}

@@ -77,9 +77,9 @@ export function AISearchResults({
   };
 
   const levelColors: Record<string, string> = {
-    beginner: "bg-green-100 text-green-700",
-    medium: "bg-yellow-100 text-yellow-700",
-    advanced: "bg-red-100 text-red-700",
+    beginner: "bg-success/10 text-success",
+    medium: "bg-warning/10 text-warning",
+    advanced: "bg-destructive/10 text-destructive",
   };
 
   return (

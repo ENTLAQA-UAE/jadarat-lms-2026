@@ -154,7 +154,7 @@ export default function CreateAccount() {
         <Dialog>
           <DialogContent>
             <div className="flex flex-col items-center justify-center gap-4 py-8">
-              <CircleCheckIcon className="size-12 text-green-500" />
+              <CircleCheckIcon className="size-12 text-success" />
               <p className="text-lg font-medium">Please check your email for confirmation.</p>
             </div>
             <DialogFooter>

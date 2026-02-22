@@ -44,9 +44,9 @@ function CardStatus({ title, icon, number, percent, loading }: CardStatusProps) 
           <div className="mt-2">
             <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
               isPositive
-                ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                ? 'bg-success/10 text-success'
                 : isNegative
-                  ? 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                  ? 'bg-destructive/10 text-destructive'
                   : 'bg-muted text-muted-foreground'
             }`}>
               {formattedPercent !== 'N/A' ? (

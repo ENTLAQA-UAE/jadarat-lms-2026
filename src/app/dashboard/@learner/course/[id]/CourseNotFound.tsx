@@ -13,7 +13,7 @@ export default function CourseNotFound() {
    <Card className="w-full max-w-md">
     <CardHeader className="text-center">
      <div className="flex justify-center mb-4">
-      <XCircle className="h-12 w-12 text-red-500" />
+      <XCircle className="h-12 w-12 text-destructive" />
      </div>
      <CardTitle className="text-2xl font-bold">Course Unavailable</CardTitle>
     </CardHeader>

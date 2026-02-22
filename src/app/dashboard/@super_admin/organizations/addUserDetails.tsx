@@ -158,7 +158,7 @@ export default function AddUser({ setOpenAddUser, selectedOrganization }: { setO
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label htmlFor="email" className="font-semibold">
-                                            Email <span className="text-red-500 text-base">*</span>
+                                            Email <span className="text-destructive text-base">*</span>
                                         </Label>
                                         <FormControl>
                                             <Input placeholder="m@example.com" {...field} />
@@ -173,7 +173,7 @@ export default function AddUser({ setOpenAddUser, selectedOrganization }: { setO
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label htmlFor="name" className="font-semibold">
-                                            Name <span className="text-red-500 text-base">*</span>
+                                            Name <span className="text-destructive text-base">*</span>
                                         </Label>
                                         <FormControl>
                                             <Input placeholder="John" {...field} />
@@ -301,7 +301,7 @@ export default function AddUser({ setOpenAddUser, selectedOrganization }: { setO
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label htmlFor="group" className="font-semibold">
-                                            Permissions <span className="text-red-500 text-base">*</span>
+                                            Permissions <span className="text-destructive text-base">*</span>
                                         </Label>
                                         <FormControl>
                                             <Select {...field} onValueChange={value => field.onChange({ target: { value } })}>
@@ -333,7 +333,7 @@ export default function AddUser({ setOpenAddUser, selectedOrganization }: { setO
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label htmlFor="group" className="font-semibold">
-                                            Account Details <span className="text-red-500 text-base">*</span>
+                                            Account Details <span className="text-destructive text-base">*</span>
                                         </Label>
                                         <FormControl>
                                             <Select {...field} onValueChange={value => field.onChange({ target: { value } })}>

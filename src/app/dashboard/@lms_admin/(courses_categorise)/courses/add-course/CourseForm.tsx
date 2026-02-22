@@ -174,7 +174,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title.message}</p>}
+            {errors.title && <p className="text-sm text-destructive mt-1">{errors.title.message}</p>}
           </div>
 
           <div>
@@ -195,7 +195,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description.message}</p>}
+            {errors.description && <p className="text-sm text-destructive mt-1">{errors.description.message}</p>}
           </div>
 
           <div>
@@ -222,7 +222,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 </Select>
               )}
             />
-            {errors.level && <p className="text-sm text-red-500 mt-1">{errors.level.message}</p>}
+            {errors.level && <p className="text-sm text-destructive mt-1">{errors.level.message}</p>}
           </div>
 
           <div>
@@ -261,7 +261,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 </Select>
               )}
             />
-            {errors.category_id && <p className="text-sm text-red-500 mt-1">{errors.category_id.message}</p>}
+            {errors.category_id && <p className="text-sm text-destructive mt-1">{errors.category_id.message}</p>}
           </div>
 
           <CourseOutcome
@@ -294,10 +294,10 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               A valid slug should only contain lowercase letters, numbers, and hyphens (e.g., <code>course-title</code>).
             </p>
-            {errors.slug && <p className="text-sm text-red-500 mt-1">{errors.slug.message}</p>}
+            {errors.slug && <p className="text-sm text-destructive mt-1">{errors.slug.message}</p>}
           </div>
 
           <div>
@@ -319,7 +319,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.timeline && <p className="text-sm text-red-500 mt-1">{errors.timeline.message}</p>}
+            {errors.timeline && <p className="text-sm text-destructive mt-1">{errors.timeline.message}</p>}
           </div>
 
           {isScormFlow && (
@@ -355,13 +355,13 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                   )}
                 />
                 {errors.scormVersion && (
-                  <p className="text-sm text-red-500 mt-1">{errors.scormVersion.message}</p>
+                  <p className="text-sm text-destructive mt-1">{errors.scormVersion.message}</p>
                 )}
               </div>
               {selectedScormVersion ? (
                 <ZipUploader onFileUpdate={handleScormUpload} />
               ) : (
-                <div className="text-sm text-amber-600">
+                <div className="text-sm text-amber-600 dark:text-amber-400">
                   Please select a SCORM version before uploading a file
                 </div>
               )}
