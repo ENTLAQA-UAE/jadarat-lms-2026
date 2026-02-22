@@ -166,6 +166,23 @@
   }
   body {
     @apply bg-background text-foreground touch-pan-y antialiased;
+    font-family: var(--font-poppins), var(--font-ibm-arabic), system-ui, sans-serif;
+  }
+
+  /* Arabic text uses IBM Plex Sans Arabic as primary */
+  [dir="rtl"] body,
+  html[lang="ar"] body,
+  [dir="rtl"],
+  html[lang="ar"] {
+    font-family: var(--font-ibm-arabic), var(--font-poppins), system-ui, sans-serif;
+  }
+
+  /* English text uses Poppins as primary */
+  [dir="ltr"] body,
+  html[lang="en"] body,
+  [dir="ltr"],
+  html[lang="en"] {
+    font-family: var(--font-poppins), var(--font-ibm-arabic), system-ui, sans-serif;
   }
 
   body:not(.lang-loaded) {
