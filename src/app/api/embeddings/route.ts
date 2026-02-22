@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { getOrgConfig, resolveEmbeddingApiKey, logUsage } from '@/lib/ai/gateway';
 
 // POST: Generate embeddings for courses in the organization.
 // Called by admin to index/re-index course content for semantic search.
@@ -24,11 +25,14 @@ export async function POST(req: NextRequest) {
     }
 
     const orgId = userData.organization_id;
-    const embeddingApiKey = process.env.OPENAI_API_KEY;
+
+    // Resolve embedding API key from org config (with env var fallback)
+    const config = await getOrgConfig(supabase);
+    const embeddingApiKey = resolveEmbeddingApiKey(config);
 
     if (!embeddingApiKey) {
       return NextResponse.json(
-        { error: 'Embedding API key not configured' },
+        { error: 'Embedding API key not configured. Set an OpenAI API key in org settings or OPENAI_API_KEY env var.' },
         { status: 500 }
       );
     }
@@ -124,6 +128,9 @@ export async function POST(req: NextRequest) {
         }
       }
     }
+
+    // Log usage
+    await logUsage(supabase, 'embeddings');
 
     return NextResponse.json({
       message: `Embedded ${embeddedCount} chunks from ${courses.length} courses`,

@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { getOrgConfig, checkRateLimit, logUsage, resolveEmbeddingApiKey } from '@/lib/ai/gateway';
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,9 +30,17 @@ export async function POST(req: NextRequest) {
 
     const orgId = userData.organization_id;
 
-    // Check if AI search is enabled
-    const { data: configs } = await supabase.rpc('get_org_ai_config');
-    const config = Array.isArray(configs) ? configs[0] : configs;
+    // Get org AI config via gateway
+    const config = await getOrgConfig(supabase);
+
+    // Check rate limits for search
+    const rateLimit = await checkRateLimit(supabase, user.id, 'search');
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 }
+      );
+    }
 
     // Strategy 1: Text-based search (always available, fast)
     const { data: textResults } = await supabase
@@ -62,8 +71,9 @@ export async function POST(req: NextRequest) {
     }> = [];
 
     if (config?.search_enabled) {
-      // Generate embedding for the query using OpenAI API
-      const embeddingApiKey = process.env.OPENAI_API_KEY;
+      // Resolve embedding API key from org config (with env var fallback)
+      const embeddingApiKey = resolveEmbeddingApiKey(config);
+
       if (embeddingApiKey) {
         try {
           const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
@@ -100,6 +110,9 @@ export async function POST(req: NextRequest) {
         }
       }
     }
+
+    // Log usage
+    await logUsage(supabase, 'search');
 
     // Merge and deduplicate results (semantic first, then text)
     const seenIds = new Set<number>();

@@ -1,8 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest } from 'next/server';
-import { streamText, createUIMessageStreamResponse } from 'ai';
-import { createAnthropic } from '@ai-sdk/anthropic';
-import { createOpenAI } from '@ai-sdk/openai';
+import { streamText } from 'ai';
+import { getAIProvider, logUsage, GatewayError } from '@/lib/ai/gateway';
 
 export const maxDuration = 60;
 
@@ -21,11 +20,23 @@ export async function POST(req: NextRequest) {
       return new Response('Message is required', { status: 400 });
     }
 
-    // Get org AI config
-    const { data: configs } = await supabase.rpc('get_org_ai_config');
-    const config = Array.isArray(configs) ? configs[0] : configs;
+    // Get AI provider via gateway (reads org config, decrypts key, checks rate limits)
+    let gateway;
+    try {
+      gateway = await getAIProvider(supabase, user.id, 'chat');
+    } catch (err) {
+      if (err instanceof GatewayError) {
+        return new Response(
+          JSON.stringify({ error: err.message }),
+          { status: err.status, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      throw err;
+    }
 
-    if (!config?.chat_enabled) {
+    const { config, model } = gateway;
+
+    if (!config.chat_enabled) {
       return new Response('AI Chat is not enabled for this organization', { status: 403 });
     }
 
@@ -89,23 +100,7 @@ ${ragContext || 'No course data available yet.'}
 - Respond in the same language as the user's question (Arabic or English)
 - Keep responses concise and actionable`;
 
-    // Create provider based on config
-    const provider = config.provider || 'anthropic';
     const modelName = config.model || 'claude-sonnet-4-5-20250929';
-
-    let model;
-    if (provider === 'openai') {
-      const openai = createOpenAI({
-        apiKey: process.env.OPENAI_API_KEY || '',
-      });
-      model = openai(modelName);
-    } else {
-      // Default to Anthropic
-      const anthropic = createAnthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY || '',
-      });
-      model = anthropic(modelName);
-    }
 
     // Stream the response
     const result = streamText({
@@ -126,6 +121,9 @@ ${ragContext || 'No course data available yet.'}
             p_model: modelName,
           });
         }
+
+        // Log usage
+        await logUsage(supabase, 'chat');
       },
     });
 
