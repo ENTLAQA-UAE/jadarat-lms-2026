@@ -62,6 +62,10 @@ const lmsAdminRoutes = [
     name: "Categories",
     href: "/dashboard/categories",
   },
+  {
+    name: "Points Config",
+    href: "/dashboard/points-config",
+  },
 ];
 
 const learningManagerRoutes = [
