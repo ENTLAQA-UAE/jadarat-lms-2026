@@ -239,7 +239,7 @@ export default function GamificationConfigPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Max XP / Level</CardTitle>
+            <CardTitle className="text-sm font-medium">Max Points / Level</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -272,8 +272,8 @@ export default function GamificationConfigPage() {
             <CardHeader>
               <CardTitle>Level Definitions</CardTitle>
               <CardDescription>
-                Define XP thresholds and names for each level. Learners progress through
-                levels as they earn XP.
+                Define point thresholds and names for each level. Learners progress through
+                levels as they earn points.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -284,7 +284,7 @@ export default function GamificationConfigPage() {
                     <TableHead className="w-[60px]">Badge</TableHead>
                     <TableHead className="w-[80px]">Level</TableHead>
                     <TableHead>Name</TableHead>
-                    <TableHead className="w-[140px]">XP Threshold</TableHead>
+                    <TableHead className="w-[140px]">Points Threshold</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -428,7 +428,7 @@ export default function GamificationConfigPage() {
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
-                    Milestone XP Bonus
+                    Milestone Points Bonus
                   </label>
                   <Input
                     type="number"
@@ -443,7 +443,7 @@ export default function GamificationConfigPage() {
                     }}
                   />
                   <p className="text-xs text-muted-foreground">
-                    XP bonus awarded at each streak milestone (7, 14, 30, 60, 100 days).
+                    Bonus points awarded at each streak milestone (7, 14, 30, 60, 100 days).
                   </p>
                 </div>
               </div>
@@ -492,7 +492,7 @@ export default function GamificationConfigPage() {
                     <TableHead className="w-[160px]">Type</TableHead>
                     <TableHead className="w-[100px]">Goal</TableHead>
                     <TableHead className="w-[100px]">Duration</TableHead>
-                    <TableHead className="w-[100px]">XP Reward</TableHead>
+                    <TableHead className="w-[100px]">Pts Reward</TableHead>
                     <TableHead className="w-[80px]">Recurring</TableHead>
                     <TableHead className="w-[50px]"></TableHead>
                   </TableRow>

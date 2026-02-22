@@ -100,7 +100,7 @@ export default function PointsConfigPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Points Configuration</h1>
           <p className="text-muted-foreground">
-            Configure how many points learners earn for each action
+            Configure how many points learners earn for each action. Points drive levels, leaderboard rankings, and badge progression.
           </p>
         </div>
         <Button onClick={handleSave} className="gap-2">
