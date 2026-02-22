@@ -2,8 +2,7 @@
 import { createClient } from '@/utils/supabase/server';
 
 export const getSummaryData = async () => {
-  // Initially
-  let dashboardData = [];
+  let dashboardData: any = null;
 
   let loading = true;
   let errorMessage = '';
@@ -18,7 +17,8 @@ export const getSummaryData = async () => {
       errorMessage = error.message;
       console.error('RPC error:', errorMessage);
     } else {
-      dashboardData = data;
+      // Handle both array and object responses from RPC
+      dashboardData = Array.isArray(data) ? data[0] : data;
     }
   } catch (error: any) {
     errorMessage = error.message;
