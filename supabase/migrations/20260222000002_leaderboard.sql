@@ -85,7 +85,7 @@ AS $$
     SELECT
       ROW_NUMBER() OVER (ORDER BY lx.total_xp DESC, lx.updated_at ASC) AS rank,
       lx.user_id,
-      COALESCE(u.first_name || ' ' || u.last_name, u.email) AS display_name,
+      COALESCE(u.name, u.email) AS display_name,
       lx.total_xp,
       lx.current_level,
       COALESCE(ld.name, 'Newcomer') AS level_name,
