@@ -184,7 +184,7 @@ export function AISearchResults({
                 )}
                 {result.similarity > 0 && (
                   <div className="absolute top-2 flex items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-tiny font-medium text-foreground" style={{ [isRTL ? "left" : "right"]: "0.5rem" }}>
-                    <Star className="h-2.5 w-2.5 text-yellow-500" />
+                    <Star className="h-2.5 w-2.5 text-warning" />
                     {Math.round(result.similarity * 100)}%
                   </div>
                 )}

@@ -31,8 +31,8 @@ function BarChar({ enrollmentCompletionData, loading, errorMessage }: BarChartPr
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Bar dataKey="enrollments" fill="#8884d8" />
-                            <Bar dataKey="completions" fill="#82ca9d" />
+                            <Bar dataKey="enrollments" fill="hsl(var(--primary))" />
+                            <Bar dataKey="completions" fill="hsl(var(--success))" />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
