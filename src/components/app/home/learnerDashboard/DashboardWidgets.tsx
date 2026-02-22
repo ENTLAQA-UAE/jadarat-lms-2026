@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, Target, ChevronRight } from "lucide-react";
+import { Trophy, Target, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/language.context";
 import {
@@ -57,12 +57,20 @@ export default function DashboardWidgets() {
   return (
     <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
       {/* Challenges Widget */}
-      <Card>
+      <Card className="group overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Target className="h-4 w-4 text-primary" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+              <Target className="h-4 w-4 text-primary" />
+            </div>
             {isRTL ? "التحديات النشطة" : "Active Challenges"}
           </CardTitle>
+          <Link href="/dashboard/achievements">
+            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-primary">
+              {isRTL ? "عرض الكل" : "View All"}
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
         </CardHeader>
         <CardContent className="space-y-3">
           {MOCK_CHALLENGES.map((challenge) => (
@@ -72,14 +80,16 @@ export default function DashboardWidgets() {
       </Card>
 
       {/* Leaderboard Preview Widget */}
-      <Card>
+      <Card className="group overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Trophy className="h-4 w-4 text-warning" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/10">
+              <Trophy className="h-4 w-4 text-warning" />
+            </div>
             {isRTL ? "لوحة المتصدرين" : "Leaderboard"}
           </CardTitle>
           <Link href="/dashboard/leaderboard">
-            <Button variant="ghost" size="sm" className="gap-1 text-xs">
+            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-primary">
               {isRTL ? "عرض الكل" : "View All"}
               <ChevronRight className="h-3.5 w-3.5" />
             </Button>

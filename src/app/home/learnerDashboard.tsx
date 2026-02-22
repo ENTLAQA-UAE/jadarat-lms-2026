@@ -44,13 +44,13 @@ export default function LearnerDashboard({
     .filter((orgCourse) => !selectedCategory || orgCourse.category_id === selectedCategory);
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6 space-y-0">
       {/* Search Bar (Visible on Mobile) */}
       <div className="md:hidden">
         <Input
           type="search"
           placeholder="Search courses..."
-          className="w-full rounded-lg bg-background shadow-sm mb-8"
+          className="w-full rounded-xl bg-background shadow-sm mb-8 h-11"
           onChange={(e) => setSearch(e.target.value)}
           value={search}
           onKeyDown={(e) => {
@@ -155,21 +155,24 @@ const Section = ({
   extraContent?: React.ReactNode;
 }) => (
   <div className="mb-8">
-    <h2 className="mb-4 text-2xl font-bold flex flex-col items-start justify-between md:flex-row">
-      {title}
-      <div className="flex items-center gap-2 mt-4 md:mt-0">
+    <div className="mb-5 flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
+      <h2 className="text-xl font-bold tracking-tight md:text-2xl">
+        {title}
+      </h2>
+      <div className="flex items-center gap-2">
         {extraContent}
         {link && (
           <Button
             variant="outline"
-            className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90"
+            size="sm"
+            className="shrink-0 gap-1.5"
             asChild
           >
             <Link href={link}>View All</Link>
           </Button>
         )}
       </div>
-    </h2>
+    </div>
     {children}
   </div>
 );

@@ -18,7 +18,7 @@ export default function CourseNotFound() {
      <CardTitle className="text-2xl font-bold">Course Unavailable</CardTitle>
     </CardHeader>
     <CardContent>
-     <p className="text-center text-gray-600">
+     <p className="text-center text-muted-foreground">
       It may be a wrong url or the course has temporarily unavailable
      </p>
     </CardContent>

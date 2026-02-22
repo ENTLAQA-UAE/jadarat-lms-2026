@@ -12,10 +12,10 @@ export default function TableSkeleton({ rows = 5, columns = 4, showHeader = true
  return (
   <div className="w-full">
    <div className="rounded-md border">
-    <div className="bg-slate-800 p-4">
+    <div className="bg-muted p-4">
      <div className="grid grid-cols-5 gap-4">
       {[...Array(5)].map((_, i) => (
-       <Skeleton key={i} className="h-6 w-full bg-slate-700" />
+       <Skeleton key={i} className="h-6 w-full bg-muted" />
       ))}
      </div>
     </div>

@@ -5,7 +5,7 @@ import React from "react";
 function BrandingSkelton() {
   return (
     <Card className="w-full">
-      <CardContent className="w-full px-6 py-12 rounded-lg dark:bg-gray-800">
+      <CardContent className="w-full px-6 py-12 rounded-lg dark:bg-muted">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 2xl:gap-20">
           <div className="h-[400px] flex flex-col gap-4">
             <div className="text-left space-y-2">
@@ -19,7 +19,7 @@ function BrandingSkelton() {
               <div>
                 <label
                   htmlFor="organization-name"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                  className="block text-sm font-medium text-foreground"
                 ></label>
                 <div className="mt-1 relative">
                   <Skeleton className="block w-full rounded-md  h-[40px]" />

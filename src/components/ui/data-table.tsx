@@ -116,7 +116,7 @@ export function DataTable<TData, TValue>({
                     </Link>
                 </Button> : <></>}
             </div>}
-            <div className="rounded-md">
+            <div className="rounded-xl border border-border/50 overflow-hidden">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -154,18 +154,20 @@ export function DataTable<TData, TValue>({
                 </TableRow>
             );
         })
-    ) : withLoading ? [...Array(5)].map(() => {
+    ) : withLoading ? [...Array(5)].map((_, idx) => {
         return (
-            <TableRow key={Math.random() * 100} >
-                <TableCell colSpan={columns.length} className="h-[88px] mb-2">
-                    <Skeleton className="w-full h-full" />
+            <TableRow key={idx}>
+                <TableCell colSpan={columns.length} className="h-[72px]">
+                    <Skeleton shimmer className="w-full h-10 rounded-lg" />
                 </TableCell>
             </TableRow>
         );
     }) : (
         <TableRow>
-            <TableCell colSpan={columns.length} className="h-24 text-center">
-                {emptyMessage ?? "No results."}
+            <TableCell colSpan={columns.length} className="h-32 text-center">
+                <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                    <p className="text-sm font-medium">{emptyMessage ?? "No results found."}</p>
+                </div>
             </TableCell>
         </TableRow>
     )}
@@ -173,13 +175,13 @@ export function DataTable<TData, TValue>({
                 </Table>
             </div>
             {enablePagination &&
-                <div className='flex items-center justify-between'>
+                <div className='flex items-center justify-between mt-4 px-1'>
                     {data.length ? pageInfo : <div />}
-                    <div className='flex items-center justify-end gap-4'>
+                    <div className='flex items-center justify-end gap-3'>
                         <Select onValueChange={size => {
                             table.setPageSize(parseFloat(size))
                         }}>
-                            <SelectTrigger className="w-fit">
+                            <SelectTrigger className="w-fit h-9 text-xs">
                                 <SelectValue placeholder="10" />
                             </SelectTrigger>
                             <SelectContent>
@@ -191,7 +193,7 @@ export function DataTable<TData, TValue>({
                                 <SelectItem value="100">100</SelectItem>
                             </SelectContent>
                         </Select>
-                        <div className="flex items-center justify-end space-x-2 py-4">
+                        <div className="flex items-center gap-2">
                             <Button
                                 variant="outline"
                                 size="sm"

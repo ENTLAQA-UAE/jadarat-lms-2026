@@ -22,40 +22,49 @@ function CardStatus({ title, icon, number, percent, loading }: CardStatusProps) 
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xs sm:text-sm font-medium">{title}</CardTitle>
-        <div aria-label={`${title} icon`} role="img">
+    <Card className="group relative overflow-hidden card-hover">
+      {/* Gradient accent on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      <CardHeader className="relative flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{title}</CardTitle>
+        <div
+          aria-label={`${title} icon`}
+          role="img"
+          className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary group-hover:bg-primary/15 transition-colors duration-300"
+        >
           {icon}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-lg sm:text-xl md:text-2xl font-bold">
+      <CardContent className="relative">
+        <div className="text-2xl sm:text-3xl font-bold tracking-tight">
           {title === 'Average Completion Rate' ? `${formattedNumber}%` : formattedNumber.toLocaleString()}
         </div>
         {percent !== null && (
-          <p className={`text-xs flex items-center gap-1 mt-1 ${
-            isPositive
-              ? 'text-green-600'
-              : isNegative
-                ? 'text-red-600'
-                : 'text-muted-foreground'
-          }`}>
-            {formattedPercent !== 'N/A' ? (
-              <>
-                {isPositive ? (
-                  <TrendingUp className="h-3.5 w-3.5" />
-                ) : isNegative ? (
-                  <TrendingDown className="h-3.5 w-3.5" />
-                ) : (
-                  <Minus className="h-3.5 w-3.5" />
-                )}
-                {isPositive ? '+' : ''}{formattedPercent} from last month
-              </>
-            ) : (
-              'No data available from last month'
-            )}
-          </p>
+          <div className="mt-2">
+            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+              isPositive
+                ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                : isNegative
+                  ? 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                  : 'bg-muted text-muted-foreground'
+            }`}>
+              {formattedPercent !== 'N/A' ? (
+                <>
+                  {isPositive ? (
+                    <TrendingUp className="h-3 w-3" />
+                  ) : isNegative ? (
+                    <TrendingDown className="h-3 w-3" />
+                  ) : (
+                    <Minus className="h-3 w-3" />
+                  )}
+                  {isPositive ? '+' : ''}{formattedPercent}% from last month
+                </>
+              ) : (
+                'No data available'
+              )}
+            </span>
+          </div>
         )}
       </CardContent>
     </Card>
@@ -64,15 +73,15 @@ function CardStatus({ title, icon, number, percent, loading }: CardStatusProps) 
 
 function CardSkeleton() {
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <Skeleton className="h-5 w-1/2" />
-        <Skeleton className="h-5 w-5" />
+        <Skeleton shimmer className="h-5 w-1/2" />
+        <Skeleton shimmer className="h-9 w-9 rounded-lg" />
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          <Skeleton className="h-10 w-16" />
-          <Skeleton className="h-4 w-28" />
+        <div className="space-y-3">
+          <Skeleton shimmer className="h-8 w-20" />
+          <Skeleton shimmer className="h-5 w-32 rounded-full" />
         </div>
       </CardContent>
     </Card>

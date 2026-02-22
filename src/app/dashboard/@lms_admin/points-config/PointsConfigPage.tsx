@@ -40,7 +40,7 @@ const defaultActions: PointAction[] = [
     description: "Awarded on first login each day",
     points: 5,
     enabled: true,
-    icon: <LogIn className="h-4 w-4 text-blue-500" />,
+    icon: <LogIn className="h-4 w-4 text-primary" />,
   },
   {
     id: "course_started",
@@ -48,7 +48,7 @@ const defaultActions: PointAction[] = [
     description: "Awarded when a learner begins a new course",
     points: 10,
     enabled: true,
-    icon: <PlayCircle className="h-4 w-4 text-purple-500" />,
+    icon: <PlayCircle className="h-4 w-4 text-accent" />,
   },
   {
     id: "certificate_earned",

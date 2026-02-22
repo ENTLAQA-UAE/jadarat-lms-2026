@@ -171,10 +171,12 @@ export default function GamificationHub() {
       {/* Top Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Level Card */}
-        <Card>
+        <Card className="overflow-hidden card-hover">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Star className="h-4 w-4 text-warning" />
+              <span className="rounded-lg bg-warning/10 p-1.5">
+                <Star className="h-4 w-4 text-warning" />
+              </span>
               Current Level
             </CardTitle>
           </CardHeader>
@@ -191,10 +193,12 @@ export default function GamificationHub() {
         </Card>
 
         {/* Streak Card */}
-        <Card>
+        <Card className="overflow-hidden card-hover">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Flame className="h-4 w-4 text-warning" />
+              <span className="rounded-lg bg-warning/10 p-1.5">
+                <Flame className="h-4 w-4 text-warning" />
+              </span>
               Learning Streak
             </CardTitle>
           </CardHeader>
@@ -221,10 +225,12 @@ export default function GamificationHub() {
         </Card>
 
         {/* Points Summary Card */}
-        <Card>
+        <Card className="overflow-hidden card-hover">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Zap className="h-4 w-4 text-primary" />
+              <span className="rounded-lg bg-primary/10 p-1.5">
+                <Zap className="h-4 w-4 text-primary" />
+              </span>
               Total Points
             </CardTitle>
           </CardHeader>

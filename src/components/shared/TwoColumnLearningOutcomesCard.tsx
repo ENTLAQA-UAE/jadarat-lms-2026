@@ -9,7 +9,7 @@ export default function TwoColumnLearningOutcomesCard({ outcomes }: { outcomes: 
                     <CardTitle className="text-xl font-semibold ">What you&apos;ll learn</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-gray-700 text-sm">No learning outcomes found.</p>
+                    <p className="text-foreground text-sm">No learning outcomes found.</p>
                 </CardContent>
             </Card>
         );
@@ -24,7 +24,7 @@ export default function TwoColumnLearningOutcomesCard({ outcomes }: { outcomes: 
             {items.map((outcome) => (
                 <li key={outcome.id} className="flex items-center gap-2 mt-3">
                     <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    <span className="text-gray-700 text-sm exclude-weglot">{outcome.text}</span>
+                    <span className="text-foreground text-sm exclude-weglot">{outcome.text}</span>
                 </li>
             ))}
         </ul>
