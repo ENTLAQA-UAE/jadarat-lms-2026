@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { cn } from "@/lib/utils";
 import {
   MessageSquare,
@@ -33,7 +34,7 @@ export function AIChatDrawer({ enabled = true, lang = "en" }: AIChatDrawerProps)
     setMessages,
     status,
   } = useChat({
-    api: "/api/chat",
+    transport: new DefaultChatTransport({ api: "/api/chat" }),
   });
 
   const isLoading = status === "submitted" || status === "streaming";
