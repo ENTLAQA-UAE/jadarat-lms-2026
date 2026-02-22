@@ -78,21 +78,30 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
     setSaveStatus("idle");
 
     try {
-      const { error } = await supabase.rpc("upsert_org_ai_config", {
-        p_provider: provider,
-        p_model: model,
-        p_api_key: apiKey || null,
-        p_system_prompt: systemPrompt,
-        p_temperature: temperature,
-        p_max_tokens: maxTokens,
-        p_rate_limit_rpm: rateLimitRpm,
-        p_rate_limit_rpd: rateLimitRpd,
-        p_chat_enabled: chatEnabled,
-        p_search_enabled: searchEnabled,
-        p_recommendations_enabled: recommendationsEnabled,
+      // POST to server-side API route — encrypts API key before storing
+      const res = await fetch("/api/ai-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          provider,
+          model,
+          apiKey: apiKey || null,
+          systemPrompt,
+          temperature,
+          maxTokens,
+          rateLimitRpm,
+          rateLimitRpd,
+          chatEnabled,
+          searchEnabled,
+          recommendationsEnabled,
+        }),
       });
 
-      if (error) throw error;
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to save");
+      }
+
       setSaveStatus("success");
       setApiKey(""); // Clear API key field after save
       setTimeout(() => setSaveStatus("idle"), 3000);
