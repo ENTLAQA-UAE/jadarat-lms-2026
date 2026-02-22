@@ -27,6 +27,16 @@ const config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          50:  "hsl(var(--primary-50))",
+          100: "hsl(var(--primary-100))",
+          200: "hsl(var(--primary-200))",
+          300: "hsl(var(--primary-300))",
+          400: "hsl(var(--primary-400))",
+          500: "hsl(var(--primary-500))",
+          600: "hsl(var(--primary-600))",
+          700: "hsl(var(--primary-700))",
+          800: "hsl(var(--primary-800))",
+          900: "hsl(var(--primary-900))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -39,6 +49,14 @@ const config = {
         success: {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -56,6 +74,14 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      fontSize: {
+        "display":  ["2.25rem", { lineHeight: "2.5rem", fontWeight: "700" }],
+        "heading":  ["1.5rem",  { lineHeight: "2rem",   fontWeight: "600" }],
+        "title":    ["1.125rem",{ lineHeight: "1.75rem", fontWeight: "600" }],
+        "body":     ["0.875rem",{ lineHeight: "1.25rem", fontWeight: "400" }],
+        "caption":  ["0.75rem", { lineHeight: "1rem",    fontWeight: "400" }],
+        "tiny":     ["0.625rem",{ lineHeight: "0.875rem",fontWeight: "400" }],
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -130,7 +130,7 @@ async function CourseInfo({ courseInfo, organizationDetails, userData }: { cours
               <>
                 <CertificateButton
                   className={
-                    'bg-white text-black border border-[#0A66C2] !text-sm'
+                    'bg-white text-black border border-info !text-sm'
                   }
                   selectedCourse={{
                     id: courseInfo.course_id,
@@ -144,7 +144,7 @@ async function CourseInfo({ courseInfo, organizationDetails, userData }: { cours
 
                 <CertificateButton
                   className={
-                    'bg-white text-black border border-[#0A66C2] !text-sm'
+                    'bg-white text-black border border-info !text-sm'
                   }
                   selectedCourse={{
                     id: courseInfo.course_id,

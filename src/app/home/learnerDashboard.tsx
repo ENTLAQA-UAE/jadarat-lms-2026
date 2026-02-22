@@ -1,13 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Course from "@/components/app/home/learnerDashboard/Course";
 import Sliders from "@/components/app/home/learnerDashboard/Sliders";
+import ContinueLearningHero from "@/components/app/home/learnerDashboard/ContinueLearningHero";
+import StatsRow from "@/components/app/home/learnerDashboard/StatsRow";
+import DashboardWidgets from "@/components/app/home/learnerDashboard/DashboardWidgets";
 import DropdownFilter from "@/components/DropdownFilter";
 import Link from "next/link";
 import { Category, SliderType } from "./types";
 import { useRouter } from "next/navigation";
+import { RecommendedCourses } from "@/components/ai/RecommendedCourses";
 
 export default function LearnerDashboard({
   categories,
@@ -27,6 +31,13 @@ export default function LearnerDashboard({
   const inProgressCourses = courses.filter((course) => course.percentage !== 100);
   const completedCourses = courses.filter((course) => course.percentage === 100);
 
+  // Pick the course closest to completion for the hero
+  const heroCourse = useMemo(() => {
+    if (inProgressCourses.length === 0) return null;
+    return [...inProgressCourses].sort(
+      (a, b) => (b.percentage ?? 0) - (a.percentage ?? 0)
+    )[0];
+  }, [inProgressCourses]);
 
   const filteredOrgCourses = organizationCourses
     .filter((orgCourse) => !courses.some((course) => course.course_id === orgCourse.course_id))
@@ -50,6 +61,15 @@ export default function LearnerDashboard({
         />
       </div>
 
+      {/* Continue Learning Hero */}
+      {heroCourse && <ContinueLearningHero course={heroCourse} />}
+
+      {/* Stats Row */}
+      <StatsRow
+        completedCount={completedCourses.length}
+        inProgressCount={inProgressCourses.length}
+      />
+
       {/* Sliders Section */}
       {sliders.length > 0 && <Sliders sliders={sliders} />}
 
@@ -63,6 +83,17 @@ export default function LearnerDashboard({
           </CourseGrid>
         </Section>
       ) : <p>No courses available</p>}
+
+      {/* AI Recommended Courses */}
+      <div className="mb-8">
+        <RecommendedCourses
+          maxVisible={3}
+          onCourseClick={(courseId) => router.push(`/dashboard/discover?course=${courseId}`)}
+        />
+      </div>
+
+      {/* Achievements & Leaderboard Widgets */}
+      <DashboardWidgets />
 
       {/* Discover Courses Section */}
       <Section

@@ -216,7 +216,7 @@ const LoginPage = () => {
         />
         <div>
           {form.formState.errors.root && (
-            <p className="text-[0.8rem] font-medium text-destructive text-center">
+            <p className="text-caption font-medium text-destructive text-center">
               {form.formState.errors.root?.message ?? ""}
             </p>
           )}

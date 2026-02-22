@@ -2,8 +2,8 @@ export const Gauge = ({
     value,
     size = "small",
     showValue = true,
-    color = "text-[#6FABCB]",
-    bgcolor = "text-[#D6D6D6]",
+    color = "text-primary-400",
+    bgcolor = "text-muted",
 }: {
     value: number;
     size: "small" | "medium" | "large";

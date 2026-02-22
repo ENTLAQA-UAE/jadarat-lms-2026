@@ -78,6 +78,10 @@ const lmsAdminRoutes = [
     name: "Badges",
     href: "/dashboard/badge-config",
   },
+  {
+    name: "AI Config",
+    href: "/dashboard/ai-config",
+  },
 ];
 
 const learningManagerRoutes = [

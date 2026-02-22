@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.46",
+    "@ai-sdk/openai": "^3.0.30",
+    "@ai-sdk/react": "^3.0.99",
     "@hookform/resolvers": "^3.4.2",
     "@nivo/bar": "^0.87.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -35,6 +38,7 @@
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.45.3",
     "@tanstack/react-table": "^8.17.3",
+    "ai": "^6.0.97",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
