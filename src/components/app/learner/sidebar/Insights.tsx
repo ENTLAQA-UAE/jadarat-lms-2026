@@ -1,5 +1,7 @@
 import type { CoursesType } from "@/app/home/types"
-import { Star, BookOpen, Award, LogIn } from "lucide-react"
+import { Star, BookOpen, Award, LogIn, Flame, Trophy } from "lucide-react"
+import Link from "next/link"
+import { LevelBadge, LevelProgress, getCurrentLevel } from "@/components/gamification/GamificationComponents"
 
 interface InsightsProps {
  courses: CoursesType[]
@@ -17,6 +19,10 @@ const mockPoints = {
  ],
 }
 
+// Mock XP/gamification data — will be replaced with real API data in Phase 2
+const mockXP = 1350
+const mockStreak = 7
+
 const transactionIcon: Record<string, React.ReactNode> = {
  book: <BookOpen className="h-3.5 w-3.5 text-green-600" />,
  award: <Award className="h-3.5 w-3.5 text-orange-500" />,
@@ -25,10 +31,32 @@ const transactionIcon: Record<string, React.ReactNode> = {
 }
 
 export function Insights({ courses }: InsightsProps) {
+ const currentLevel = getCurrentLevel(mockXP)
+
  return (
   <div>
    <h3 className="mb-4 text-lg font-semibold">Insights</h3>
    <div className="grid gap-4">
+    {/* Level & XP Card */}
+    <Link href="/dashboard/achievements" className="block">
+     <div className="rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 p-4 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-3">
+       <div className="flex items-center gap-2">
+        <LevelBadge xp={mockXP} size="sm" />
+        <div>
+         <p className="text-sm font-semibold">{currentLevel.name}</p>
+         <p className="text-[10px] text-muted-foreground">Level {currentLevel.level}</p>
+        </div>
+       </div>
+       <div className="flex items-center gap-1.5">
+        <Flame className="h-4 w-4 text-orange-500" />
+        <span className="text-sm font-bold">{mockStreak}</span>
+       </div>
+      </div>
+      <LevelProgress xp={mockXP} />
+     </div>
+    </Link>
+
     {/* Learning Points Card */}
     <div className="rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 p-4 shadow-sm">
      <div className="mb-1 flex items-center gap-2 text-sm font-medium">
@@ -69,6 +97,14 @@ export function Insights({ courses }: InsightsProps) {
       {courses.filter((e) => e.percentage === 0).length}
      </div>
     </div>
+
+    {/* Achievements Link */}
+    <Link href="/dashboard/achievements">
+     <div className="rounded-lg border border-primary/20 p-3 flex items-center gap-2 text-sm font-medium text-primary hover:bg-primary/5 transition-colors">
+      <Trophy className="h-4 w-4" />
+      View All Achievements
+     </div>
+    </Link>
    </div>
   </div>
  )
