@@ -24,7 +24,12 @@ import {
   CelebrationOverlay,
   useCelebration,
 } from "@/components/gamification/CelebrationOverlay";
-import { Trophy, Flame, Target, Star, Zap } from "lucide-react";
+import { Trophy, Flame, Target, Star, Zap, BarChart3 } from "lucide-react";
+import Link from "next/link";
+import {
+  LeaderboardRow,
+  type LeaderboardEntry,
+} from "@/components/gamification/LeaderboardComponents";
 
 // ============================================================
 // Mock Data (Phase 2 will replace with real API calls)
@@ -91,6 +96,13 @@ const mockChallenges: ChallengeData[] = [
     xpReward: 250,
     isCompleted: false,
   },
+];
+
+const mockLeaderboardPreview: LeaderboardEntry[] = [
+  { rank: 1, userId: "u1", displayName: "Sarah Al-Rashidi", totalXP: 4250, currentLevel: 8, levelName: "Grand Master", levelColor: "bg-red-500", currentStreak: 21 },
+  { rank: 2, userId: "u2", displayName: "Mohammed Al-Harbi", totalXP: 3890, currentLevel: 7, levelName: "Master", levelColor: "bg-orange-500", currentStreak: 14 },
+  { rank: 3, userId: "u3", displayName: "Fatima Al-Dosari", totalXP: 3520, currentLevel: 7, levelName: "Master", levelColor: "bg-orange-500", currentStreak: 9 },
+  { rank: 5, userId: "current", displayName: "You (Demo User)", totalXP: 1350, currentLevel: 5, levelName: "Scholar", levelColor: "bg-emerald-500", currentStreak: 7, isCurrentUser: true },
 ];
 
 const mockRecentXP = [
@@ -293,6 +305,37 @@ export default function GamificationHub() {
                 </div>
               );
             })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Leaderboard Preview */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                Leaderboard
+              </CardTitle>
+              <CardDescription>Your rank among peers</CardDescription>
+            </div>
+            <Link href="/dashboard/leaderboard">
+              <Button variant="outline" size="sm">
+                View Full Leaderboard
+              </Button>
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {mockLeaderboardPreview.map((entry) => (
+              <LeaderboardRow
+                key={entry.userId}
+                entry={entry}
+                showStreak={false}
+              />
+            ))}
           </div>
         </CardContent>
       </Card>

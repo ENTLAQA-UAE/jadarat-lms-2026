@@ -1,5 +1,5 @@
 import type { CoursesType } from "@/app/home/types"
-import { Star, BookOpen, Award, LogIn, Flame, Trophy } from "lucide-react"
+import { Star, BookOpen, Award, LogIn, Flame, Trophy, BarChart3 } from "lucide-react"
 import Link from "next/link"
 import { LevelBadge, LevelProgress, getCurrentLevel } from "@/components/gamification/GamificationComponents"
 
@@ -97,6 +97,20 @@ export function Insights({ courses }: InsightsProps) {
       {courses.filter((e) => e.percentage === 0).length}
      </div>
     </div>
+
+    {/* Leaderboard Rank */}
+    <Link href="/dashboard/leaderboard" className="block">
+     <div className="rounded-lg bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border border-yellow-200 dark:border-yellow-800 p-4 shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between">
+       <div className="flex items-center gap-2">
+        <BarChart3 className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+        <span className="text-sm font-medium">Leaderboard Rank</span>
+       </div>
+       <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">#5</span>
+      </div>
+      <p className="text-[10px] text-muted-foreground mt-1">of 48 learners</p>
+     </div>
+    </Link>
 
     {/* Achievements Link */}
     <Link href="/dashboard/achievements">
