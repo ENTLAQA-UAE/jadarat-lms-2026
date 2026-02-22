@@ -285,10 +285,10 @@ export default function WelcomePage() {
                         <span
                           className={cn(
                             strength === 100
-                              ? "text-green-500"
+                              ? "text-success"
                               : strength > 50
-                                ? "text-yellow-500"
-                                : "text-red-500"
+                                ? "text-warning"
+                                : "text-destructive"
                           )}
                         >
                           {strength === 100

@@ -91,28 +91,28 @@ export default function SuperAdminDashboard({
           title="Total Organizations per Month"
           monthlyData={monthlyData}
           type="organizations"
-          color="#8884d8"
+          color="hsl(var(--primary))"
         />
 
         <BarChar
           title="Total Users per Month"
           monthlyData={monthlyData}
           type="users"
-          color="#82ca9d"
+          color="hsl(var(--success))"
         />
 
         <BarChar
           title="Total Courses per Month"
           monthlyData={monthlyData}
           type="courses"
-          color="#ffc658"
+          color="hsl(var(--warning, 45 93% 47%))"
         />
 
         <BarChar
           title="Total Certificates per Month"
           monthlyData={monthlyData}
           type="certificates"
-          color="#ff7300"
+          color="hsl(var(--info))"
         />
       </div>
     </div>
