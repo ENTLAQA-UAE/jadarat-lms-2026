@@ -1,56 +1,5 @@
-import { generatePdf, getPDFURL } from "@/lib/controllers/certificate";
 import { DownloadFile } from "@/utils/downloadFile";
 import { createClient } from "./supabase/client";
-
-export const getCertificateURL = async (
-  id: number,
-  share: boolean,
-  selectedCourse: any,
-  setGeneratingCertificate: (value: boolean) => void,
-  setSharingCertificate: (value: boolean) => void
-) => {
-  const supabase = createClient();
-  const data = await getPDFURL(id);
-
-  if (data.status === "error") {
-    setGeneratingCertificate(false);
-    setSharingCertificate(false);
-    return;
-  }
-
-  if (data.transfer_url) {
-    if (share) {
-      window.open(
-        `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${
-          selectedCourse?.name
-        }&organizationId=103915279&issueYear=${new Date().getFullYear()}&issueMonth=${new Date().getMonth()}&expirationYear=2030&expirationMonth=5&certUrl=${
-          data.transfer_url
-        }&certId=${data.id}`,
-        "_blank"
-      );
-    } else {
-      DownloadFile(data.transfer_url);
-    }
-
-    await supabase.rpc("insert_user_certificate", {
-      certificate_url: data.transfer_url,
-      course: selectedCourse?.id,
-    });
-
-    setGeneratingCertificate(false);
-    setSharingCertificate(false);
-  } else {
-    setTimeout(async () => {
-      await getCertificateURL(
-        id,
-        share,
-        selectedCourse,
-        setGeneratingCertificate,
-        setSharingCertificate
-      );
-    }, 2000);
-  }
-};
 
 export const generateCertificate = async (
   share: boolean,
@@ -67,23 +16,18 @@ export const generateCertificate = async (
     else setGeneratingCertificate(true);
 
     const supabase = createClient();
-    const { data, error } = await supabase
+
+    // 1. Check if certificate already exists
+    const { data: existingData } = await supabase
       .from("user_certificates")
       .select("certificate")
       .eq("course_id", selectedCourse.id)
       .single();
-    const existingURL = data?.certificate;
+
+    const existingURL = existingData?.certificate;
     if (existingURL) {
-      console.log("Certificate URL already exists:", existingURL);
-      // If the URL exists, directly download or share the certificate
-      console.log(share);
       if (share) {
-        window.open(
-          `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${
-            selectedCourse?.name
-          }&organizationId=103915279&issueYear=${new Date().getFullYear()}&issueMonth=${new Date().getMonth()}&expirationYear=2030&expirationMonth=5&certUrl=${existingURL}&certId=${selectedCourse.id}`,
-          "_blank"
-        );
+        openLinkedInShare(selectedCourse, existingURL);
       } else {
         DownloadFile(existingURL);
       }
@@ -91,36 +35,25 @@ export const generateCertificate = async (
       setSharingCertificate(false);
       return;
     }
+
+    // 2. Generate via internal API (uses @react-pdf/renderer)
     if (selectedCourse?.id) {
-      const { data } = await supabase.rpc("get_certificates");
-      const placid = data.find(
-        (e: any) => e.id === certificate?.certificateTemplate
-      )?.placid;
+      const response = await fetch('/api/certificate/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseId: selectedCourse.id }),
+      });
 
-      if (placid) {
-        const response = await generatePdf({
-          color: certificate?.certificateBGColor ?? "#ffffff",
-          courseName: selectedCourse?.name,
-          logo: certificate?.certificateLogo ?? "https://default.logo.url",
-          sign: certificate?.certificateSign ?? "",
-          studentName: name,
-          title: certificate?.certificateAuthTitle ?? orgName,
-          uuid: placid,
-        });
+      const result = await response.json();
 
-        if (response.data.id) {
-          await getCertificateURL(
-            response.data.id,
-            share,
-            selectedCourse,
-            setGeneratingCertificate,
-            setSharingCertificate
-          );
-        } else {
-          throw new Error(response.statusText);
-        }
+      if (!response.ok || !result.url) {
+        throw new Error(result.error || 'Certificate generation failed');
+      }
+
+      if (share) {
+        openLinkedInShare(selectedCourse, result.url);
       } else {
-        throw new Error("Certificate template not found.");
+        DownloadFile(result.url);
       }
     }
   } catch (error) {
@@ -135,3 +68,14 @@ export const generateCertificate = async (
     setSharingCertificate(false);
   }
 };
+
+function openLinkedInShare(course: any, certUrl: string) {
+  window.open(
+    `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${
+      encodeURIComponent(course?.name || '')
+    }&organizationId=103915279&issueYear=${new Date().getFullYear()}&issueMonth=${
+      new Date().getMonth() + 1
+    }&certUrl=${encodeURIComponent(certUrl)}&certId=${course.id}`,
+    "_blank"
+  );
+}
