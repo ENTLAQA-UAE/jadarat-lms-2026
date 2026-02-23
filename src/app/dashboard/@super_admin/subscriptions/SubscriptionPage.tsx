@@ -324,6 +324,29 @@ export default function SubscriptionPage({
                 <Label>Associated Organizations</Label>
                 <p>{subscriptionToView.associatedOrganizations}</p>
               </div>
+              <div className="border-t pt-4 space-y-2">
+                <Label>Tier Features</Label>
+                <ul className="text-sm space-y-1">
+                  <li className="flex items-center gap-2">
+                    <span className={subscriptionToView.allowCreateCourses ? 'text-green-600' : 'text-muted-foreground'}>
+                      {subscriptionToView.allowCreateCourses ? '✓' : '✗'}
+                    </span>
+                    Create Courses
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className={subscriptionToView.allowCreateAICourses ? 'text-green-600' : 'text-muted-foreground'}>
+                      {subscriptionToView.allowCreateAICourses ? '✓' : '✗'}
+                    </span>
+                    AI Course Builder
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className={subscriptionToView.allowCreateCoursesFromDocuments ? 'text-green-600' : 'text-muted-foreground'}>
+                      {subscriptionToView.allowCreateCoursesFromDocuments ? '✓' : '✗'}
+                    </span>
+                    Document Course Builder
+                  </li>
+                </ul>
+              </div>
             </div>
           )}
         </DialogContent>

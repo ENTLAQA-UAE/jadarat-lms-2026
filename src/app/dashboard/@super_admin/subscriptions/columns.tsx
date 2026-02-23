@@ -25,6 +25,9 @@ export type Subscription = {
   totalAllowedCourses: number;
   totalAllowedContentCreators: number;
   associatedOrganizations: number;
+  allowCreateCourses: boolean;
+  allowCreateAICourses: boolean;
+  allowCreateCoursesFromDocuments: boolean;
 };
 
 export const columns: ColumnDef<Subscription>[] = [

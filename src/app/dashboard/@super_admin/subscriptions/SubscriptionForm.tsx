@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -6,13 +5,14 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 import { Subscription } from './columns';
 
 const subscriptionSchema = z.object({
@@ -26,18 +26,16 @@ const subscriptionSchema = z.object({
   totalAllowedContentCreators: z
     .number()
     .min(1, 'Total allowed content creators must be at least 1'),
+  allowCreateCourses: z.boolean().default(true),
+  allowCreateAICourses: z.boolean().default(false),
+  allowCreateCoursesFromDocuments: z.boolean().default(false),
 });
 
 type SubscriptionFormData = z.infer<typeof subscriptionSchema>;
 
 interface SubscriptionFormProps {
   subscription?: Omit<Subscription, 'associatedOrganizations'>;
-  onSubmit: (data: {
-    package: string;
-    totalAllowedUsers: number;
-    totalAllowedCourses: number;
-    totalAllowedContentCreators: number;
-  }) => void;
+  onSubmit: (data: SubscriptionFormData) => void;
   mode: 'create' | 'edit';
 }
 
@@ -54,6 +52,9 @@ export function SubscriptionForm({
       totalAllowedCourses: subscription?.totalAllowedCourses || 0,
       totalAllowedContentCreators:
         subscription?.totalAllowedContentCreators || 0,
+      allowCreateCourses: subscription?.allowCreateCourses ?? true,
+      allowCreateAICourses: subscription?.allowCreateAICourses ?? false,
+      allowCreateCoursesFromDocuments: subscription?.allowCreateCoursesFromDocuments ?? false,
     },
   });
 
@@ -135,6 +136,46 @@ export function SubscriptionForm({
             </FormItem>
           )}
         />
+        <Separator />
+        <div className="space-y-3">
+          <p className="text-sm font-medium">Tier Features</p>
+          <FormField
+            control={form.control}
+            name="allowCreateCourses"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <FormLabel className="text-sm">Allow Create Courses</FormLabel>
+                <FormControl>
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="allowCreateAICourses"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <FormLabel className="text-sm">Allow AI Course Builder</FormLabel>
+                <FormControl>
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="allowCreateCoursesFromDocuments"
+            render={({ field }) => (
+              <FormItem className="flex items-center justify-between">
+                <FormLabel className="text-sm">Allow Document Course Builder</FormLabel>
+                <FormControl>
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
         <Button type="submit">
           {mode === 'create' ? 'Create Subscription' : 'Update Subscription'}
         </Button>

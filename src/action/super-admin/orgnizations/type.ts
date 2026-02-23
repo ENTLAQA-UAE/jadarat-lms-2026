@@ -2,7 +2,7 @@ export interface Organization {
   id: string;
   name: string;
   domain: string;
-  subscriptionPackage: 'Basic' | 'Pro' | 'Enterprise'; // Update type
+  subscriptionPackage: string;
   totalUsers: number;
   allowedUsers: number;
   totalCourses: number;
@@ -10,7 +10,7 @@ export interface Organization {
   totalContentCreators: number;
   allowedContentCreators: number;
   subscriptionExpirationDate: Date;
-  status: 'Active' | 'Expired'; // Update type
+  status: 'Active' | 'Expired';
   allowCreateCourses: boolean;
   allowCreateAICourses: boolean;
   allowCreateCoursesFromDocuments: boolean;
@@ -19,7 +19,7 @@ export interface Organization {
 export interface OrganizationFormData {
   name: string;
   domain: string;
-  subscriptionPackage: 'Basic' | 'Pro' | 'Enterprise'; // Update type
+  subscriptionPackage: string;
   allowCreateCourses: boolean;
   allowCreateAICourses: boolean;
   allowCreateCoursesFromDocuments: boolean;
@@ -27,10 +27,13 @@ export interface OrganizationFormData {
 
 // Add the Subscription type definition
 export interface Subscription {
-  id: string; // Ensure id is a string
+  id: string;
   package: string;
   totalAllowedUsers: number;
   totalAllowedCourses: number;
   totalAllowedContentCreators: number;
   associatedOrganizations: number;
+  allowCreateCourses: boolean;
+  allowCreateAICourses: boolean;
+  allowCreateCoursesFromDocuments: boolean;
 }

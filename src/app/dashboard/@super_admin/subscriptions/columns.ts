@@ -1,10 +1,13 @@
 export interface Subscription {
-  id: string; // Ensure id is a string
+  id: string;
   package: string;
   totalAllowedUsers: number;
   totalAllowedCourses: number;
   totalAllowedContentCreators: number;
   associatedOrganizations: number;
+  allowCreateCourses: boolean;
+  allowCreateAICourses: boolean;
+  allowCreateCoursesFromDocuments: boolean;
 }
 
 // Define the columns for the DataTableComponent

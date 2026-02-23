@@ -16,14 +16,17 @@ export const getSubscriptionTiers = async () => {
     if (error) {
       throw error;
     }
-    // Map the data to the Subscription type
+    // Map the flat RPC rows to the Subscription type
     subscriptionTiers = data.map((item: any) => ({
-      id: item.subscription_tier.id.toString(), // Ensure id is a string
-      package: item.subscription_tier.tier_name,
-      totalAllowedUsers: item.subscription_tier.max_user,
-      totalAllowedCourses: item.subscription_tier.max_courses,
-      totalAllowedContentCreators: item.subscription_tier.max_lms_managers,
-      associatedOrganizations: item.associated_organizations_count,
+      id: item.id.toString(),
+      package: item.tier_name,
+      totalAllowedUsers: item.max_user,
+      totalAllowedCourses: item.max_courses,
+      totalAllowedContentCreators: item.max_lms_managers,
+      associatedOrganizations: item.associated_organizations,
+      allowCreateCourses: item.create_courses ?? true,
+      allowCreateAICourses: item.ai_builder ?? false,
+      allowCreateCoursesFromDocuments: item.document_builder ?? false,
     }));
   } catch (error: any) {
     errorMessage = error.message;
@@ -54,6 +57,9 @@ export const createSubscription = async (
           max_user: data.totalAllowedUsers,
           max_courses: data.totalAllowedCourses,
           max_lms_managers: data.totalAllowedContentCreators,
+          create_courses: data.allowCreateCourses,
+          ai_builder: data.allowCreateAICourses,
+          document_builder: data.allowCreateCoursesFromDocuments,
         },
       ])
       .select();
@@ -62,12 +68,15 @@ export const createSubscription = async (
       throw error;
     }
     newSubscription = {
-      id: addTierData[0].id.toString(), // Ensure id is a string
+      id: addTierData[0].id.toString(),
       package: addTierData[0].tier_name,
       totalAllowedUsers: addTierData[0].max_user,
       totalAllowedCourses: addTierData[0].max_courses,
       totalAllowedContentCreators: addTierData[0].max_lms_managers,
-      associatedOrganizations: 0, // New subscriptions have 0 associated organizations
+      associatedOrganizations: 0,
+      allowCreateCourses: addTierData[0].create_courses,
+      allowCreateAICourses: addTierData[0].ai_builder,
+      allowCreateCoursesFromDocuments: addTierData[0].document_builder,
     };
   } catch (error: any) {
     errorMessage = error.message;
@@ -98,6 +107,9 @@ export const editSubscription = async (
         max_user: data.totalAllowedUsers,
         max_courses: data.totalAllowedCourses,
         max_lms_managers: data.totalAllowedContentCreators,
+        create_courses: data.allowCreateCourses,
+        ai_builder: data.allowCreateAICourses,
+        document_builder: data.allowCreateCoursesFromDocuments,
       })
       .eq('id', subscriptionId)
       .select();
@@ -107,12 +119,15 @@ export const editSubscription = async (
     }
 
     updatedSubscription = {
-      id: editTierData[0].id.toString(), // Ensure id is a string
+      id: editTierData[0].id.toString(),
       package: editTierData[0].tier_name,
       totalAllowedUsers: editTierData[0].max_user,
       totalAllowedCourses: editTierData[0].max_courses,
       totalAllowedContentCreators: editTierData[0].max_lms_managers,
-      associatedOrganizations: 0, // Default to 0 if not provided
+      associatedOrganizations: 0,
+      allowCreateCourses: editTierData[0].create_courses,
+      allowCreateAICourses: editTierData[0].ai_builder,
+      allowCreateCoursesFromDocuments: editTierData[0].document_builder,
     };
   } catch (error: any) {
     errorMessage = error.message;
