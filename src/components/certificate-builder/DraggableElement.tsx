@@ -134,6 +134,7 @@ export default function DraggableElement({
         outlineOffset: '1px',
       }}
       onPointerDown={handlePointerDown}
+      onClick={(e) => e.stopPropagation()}
     >
       <div className="w-full h-full overflow-hidden">{children}</div>
 
