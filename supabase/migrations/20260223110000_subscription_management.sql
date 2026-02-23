@@ -23,8 +23,12 @@ ALTER TABLE public.subscription_requests
 -- valid values: 'pending', 'approved', 'dismissed'
 
 -- ==========================================================================
---  UPDATED RPCs
+--  UPDATED RPCs — drop first because return types changed
 -- ==========================================================================
+
+DROP FUNCTION IF EXISTS public.get_all_organization();
+DROP FUNCTION IF EXISTS public.create_new_organization(text, text, text, boolean, boolean, boolean);
+DROP FUNCTION IF EXISTS public.get_organization_subscription();
 
 -- 4. get_all_organization — add start_date, is_active; fix expiration_date type
 CREATE OR REPLACE FUNCTION public.get_all_organization()
