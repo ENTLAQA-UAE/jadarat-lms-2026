@@ -3,9 +3,15 @@
 -- ==========================================================================
 
 -- 1. Convert start_date & expires_at from TEXT to TIMESTAMPTZ
+--    Existing data may use locale-dependent formats (e.g. "22/02/2026 ..."),
+--    so we set datestyle to handle DD/MM/YYYY before the cast.
+SET datestyle = 'ISO, DMY';
+
 ALTER TABLE public.subscriptions
   ALTER COLUMN start_date  TYPE timestamptz USING start_date::timestamptz,
   ALTER COLUMN expires_at  TYPE timestamptz USING expires_at::timestamptz;
+
+RESET datestyle;
 
 -- 2. Add is_active flag (existing rows default to true)
 ALTER TABLE public.subscriptions
