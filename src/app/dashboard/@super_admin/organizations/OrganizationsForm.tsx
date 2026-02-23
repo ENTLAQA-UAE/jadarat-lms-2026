@@ -24,6 +24,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { OrganizationFormData } from "./type";
 import { Upload } from "lucide-react";
+import { DatePicker } from "@/components/ui/date-picker";
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
 
@@ -47,6 +48,8 @@ const formSchema = z.object({
   allowCreateCourses: z.boolean().default(false),
   allowCreateAICourses: z.boolean().default(false),
   allowCreateCoursesFromDocuments: z.boolean().default(false),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
 });
 
 interface OrganizationFormProps {
@@ -86,10 +89,12 @@ export function OrganizationForm({
       name: "",
       domain: "",
       logo: undefined,
-      subscriptionPackage: undefined, // Change to undefined
+      subscriptionPackage: undefined,
       allowCreateCourses: false,
       allowCreateAICourses: false,
       allowCreateCoursesFromDocuments: false,
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     },
   });
 
@@ -269,6 +274,51 @@ export function OrganizationForm({
                   </React.Fragment>
                 ))}
             </ul>
+          </div>
+        )}
+
+        {selectedPackage && (
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="startDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start Date</FormLabel>
+                  <FormControl>
+                    <DatePicker
+                      selectedDate={field.value ? new Date(field.value) : new Date()}
+                      onDateChange={(date) => {
+                        field.onChange(date?.toISOString());
+                        // Auto-set end date to 1 year from start if not manually changed
+                        if (date) {
+                          const endDate = new Date(date);
+                          endDate.setFullYear(endDate.getFullYear() + 1);
+                          form.setValue("endDate", endDate.toISOString());
+                        }
+                      }}
+                      placeholder="Start date"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="endDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>End Date</FormLabel>
+                  <FormControl>
+                    <DatePicker
+                      selectedDate={field.value ? new Date(field.value) : undefined}
+                      onDateChange={(date) => field.onChange(date?.toISOString())}
+                      placeholder="End date"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           </div>
         )}
 

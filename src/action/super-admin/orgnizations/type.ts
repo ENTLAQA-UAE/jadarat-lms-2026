@@ -10,7 +10,9 @@ export interface Organization {
   totalContentCreators: number;
   allowedContentCreators: number;
   subscriptionExpirationDate: Date | null;
-  status: 'Active' | 'Expired';
+  subscriptionStartDate: Date | null;
+  subscriptionIsActive: boolean;
+  status: 'Active' | 'Expired' | 'Suspended';
   allowCreateCourses: boolean;
   allowCreateAICourses: boolean;
   allowCreateCoursesFromDocuments: boolean;
@@ -23,6 +25,8 @@ export interface OrganizationFormData {
   allowCreateCourses: boolean;
   allowCreateAICourses: boolean;
   allowCreateCoursesFromDocuments: boolean;
+  startDate?: string;
+  endDate?: string;
 }
 
 // Add the Subscription type definition

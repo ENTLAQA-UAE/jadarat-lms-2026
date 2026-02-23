@@ -11,7 +11,8 @@ import { useAppSelector } from "@/hooks/redux.hook"
 import { createClient } from "@/utils/supabase"
 import { useToast } from "@/components/ui/use-toast"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, AlertCircle } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { useLanguage } from "@/context/language.context"
 import MyComponentWithSkeleton from "./skeletons/used-skelton"
 
@@ -116,10 +117,27 @@ export default function Subscription() {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Subscription</CardTitle>
-                            <CardDescription>Details about your current subscription.</CardDescription>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Subscription</CardTitle>
+                                    <CardDescription>Details about your current subscription.</CardDescription>
+                                </div>
+                                {subscription.is_active === false ? (
+                                    <Badge variant="warning">Suspended</Badge>
+                                ) : new Date() > new Date(subscription.expires_at) ? (
+                                    <Badge variant="destructive">Expired</Badge>
+                                ) : (
+                                    <Badge variant="success">Active</Badge>
+                                )}
+                            </div>
                         </CardHeader>
                         <CardContent className="grid gap-4">
+                            {subscription.is_active === false && (
+                                <div className="flex items-center gap-2 text-sm text-warning p-2 bg-warning/10 rounded-md">
+                                    <AlertCircle className="h-4 w-4" />
+                                    Your subscription has been suspended. Please contact your administrator.
+                                </div>
+                            )}
                             <div className="flex items-center justify-between">
                                 <div className="text-sm font-medium">Start Date</div>
                                 <div className="text-sm">{new Date(subscription.start_date).toLocaleDateString(numbers, options)}</div>
@@ -130,7 +148,7 @@ export default function Subscription() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                            <Button onClick={() => setIsModalOpen(true)}>
+                            <Button onClick={() => setIsModalOpen(true)} disabled={subscription.is_active === false}>
                                 Upgrade Subscription <ArrowRight className="ml-2 rtl:ms-2 rtl:ml-0 h-4 w-4 rtl:rotate-180" />
                             </Button>
                         </CardFooter>

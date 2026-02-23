@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { ChevronDown, ChevronUp, ChevronsUpDown, Edit, Trash2, UserPlus } from "lucide-react"
+import { ChevronDown, ChevronUp, ChevronsUpDown, CreditCard, Edit, Trash2, UserPlus } from "lucide-react"
 import { Organization } from "./type"
 
 const ProgressBar = ({ current, allowed }: { current: number; allowed: number }) => {
@@ -207,18 +207,22 @@ export const columns: ColumnDef<Organization>[] = [
                 </Button>
             )
         },
-        cell: ({ row }) => (
-            <div className="flex items-center justify-center exclude-weglot ">
-                {row.original.subscriptionExpirationDate?.toLocaleDateString() ?? "N/A"}
-                <span
-                    className={`ms-2 w-2 h-2 rounded-full ${row.original.status === "Active" ? "bg-success" : "bg-destructive"
-                        }`}
-                />
-                <span className="ms-1 text-sm">
-                    {row.original.status}
-                </span>
-            </div>
-        ),
+        cell: ({ row }) => {
+            const statusColor = row.original.status === "Active"
+                ? "bg-success"
+                : row.original.status === "Suspended"
+                ? "bg-warning"
+                : "bg-destructive"
+            return (
+                <div className="flex items-center justify-center exclude-weglot ">
+                    {row.original.subscriptionExpirationDate?.toLocaleDateString() ?? "N/A"}
+                    <span className={`ms-2 w-2 h-2 rounded-full ${statusColor}`} />
+                    <span className="ms-1 text-sm">
+                        {row.original.status}
+                    </span>
+                </div>
+            )
+        },
     },
     {
         id: "actions",
@@ -243,6 +247,10 @@ export const columns: ColumnDef<Organization>[] = [
                         <DropdownMenuItem onClick={() => organization.onEdit && organization.onEdit(organization)}>
                             <Edit className="me-2 h-4 w-4" />
                             Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => organization.onManageSubscription && organization.onManageSubscription(organization)}>
+                            <CreditCard className="me-2 h-4 w-4" />
+                            Manage Subscription
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => organization.onDelete && organization.onDelete(organization)}>
                             <Trash2 className="me-2 h-4 w-4" />

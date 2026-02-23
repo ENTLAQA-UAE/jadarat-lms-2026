@@ -37,6 +37,7 @@ interface Subscription {
     max_user: number
     max_courses: number
     max_lms_managers: number
+    is_active: boolean
 }
 
 
