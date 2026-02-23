@@ -1,3 +1,5 @@
+import { withSentryConfig } from '@sentry/nextjs';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     compiler: {
@@ -30,4 +32,18 @@ const nextConfig = {
     },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+    // Sentry webpack plugin options
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+
+    // Upload source maps for better stack traces
+    widenClientFileUpload: true,
+
+    // Reduce bundle size by tree-shaking logger statements
+    disableLogger: true,
+
+    // Silently skip source map upload if no auth token (dev/CI without secrets)
+    silent: !process.env.SENTRY_AUTH_TOKEN,
+});

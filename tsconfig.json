@@ -35,6 +35,10 @@
     "src/app/organization-settings/templates/init.js"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "e2e",
+    "src/__tests__"
   ]
 }
