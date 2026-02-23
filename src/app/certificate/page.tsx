@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createClient } from "@/utils/supabase";
 import PdfPreviewer from "./PdfPreviewer";
 
