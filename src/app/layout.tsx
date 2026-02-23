@@ -35,12 +35,13 @@ export async function generateMetadata() {
   const headersList = headers();
   const domainWithPort = headersList.get('host') || '';
   const [domain] = domainWithPort.split(':');
+  const mainDomain = (process.env.NEXT_PUBLIC_MAIN_DOMIAN || '').split('.')[0];
 
   let title = 'Jadarat';
 
-  if (domain === 'localhost') {
+  if (mainDomain && domain === mainDomain) {
     title = 'Jadarat';
-  } else {
+  } else if (domain) {
     let subdomain = domain.split('.')[0];
     subdomain = subdomain.charAt(0).toUpperCase() + subdomain.slice(1);
 

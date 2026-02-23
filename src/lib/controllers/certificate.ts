@@ -1,6 +1,6 @@
 "use server"
 
-import { fulldomain } from '@/utils/getFullDomain'
+import { headers } from 'next/headers'
 
 /**
  * Generate a certificate PDF via the internal API route.
@@ -14,8 +14,8 @@ export async function generateCertificatePdf({
   studentId?: string
 }): Promise<{ url: string | null; error: string | null }> {
   try {
-    const isLocal = process.env.NODE_ENV === 'development'
-    const baseUrl = isLocal ? 'http://localhost:3000' : `https://${fulldomain}`
+    const host = headers().get('host') || process.env.NEXT_PUBLIC_MAIN_DOMIAN || ''
+    const baseUrl = `https://${host}`
 
     const response = await fetch(`${baseUrl}/api/certificate/generate`, {
       method: 'POST',
