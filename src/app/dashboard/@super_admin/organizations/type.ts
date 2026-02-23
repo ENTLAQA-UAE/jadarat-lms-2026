@@ -3,7 +3,7 @@ export interface Organization {
   name: string;
   domain: string;
   logo?: File;
-  subscriptionPackage: 'Basic' | 'Pro' | 'Enterprise';
+  subscriptionPackage: string;
   totalUsers: number;
   allowedUsers: number;
   totalCourses: number;
@@ -24,7 +24,7 @@ export interface Organization {
 export interface OrganizationFormData {
   name: string;
   domain: string;
-  subscriptionPackage: 'Basic' | 'Pro' | 'Enterprise'; // Update this line
+  subscriptionPackage: string;
   allowCreateCourses: boolean;
   allowCreateAICourses: boolean;
   allowCreateCoursesFromDocuments: boolean;

@@ -16,26 +16,26 @@ export const getOrganizations = async () => {
     if (error) {
       throw error;
     }
-    // Restructure the data
+    // Map flat snake_case RPC rows to Organization type
     organizations = data.map((org: any) => ({
-      id: org.id as string,
+      id: org.id.toString(),
       name: org.name,
       domain: org.domain,
-      subscriptionPackage: org.subscriptionPackage,
-      totalUsers: org.totalUsers,
-      allowedUsers: org.allowedUsers,
-      totalCourses: org.totalCourses,
-      allowedCourses: org.allowedCourses,
-      totalContentCreators: org.totalContentCreators,
-      allowedContentCreators: org.allowedContentCreators,
-      subscriptionExpirationDate: new Date(org.subscriptionExpirationDate),
+      subscriptionPackage: org.subscription_package,
+      totalUsers: org.total_users,
+      allowedUsers: org.allowed_users,
+      totalCourses: org.total_courses,
+      allowedCourses: org.allowed_courses,
+      totalContentCreators: org.total_content_creators,
+      allowedContentCreators: org.allowed_content_creators,
+      subscriptionExpirationDate: new Date(org.subscription_expiration_date),
       status:
-        new Date() <= new Date(org.subscriptionExpirationDate)
+        new Date() <= new Date(org.subscription_expiration_date)
           ? "Active"
-          : "Disabled",
-      allowCreateCourses: org.createCourses,
-      allowCreateAICourses: org.aiBuilder,
-      allowCreateCoursesFromDocuments: org.documentBuilder,
+          : "Expired",
+      allowCreateCourses: org.create_courses,
+      allowCreateAICourses: org.ai_builder,
+      allowCreateCoursesFromDocuments: org.document_builder,
       logo_url: org.logo_url,
     }));
   } catch (error: any) {

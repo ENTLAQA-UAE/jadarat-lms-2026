@@ -16,14 +16,14 @@ export const getSubscriptionTiers = async () => {
     if (error) {
       throw error;
     }
-    // Map the data to the Subscription type
+    // Map the flat RPC rows to the Subscription type
     subscriptionTiers = data.map((item: any) => ({
-      id: item.subscription_tier.id.toString(), // Ensure id is a string
-      package: item.subscription_tier.tier_name,
-      totalAllowedUsers: item.subscription_tier.max_user,
-      totalAllowedCourses: item.subscription_tier.max_courses,
-      totalAllowedContentCreators: item.subscription_tier.max_lms_managers,
-      associatedOrganizations: item.associated_organizations_count,
+      id: item.id.toString(),
+      package: item.tier_name,
+      totalAllowedUsers: item.max_user,
+      totalAllowedCourses: item.max_courses,
+      totalAllowedContentCreators: item.max_lms_managers,
+      associatedOrganizations: item.associated_organizations,
     }));
   } catch (error: any) {
     errorMessage = error.message;
