@@ -39,6 +39,7 @@ import {
 } from "@/action/super-admin/orgnizations/organizationsActions";
 import { createClient } from "@/utils/supabase/client";
 import AddUser from "./addUserDetails";
+import { SubscriptionSheet } from "./SubscriptionSheet";
 
 interface OrganizationsPageProps {
   initialData: Organization[];
@@ -52,6 +53,7 @@ export default function OrganizationsPage({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+  const [subscriptionSheetOpen, setSubscriptionSheetOpen] = useState(false);
   const [currentOrganization, setCurrentOrganization] =
     useState<Organization | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,27 +65,35 @@ export default function OrganizationsPage({
     let { data, error } = await supabase.rpc("get_all_organization");
     if (!error && data) {
       // restructure the data
-      const restructureData = data.map((org: any) => ({
-        id: org.id as string,
-        name: org.name,
-        domain: org.domain,
-        subscriptionPackage: org.subscriptionPackage,
-        totalUsers: org.totalUsers,
-        allowedUsers: org.allowedUsers,
-        totalCourses: org.totalCourses,
-        allowedCourses: org.allowedCourses,
-        totalContentCreators: org.totalContentCreators,
-        allowedContentCreators: org.allowedContentCreators,
-        subscriptionExpirationDate: org.subscriptionExpirationDate ? new Date(org.subscriptionExpirationDate) : null,
-        status:
-          org.subscriptionExpirationDate && new Date() <= new Date(org.subscriptionExpirationDate)
-            ? "Active"
-            : "Disabled",
-        allowCreateCourses: org.createCourses,
-        allowCreateAICourses: org.aiBuilder,
-        allowCreateCoursesFromDocuments: org.documentBuilder,
-        logo_url: org.logo_url,
-      }));
+      const restructureData = data.map((org: any) => {
+        const isActive = org.subscription_is_active ?? true;
+        const isExpired = org.subscription_expiration_date && new Date() > new Date(org.subscription_expiration_date);
+        let status: 'Active' | 'Expired' | 'Suspended';
+        if (!isActive) status = 'Suspended';
+        else if (isExpired) status = 'Expired';
+        else status = 'Active';
+
+        return {
+          id: org.id as string,
+          name: org.name,
+          domain: org.domain,
+          subscriptionPackage: org.subscription_package,
+          totalUsers: org.total_users,
+          allowedUsers: org.allowed_users,
+          totalCourses: org.total_courses,
+          allowedCourses: org.allowed_courses,
+          totalContentCreators: org.total_content_creators,
+          allowedContentCreators: org.allowed_content_creators,
+          subscriptionExpirationDate: org.subscription_expiration_date ? new Date(org.subscription_expiration_date) : null,
+          subscriptionStartDate: org.subscription_start_date ? new Date(org.subscription_start_date) : null,
+          subscriptionIsActive: isActive,
+          status,
+          allowCreateCourses: org.create_courses,
+          allowCreateAICourses: org.ai_builder,
+          allowCreateCoursesFromDocuments: org.document_builder,
+          logo_url: org.logo_url,
+        };
+      });
       setData(restructureData);
     }
   }
@@ -313,6 +323,10 @@ export default function OrganizationsPage({
       setCurrentOrganization(org);
       setAddUserDialogOpen(true);
     },
+    onManageSubscription: (org: Organization) => {
+      setCurrentOrganization(org);
+      setSubscriptionSheetOpen(true);
+    },
   }));
 
   if (isLoading) {
@@ -422,6 +436,15 @@ export default function OrganizationsPage({
           </div>
         </DialogContent>
       </Dialog>
+
+      <SubscriptionSheet
+        open={subscriptionSheetOpen}
+        onOpenChange={setSubscriptionSheetOpen}
+        organization={currentOrganization}
+        onUpdated={async () => {
+          await refershOrgTable();
+        }}
+      />
     </div>
   );
 }
