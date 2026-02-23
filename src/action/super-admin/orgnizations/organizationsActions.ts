@@ -28,9 +28,9 @@ export const getOrganizations = async () => {
       allowedCourses: org.allowed_courses,
       totalContentCreators: org.total_content_creators,
       allowedContentCreators: org.allowed_content_creators,
-      subscriptionExpirationDate: new Date(org.subscription_expiration_date),
+      subscriptionExpirationDate: org.subscription_expiration_date ? new Date(org.subscription_expiration_date) : null,
       status:
-        new Date() <= new Date(org.subscription_expiration_date)
+        org.subscription_expiration_date && new Date() <= new Date(org.subscription_expiration_date)
           ? "Active"
           : "Expired",
       allowCreateCourses: org.create_courses,

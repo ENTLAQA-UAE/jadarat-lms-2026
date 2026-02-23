@@ -209,7 +209,7 @@ export const columns: ColumnDef<Organization>[] = [
         },
         cell: ({ row }) => (
             <div className="flex items-center justify-center exclude-weglot ">
-                {row.original.subscriptionExpirationDate.toLocaleDateString()}
+                {row.original.subscriptionExpirationDate?.toLocaleDateString() ?? "N/A"}
                 <span
                     className={`ms-2 w-2 h-2 rounded-full ${row.original.status === "Active" ? "bg-success" : "bg-destructive"
                         }`}

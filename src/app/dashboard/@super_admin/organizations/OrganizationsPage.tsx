@@ -74,9 +74,9 @@ export default function OrganizationsPage({
         allowedCourses: org.allowedCourses,
         totalContentCreators: org.totalContentCreators,
         allowedContentCreators: org.allowedContentCreators,
-        subscriptionExpirationDate: new Date(org.subscriptionExpirationDate),
+        subscriptionExpirationDate: org.subscriptionExpirationDate ? new Date(org.subscriptionExpirationDate) : null,
         status:
-          new Date() <= new Date(org.subscriptionExpirationDate)
+          org.subscriptionExpirationDate && new Date() <= new Date(org.subscriptionExpirationDate)
             ? "Active"
             : "Disabled",
         allowCreateCourses: org.createCourses,

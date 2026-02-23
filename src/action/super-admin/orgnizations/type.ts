@@ -9,7 +9,7 @@ export interface Organization {
   allowedCourses: number;
   totalContentCreators: number;
   allowedContentCreators: number;
-  subscriptionExpirationDate: Date;
+  subscriptionExpirationDate: Date | null;
   status: 'Active' | 'Expired';
   allowCreateCourses: boolean;
   allowCreateAICourses: boolean;
