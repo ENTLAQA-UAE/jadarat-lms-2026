@@ -3,15 +3,19 @@
 import { createClient } from "@/utils/supabase/server";
 
 export async function getOrganizationDetails(domain: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc('get_organization_settings_for_user', {
-    domain_name: domain ?? null
-  });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc('get_organization_settings_for_user', {
+      domain_name: domain ?? null
+    });
 
-  if (error) {
-    return null
-  };
-  return data;
+    if (error) {
+      return null
+    };
+    return data;
+  } catch {
+    return null;
+  }
 }
 
 export async function getOrganizationSubscription() {
