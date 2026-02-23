@@ -4,171 +4,136 @@ import { useEffect, useState, useCallback } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
-import Image from "next/image";
+import { Pencil } from "lucide-react";
 import { createClient } from "@/utils/supabase";
-import { CertificateTemplate } from "@/app/dashboard/@org_admin/organization-settings/types";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { useAppSelector } from "@/hooks/redux.hook";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { capitalize, upperCase } from "lodash";
-import EditCertificate from "./edit-certificate";
+import type { CertificateTemplateJSON } from "@/components/certificate-builder/types";
 
-const CertificateSkeleton = dynamic(() => import("./skeletons/CertificateSkelton"), { ssr: false });
+const CertificateBuilder = dynamic(
+    () => import("@/components/certificate-builder/CertificateBuilder"),
+    { ssr: false }
+);
 
 export default function Certificate() {
     const { toast } = useToast();
     const { settings, loading: loadingTheme } = useAppSelector((state) => state.organization);
 
-    const [certificates, setCertificates] = useState<CertificateTemplate[]>([]);
-    const [selectedCertificate, setSelectedCertificate] = useState<CertificateTemplate>();
+    const [existingTemplate, setExistingTemplate] = useState<CertificateTemplateJSON | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [selectedCertificateToEdit, setSelectedCertificateToEdit] = useState<number | undefined>();
+    const [builderOpen, setBuilderOpen] = useState(false);
 
-    const fetchCertificates = useCallback(async () => {
-        const supabase = createClient();
+    const fetchTemplate = useCallback(async () => {
         setIsLoading(true);
+        const supabase = createClient();
 
-        const { data, error } = await supabase.rpc("get_certificates");
+        const { data, error } = await supabase
+            .from("organization_settings")
+            .select("certificate_template_json")
+            .eq("organization_id", settings.organization_id)
+            .single();
 
-        if (error) {
-            toast({
-                title: "Error",
-                description: error.message,
-                variant: "destructive",
-            });
-            setIsLoading(false);
-            return;
-        }
-
-        setCertificates(data);
-
-        // Check if a certificate is already selected from settings
-        const selectedCert = data.find(
-            (e: CertificateTemplate) => e.id === settings.certificate?.certificateTemplate
-        );
-
-        // If no certificate is selected, use the first one as default
-        if (!selectedCert && data.length > 0) {
-            setSelectedCertificate(data[0]);
-            await updateCertificateInDB(data[0].id); // Update DB to reflect the default selection
-        } else {
-            setSelectedCertificate(selectedCert);
+        if (!error && data?.certificate_template_json) {
+            setExistingTemplate(data.certificate_template_json as CertificateTemplateJSON);
         }
 
         setIsLoading(false);
-    }, [settings.certificate?.certificateTemplate, toast]);
-
+    }, [settings.organization_id]);
 
     useEffect(() => {
-        fetchCertificates();
-    }, [fetchCertificates]);
-
-    const updateCertificateInDB = async (certificateId: number | null) => {
-        const supabase = createClient();
-        const { error } = await supabase.from("organization_settings").update({
-            certificate_template: certificateId,
-        }).eq('organization_id', settings.organization_id);
-
-        if (error) {
-            toast({
-                title: "Error",
-                description: error.message,
-                variant: "destructive",
-            });
-        } else {
-            toast({
-                title: "Success",
-                description: "Certificate updated successfully",
-                variant: "default",
-            });
+        if (settings.organization_id) {
+            fetchTemplate();
         }
-    };
-
-    const handleEditClick = (itemId: number) => {
-        setSelectedCertificateToEdit((prev) => (prev === itemId ? undefined : itemId));
-    };
-
-    const handleCertificateClick = async (item: CertificateTemplate) => {
-        if (selectedCertificate?.id === item.id) {
-            setSelectedCertificate(undefined);
-            await updateCertificateInDB(null);
-        } else {
-            setSelectedCertificate(item);
-            await updateCertificateInDB(item.id);
-        }
-    };
+    }, [fetchTemplate, settings.organization_id]);
 
     if (loadingTheme) {
-        return <CertificateSkeleton />;
+        return (
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-48" />
+                    <Skeleton className="h-4 w-72 mt-1" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-[200px] w-full" />
+                </CardContent>
+            </Card>
+        );
     }
 
     return (
-        <Card>
-            <CardHeader className="flex justify-between">
-                <div>
-                    <CardTitle>Certificate Settings</CardTitle>
-                    <CardDescription>Select and customize your certificate design.</CardDescription>
-                </div>
-                <EditCertificate selected={selectedCertificate} />
-            </CardHeader>
-            <CardContent className="grid max-h-[400px] overflow-auto">
-                <Label htmlFor="design" className="text-base">
-                    Certificate Design
-                </Label>
-                <div className="flex gap-4 mt-2 overflow-auto" id="design">
+        <>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle>Certificate Settings</CardTitle>
+                        <CardDescription>
+                            Design and customize your certificate template.
+                        </CardDescription>
+                    </div>
+                    <Button
+                        className="flex gap-2 h-9"
+                        onClick={() => setBuilderOpen(true)}
+                    >
+                        <Pencil className="w-4 h-4" />
+                        {existingTemplate ? "Edit Template" : "Build Template"}
+                    </Button>
+                </CardHeader>
+                <CardContent>
                     {isLoading ? (
-                        Array.from({ length: 10 }).map((_, index) => <Skeleton key={index} className="w-[180px] h-[180px]" />)
-                    ) : (
-                        certificates.map((item) => {
-                            const isActive = item.id === selectedCertificate?.id;
-                            const isEditable = item.id === selectedCertificateToEdit;
-
-                            return (
-                                <div key={item.id} className={`relative rounded-md mt-4 ${isActive ? "border-2 border-primary" : ""}`}>
-                                    {isActive && (
-                                        <Badge className="absolute w-6 h-6 -right-3 -top-3 p-1">
-                                            <Check />
-                                        </Badge>
-                                    )}
-                                    <Button variant="secondary" className="w-[180px] h-[180px] p-0" onClick={() => handleEditClick(item.id)}>
-                                        {isEditable ? (
-                                            <div className="flex flex-col gap-2">
-                                                <Button onClick={() => handleCertificateClick(item)}>
-                                                    {isActive ? "Unselect This" : "Use This"}
-                                                </Button>
-                                                <Dialog>
-                                                    <DialogTrigger asChild>
-                                                        <Button variant="outline" onClick={(e) => e.stopPropagation()}>
-                                                            Preview
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent className="sm:max-w-[425px]">
-                                                        <DialogHeader>
-                                                            <DialogTitle>{capitalize(upperCase(item.name))}</DialogTitle>
-                                                        </DialogHeader>
-                                                        <Image alt={item.name} src={item.thumbnail} width={400} height={400} />
-                                                    </DialogContent>
-                                                </Dialog>
-                                            </div>
-                                        ) : (
-                                            <Image
-                                                alt={item.name}
-                                                src={isActive ? settings.certificate?.certificatePreview ?? item.thumbnail : item.thumbnail}
-                                                width={180}
-                                                height={180}
-                                                className="object-contain w-full h-full"
-                                            />
-                                        )}
-                                    </Button>
+                        <Skeleton className="h-[200px] w-full" />
+                    ) : existingTemplate ? (
+                        <div className="space-y-3">
+                            <Label className="text-sm text-muted-foreground">
+                                Current template
+                            </Label>
+                            <div
+                                className="relative border rounded-lg overflow-hidden bg-muted/30"
+                                style={{ aspectRatio: '842/595', maxWidth: 500 }}
+                            >
+                                <div
+                                    className="w-full h-full"
+                                    style={{
+                                        backgroundColor: existingTemplate.canvas.backgroundColor,
+                                        backgroundImage: existingTemplate.canvas.backgroundImage
+                                            ? `url(${existingTemplate.canvas.backgroundImage})`
+                                            : undefined,
+                                        backgroundSize: 'cover',
+                                    }}
+                                >
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-sm text-muted-foreground bg-background/80 px-3 py-1 rounded">
+                                            {existingTemplate.lang === 'ar' ? 'عربي' : 'English'} — {existingTemplate.elements.length} elements
+                                        </span>
+                                    </div>
                                 </div>
-                            );
-                        })
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-center">
+                            <p className="text-sm text-muted-foreground mb-4">
+                                No certificate template configured yet. Build one to start issuing certificates.
+                            </p>
+                            <Button
+                                variant="outline"
+                                onClick={() => setBuilderOpen(true)}
+                            >
+                                Build Your First Template
+                            </Button>
+                        </div>
                     )}
-                </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+
+            <CertificateBuilder
+                open={builderOpen}
+                onOpenChange={(open) => {
+                    setBuilderOpen(open);
+                    if (!open) fetchTemplate();
+                }}
+                initialTemplate={existingTemplate}
+                organizationId={settings.organization_id}
+            />
+        </>
     );
 }

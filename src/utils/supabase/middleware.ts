@@ -4,10 +4,15 @@ import { NextResponse, type NextRequest } from 'next/server';
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next(); // Initialize response
 
+    // Skip auth when Supabase credentials are not configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_KEY) {
+        return supabaseResponse;
+    }
+
     // Create Supabase server-side client
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_KEY!,
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.NEXT_PUBLIC_SUPABASE_KEY,
         {
             auth: {
                 autoRefreshToken: true,

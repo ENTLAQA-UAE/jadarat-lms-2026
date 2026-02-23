@@ -2,7 +2,6 @@
 import { AlertCircle } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import Image from "next/image"
-import notFoundImage from "@/../../public/placeholder.png"
 import { LanguageSwitcherDropdown } from "@/components/ui/LanauageSwitcherDropdown"
 
 export default function CertNotFound() {
@@ -11,8 +10,10 @@ export default function CertNotFound() {
    {/* Header */}
    <div className="flex flex-col items-center gap-4">
     <Image
-     src={notFoundImage}
+     src="/placeholder.png"
      alt="Company Logo"
+     width={120}
+     height={60}
      className="h-[60px] w-auto"
     />
     <LanguageSwitcherDropdown />

@@ -1,119 +1,37 @@
 "use server"
-import { fulldomain } from '@/utils/getFullDomain';
-import axios from 'axios'
 
-export const getImageURL = async (id: number) => {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_PLACID_DOMAIN}/images/${id}?placid-custom-cors-header=*`, {
-        headers: {
-            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_PLACID_KEY}`
-        }
+import { headers } from 'next/headers'
+
+/**
+ * Generate a certificate PDF via the internal API route.
+ * This replaces the previous Placid-based generation.
+ */
+export async function generateCertificatePdf({
+  courseId,
+  studentId,
+}: {
+  courseId: number
+  studentId?: string
+}): Promise<{ url: string | null; error: string | null }> {
+  try {
+    const host = headers().get('host') || process.env.NEXT_PUBLIC_MAIN_DOMIAN || ''
+    const baseUrl = `https://${host}`
+
+    const response = await fetch(`${baseUrl}/api/certificate/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ courseId, studentId }),
     })
-    return data;
-}
 
-export async function generateImage({ uuid, logo, title, sign, color }: { uuid: string, logo: string, title: string, sign: string, color: string }) {
+    const data = await response.json()
 
-    return await axios.post(`${process.env.NEXT_PUBLIC_PLACID_DOMAIN}/images?placid-custom-cors-header=*`, {
-        template_uuid:
-            uuid,
-        layers: {
-            logo: {
-                image: logo
-            },
-            author_title: {
-                text: title
-            },
-            name: {
-                text: "Student Name"
-            },
-            date: {
-                text: new Date().toLocaleDateString('en-GB') // formats to dd/mm/yyyy
-            },
-            qr_code: {
-                value: "#"
-            },
-            signature: {
-                image: sign
-            },
-            bg: {
-                "background_color": color
-            },
-            course_name: {
-                text: "Course Name"
-            }
+    if (!response.ok) {
+      return { url: null, error: data.error || 'Certificate generation failed' }
+    }
 
-        }
-    }, {
-        headers: {
-            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_PLACID_KEY}`
-        }
-    })
-}
-
-export const getPDFURL = async (id: number) => {
-    const { data } = await axios.get(`${process.env.NEXT_PUBLIC_PLACID_DOMAIN}/pdfs/${id}?placid-custom-cors-header=*`, {
-        headers: {
-            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_PLACID_KEY}`
-        }
-    })
-    return data;
-}
-
-export async function generatePdf({ uuid, logo, title, sign, color, studentName, courseName, studentId, courseId }: { uuid: string, logo: string, title: string, sign: string, color: string, studentName: string, courseName: string, studentId?: string, courseId?: number }) {
-    const isLocal = process.env.NODE_ENV === "development";
-    const certificateUrl = isLocal ? `http://localhost:3000/certificates-qr?s=${encodeURIComponent(studentId!)}&c=${encodeURIComponent(courseId!)}` : `https://${fulldomain}/certificates-qr?s=${encodeURIComponent(studentId!)}&c=${encodeURIComponent(courseId!)}`;
-
-    const sanitizedFileName = `${studentName.replace(/[^a-zA-Z0-9]/g, '-')}-${courseName.replace(/[^a-zA-Z0-9]/g, '-')}`;
-
-    const data  = await axios.post(`${process.env.NEXT_PUBLIC_PLACID_DOMAIN}/pdfs?placid-custom-cors-header=*`, {
-        pages: [
-            {
-                template_uuid: uuid,
-                layers: {
-                    logo: {
-                        image: logo
-                    },
-                    author_title: {
-                        text: title
-                    },
-                    name: {
-                        text: studentName
-                    },
-                    date: {
-                        text: new Date().toLocaleDateString('en-GB')
-                    },
-                    qr_code: {
-                        value: certificateUrl
-                    },
-                    signature: {
-                        image: sign
-                    },
-                    bg: {
-                        "background_color": color
-                    },
-                    course_name: {
-                        text: courseName
-                    }
-
-                },
-            }
-        ],
-        transfer: {
-            to: "s3",
-            key: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY,
-            secret: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS,
-            region: "eu-north-1",
-            bucket: "entlaqa-lms-certificates",
-            visibility: "public",
-            path: `certificates/${sanitizedFileName}.pdf`,
-            endpoint: "https://s3.eu-north-1.amazonaws.com",
-            acl: "public-read"
-        }
-    }, {
-        headers: {
-            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_PLACID_KEY}`
-        }
-    })
-    console.log("data =>>", data)
-    return data;
+    return { url: data.url, error: null }
+  } catch (error: any) {
+    console.error('Certificate generation error:', error)
+    return { url: null, error: error.message || 'Unexpected error' }
+  }
 }

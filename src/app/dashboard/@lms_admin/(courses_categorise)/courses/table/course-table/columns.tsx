@@ -2,7 +2,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Course } from '../type';
 import Image from 'next/image';
-import PlaceholderImage from '@/../public/placeholder.png';
+const PlaceholderImage = '/placeholder.png';
 import { ActionsCell } from './ActionsCell';
 import { CourseStatusBadge } from '@/components/shared/StatusBadge';
 

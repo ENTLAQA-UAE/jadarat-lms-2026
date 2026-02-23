@@ -3,14 +3,15 @@ import { NextRequest } from 'next/server';
 
 export async function generateMetadata(request: NextRequest) {
   const { headers } = request;
-  const host = headers.get('host') || ''; // Get the domain from headers
-  const isDefaultDomain = host === 'localhost:3000'; // Modify this check based on your default domain
+  const host = headers.get('host') || '';
+  const mainDomain = process.env.NEXT_PUBLIC_MAIN_DOMIAN || '';
+  const isDefaultDomain = host === mainDomain;
 
   const getTitle = () => {
     if (isDefaultDomain) {
       return 'Jadarat';
     } else {
-      const subdomain = host.split('.')[0]; // Get subdomain part
+      const subdomain = host.split('.')[0];
       return `${subdomain.toUpperCase()} LMS`;
     }
   };

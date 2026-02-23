@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic';
 import './globals.css';
-import { Poppins, IBM_Plex_Sans_Arabic } from 'next/font/google';
+import localFont from 'next/font/local';
 import { Toaster } from '@/components/ui/sonner';
 import { Toaster as Toast } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
@@ -17,16 +17,26 @@ import {
   getUserDetails,
 } from '@/action/organization/organizationAction';
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+const poppins = localFont({
+  src: [
+    { path: '../../public/fonts/Poppins-Light.ttf', weight: '300', style: 'normal' },
+    { path: '../../public/fonts/Poppins-Regular.ttf', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/Poppins-Medium.ttf', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/Poppins-SemiBold.ttf', weight: '600', style: 'normal' },
+    { path: '../../public/fonts/Poppins-Bold.ttf', weight: '700', style: 'normal' },
+  ],
   variable: '--font-poppins',
   display: 'swap',
 });
 
-const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
-  subsets: ['arabic'],
-  weight: ['300', '400', '500', '600', '700'],
+const ibmPlexSansArabic = localFont({
+  src: [
+    { path: '../../public/fonts/IBMPlexSansArabic-Light.ttf', weight: '300', style: 'normal' },
+    { path: '../../public/fonts/IBMPlexSansArabic-Regular.ttf', weight: '400', style: 'normal' },
+    { path: '../../public/fonts/IBMPlexSansArabic-Medium.ttf', weight: '500', style: 'normal' },
+    { path: '../../public/fonts/IBMPlexSansArabic-SemiBold.ttf', weight: '600', style: 'normal' },
+    { path: '../../public/fonts/IBMPlexSansArabic-Bold.ttf', weight: '700', style: 'normal' },
+  ],
   variable: '--font-ibm-arabic',
   display: 'swap',
 });
@@ -35,12 +45,13 @@ export async function generateMetadata() {
   const headersList = headers();
   const domainWithPort = headersList.get('host') || '';
   const [domain] = domainWithPort.split(':');
+  const mainDomain = (process.env.NEXT_PUBLIC_MAIN_DOMIAN || '').split('.')[0];
 
   let title = 'Jadarat';
 
-  if (domain === 'localhost') {
+  if (mainDomain && domain === mainDomain) {
     title = 'Jadarat';
-  } else {
+  } else if (domain) {
     let subdomain = domain.split('.')[0];
     subdomain = subdomain.charAt(0).toUpperCase() + subdomain.slice(1);
 
