@@ -19,6 +19,8 @@ const CertificateBuilder = dynamic(
 export default function Certificate() {
     const { toast } = useToast();
     const { settings, loading: loadingTheme } = useAppSelector((state) => state.organization);
+    const { user } = useAppSelector((state) => state.user);
+    const organizationId = settings.organization_id || user.organization_id;
 
     const [existingTemplate, setExistingTemplate] = useState<CertificateTemplateJSON | undefined>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -31,7 +33,7 @@ export default function Certificate() {
         const { data, error } = await supabase
             .from("organization_settings")
             .select("certificate_template_json")
-            .eq("organization_id", settings.organization_id)
+            .eq("organization_id", organizationId)
             .single();
 
         if (!error && data?.certificate_template_json) {
@@ -39,13 +41,13 @@ export default function Certificate() {
         }
 
         setIsLoading(false);
-    }, [settings.organization_id]);
+    }, [organizationId]);
 
     useEffect(() => {
-        if (settings.organization_id) {
+        if (organizationId) {
             fetchTemplate();
         }
-    }, [fetchTemplate, settings.organization_id]);
+    }, [fetchTemplate, organizationId]);
 
     if (loadingTheme) {
         return (
@@ -132,7 +134,7 @@ export default function Certificate() {
                     if (!open) fetchTemplate();
                 }}
                 initialTemplate={existingTemplate}
-                organizationId={settings.organization_id}
+                organizationId={organizationId}
             />
         </>
     );
