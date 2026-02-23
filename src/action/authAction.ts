@@ -9,20 +9,20 @@ export async function fetchUserData() {
   try {
     const supabase = await createClient();
 
-    let { data, error } = await supabase.rpc('get_user_role');
+    let { data, error } = await supabase.rpc('get_user_details');
 
     if (error) {
-      console.error('Error fetching user role:', error);
+      console.error('Error fetching user details:', error);
       return null;
     }
 
     if (!data || data.length === 0) {
-      console.log('No role data returned');
+      console.log('No user data returned');
       return null;
     }
 
-    // Assuming `data` is a single value like a string
-    return data[0];
+    const row = data[0];
+    return { ...row, user_role: row.role };
   } catch {
     return null;
   }
