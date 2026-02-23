@@ -19,62 +19,86 @@ export async function getOrganizationDetails(domain: string) {
 }
 
 export async function getOrganizationSubscription() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc('get_organization_subscription');
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc('get_organization_subscription');
 
-  if (error) throw new Error(error.message);
-  return data;
+    if (error) throw new Error(error.message);
+    return data;
+  } catch {
+    return null;
+  }
 }
 
 export async function getUserDetails() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc('get_user_details');
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc('get_user_details');
 
-  if (error) throw new Error(error.message);
+    if (error) throw new Error(error.message);
 
-  return data[0];
+    return data[0];
+  } catch {
+    return null;
+  }
 }
 
 export async function get_organization_statistics() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc('get_organization_statistics');
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc('get_organization_statistics');
 
-  if (error) {
-    throw new Error(error.message);
+    if (error) {
+      throw new Error(error.message);
+    }
+    return data || 0;
+  } catch {
+    return 0;
   }
-  return data || 0;
 }
 
 export async function getAiAndDocumentBuilder(organization_id: number) {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('organization_settings')
-    .select('ai_builder, document_builder , create_courses')
-    .eq('organization_id', organization_id)
-    .single();
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('organization_settings')
+      .select('ai_builder, document_builder , create_courses')
+      .eq('organization_id', organization_id)
+      .single();
 
-  if (error) {
-    console.log(error)
+    if (error) {
+      console.log(error)
+    }
+    return data || {};
+  } catch {
+    return {};
   }
-  return data || {};
 }
 
 export async function get_monthly_stats_for_year(year: number) {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc('get_monthly_stats_for_year', {
-    year: year ?? 2024
-  });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc('get_monthly_stats_for_year', {
+      year: year ?? 2024
+    });
 
-  if (error) throw new Error(error.message);
-  return data;
+    if (error) throw new Error(error.message);
+    return data;
+  } catch {
+    return null;
+  }
 }
 
 export async function getOrgIdByUser() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("get_organization_id_by_user")
-  
-  if (error) throw new Error(error.message)
-  return data;
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("get_organization_id_by_user")
+
+    if (error) throw new Error(error.message)
+    return data;
+  } catch {
+    return null;
+  }
 }
 
 export async function getCertData(studentId:string,courseId:string) {

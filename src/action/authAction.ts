@@ -6,22 +6,26 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 export async function fetchUserData() {
-  const supabase = await createClient(); // fix
+  try {
+    const supabase = await createClient();
 
-  let { data, error } = await supabase.rpc('get_user_role');  
+    let { data, error } = await supabase.rpc('get_user_role');
 
-  if (error) {
-    console.error('Error fetching user role:', error);
+    if (error) {
+      console.error('Error fetching user role:', error);
+      return null;
+    }
+
+    if (!data || data.length === 0) {
+      console.log('No role data returned');
+      return null;
+    }
+
+    // Assuming `data` is a single value like a string
+    return data[0];
+  } catch {
     return null;
   }
-
-  if (!data || data.length === 0) {
-    console.log('No role data returned');
-    return null;
-  }
-
-  // Assuming `data` is a single value like a string
-  return data[0];
 }
 
 const loginSchema = z.object({
