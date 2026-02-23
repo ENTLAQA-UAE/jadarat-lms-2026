@@ -9,15 +9,22 @@ import { createClient } from "@/utils/supabase/server";
 export default async function LearnerLayout({ children }: { children: ReactNode }) {
   const courses = await getUserCourses()
 
-  // Check if AI chat is enabled for this org
-  const supabase = await createClient()
-  const { data: aiConfigs } = await supabase.rpc('get_org_ai_config')
-  const aiConfig = Array.isArray(aiConfigs) ? aiConfigs?.[0] : aiConfigs
-  const chatEnabled = aiConfig?.chat_enabled ?? false
+  let chatEnabled = false
+  let userLang = 'en'
 
-  // Get user language
-  const { data: userData } = await supabase.rpc('get_user_details')
-  const userLang = (Array.isArray(userData) ? userData?.[0]?.lang : userData?.lang) ?? 'en'
+  try {
+    // Check if AI chat is enabled for this org
+    const supabase = await createClient()
+    const { data: aiConfigs } = await supabase.rpc('get_org_ai_config')
+    const aiConfig = Array.isArray(aiConfigs) ? aiConfigs?.[0] : aiConfigs
+    chatEnabled = aiConfig?.chat_enabled ?? false
+
+    // Get user language
+    const { data: userData } = await supabase.rpc('get_user_details')
+    userLang = (Array.isArray(userData) ? userData?.[0]?.lang : userData?.lang) ?? 'en'
+  } catch {
+    // Supabase unavailable, use defaults
+  }
 
   return (
     <>

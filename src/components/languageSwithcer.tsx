@@ -68,8 +68,12 @@ export const LanguageSwitcher = ({ className }: { className?: string }) => {
     }, [])
 
     useEffect(() => {
-        if (switched) {
-            window.Weglot.switchTo(localStorage.getItem('language') || 'en')
+        if (switched && typeof window.Weglot !== 'undefined') {
+            try {
+                window.Weglot.switchTo(localStorage.getItem('language') || 'en')
+            } catch {
+                // Weglot not available
+            }
         }
     }, [switched])
 

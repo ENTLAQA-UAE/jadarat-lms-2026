@@ -2,12 +2,19 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies as nextCookies } from 'next/headers';
 
 export async function createClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_KEY;
+
+  if (!url || !key) {
+    throw new Error('Supabase URL and Key are not configured');
+  }
+
   // Remove artificial delay and simplify cookie handling
   const cookieStore = nextCookies();
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_KEY!,
+    url,
+    key,
     {
       cookies: {
         async getAll() {

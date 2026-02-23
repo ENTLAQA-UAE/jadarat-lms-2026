@@ -20,18 +20,24 @@ const LangugageProvider: FC<{ children: any }> = ({ children }) => {
 
         const currentPath = window.location.pathname
         const isPublicRoute = publicRoute.some(route => currentPath.includes(route))
-        console.log('currentPath', currentPath)
-        console.log('isPublicRoute', isPublicRoute)
         if (isPublicRoute) {
             document.body.classList.add('lang-loaded')
         }
 
-        window.Weglot.switchTo('en')
+        try {
+            if (typeof window.Weglot !== 'undefined') {
+                window.Weglot.switchTo('en')
 
-
-        window.Weglot.on('languageChanged', (lang: any) => {
-            setIsRTL(lang === 'ar')
-        })
+                window.Weglot.on('languageChanged', (lang: any) => {
+                    setIsRTL(lang === 'ar')
+                })
+            } else {
+                // Weglot not available, ensure body is visible
+                document.body.classList.add('lang-loaded')
+            }
+        } catch {
+            document.body.classList.add('lang-loaded')
+        }
 
     }, [])
 
