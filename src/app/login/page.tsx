@@ -3,8 +3,8 @@ import Link from "next/link"
 import Image from "next/image"
 import LoginForm from "./loginForm"
 import { getOrganizationDetails } from "@/action/organization/organizationAction"
-import logo from "@/../../public/logo.png"
-import auth from "@/../../public/side.png"
+const logo = "/logo.png"
+const auth = "/side.png"
 import { LanguageSwitcher } from "@/components/languageSwithcer"
 
 

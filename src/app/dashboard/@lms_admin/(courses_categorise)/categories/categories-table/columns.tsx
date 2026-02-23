@@ -4,7 +4,7 @@ import { Category } from './type';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash } from 'lucide-react';
 import Image from 'next/image';
-import PlaceholderImage from '@/../public/placeholder.png';
+const PlaceholderImage = '/placeholder.png';
 import TableAction from './components/TableAction';
 import { useLanguage } from '@/context/language.context';
 import useSWR from 'swr';
