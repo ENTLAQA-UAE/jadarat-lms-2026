@@ -62,6 +62,9 @@ interface SubscriptionTier {
   max_user: number;
   max_courses: number;
   max_lms_managers: number;
+  create_courses: boolean;
+  ai_builder: boolean;
+  document_builder: boolean;
 }
 
 export function OrganizationForm({
@@ -112,9 +115,21 @@ export function OrganizationForm({
     const getTiers = async () => {
       let { data: subscription_tiers, error } = await supabase
         .from("subscription_tiers")
-        .select("*");
+        .select("id, tier_name, max_user, max_courses, max_lms_managers, create_courses, ai_builder, document_builder");
       if (!error) {
-        setTiers(subscription_tiers || []); // Ensure setTiers handles null
+        setTiers(subscription_tiers || []);
+        // In edit mode, auto-fill features from the selected tier
+        if (initialData?.subscriptionPackage && subscription_tiers) {
+          const tier = subscription_tiers.find(
+            (t: SubscriptionTier) => t.tier_name === initialData.subscriptionPackage
+          );
+          if (tier) {
+            setSelectedPackage(tier.tier_name);
+            form.setValue("allowCreateCourses", tier.create_courses);
+            form.setValue("allowCreateAICourses", tier.ai_builder);
+            form.setValue("allowCreateCoursesFromDocuments", tier.document_builder);
+          }
+        }
       }
     };
     getTiers();
@@ -207,6 +222,12 @@ export function OrganizationForm({
                 onValueChange={(value) => {
                   setSelectedPackage(value);
                   field.onChange(value);
+                  const tier = tiers.find((t) => t.tier_name === value);
+                  if (tier) {
+                    form.setValue("allowCreateCourses", tier.create_courses);
+                    form.setValue("allowCreateAICourses", tier.ai_builder);
+                    form.setValue("allowCreateCoursesFromDocuments", tier.document_builder);
+                  }
                 }}
               >
                 <FormControl>
@@ -252,6 +273,9 @@ export function OrganizationForm({
         )}
 
         <div className="grid gap-2">
+          <p className="text-xs text-muted-foreground">
+            Features are inherited from the subscription tier
+          </p>
           <FormField
             control={form.control}
             name="allowCreateCourses"
@@ -266,6 +290,7 @@ export function OrganizationForm({
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    disabled
                   />
                 </FormControl>
               </FormItem>
@@ -285,6 +310,7 @@ export function OrganizationForm({
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    disabled
                   />
                 </FormControl>
               </FormItem>
@@ -304,6 +330,7 @@ export function OrganizationForm({
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    disabled
                   />
                 </FormControl>
               </FormItem>

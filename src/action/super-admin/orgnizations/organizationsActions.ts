@@ -57,15 +57,13 @@ export const createOrganization = async (newOrg: OrganizationFormData) => {
   const supabase = await createClient();
 
   try {
+    // Features are inherited from the tier — no per-org feature params needed
     const { data: organization_id, error } = await supabase.rpc(
       "create_new_organization",
       {
         org_domain: newOrg.domain,
         org_name: newOrg.name,
         org_sub_tier_name: newOrg.subscriptionPackage,
-        org_create_courses: newOrg.allowCreateCourses,
-        org_ai_builder: newOrg.allowCreateAICourses,
-        org_ai_documents_builder: newOrg.allowCreateCoursesFromDocuments,
       }
     );
 
@@ -125,14 +123,12 @@ export const editOrganization = async (
   const supabase = await createClient();
 
   try {
+    // Features are inherited from the tier — no per-org feature params needed
     const { error } = await supabase.rpc("update_organization_details", {
       new_domain: editedOrg.domain,
       new_name: editedOrg.name,
       new_subscription_package: editedOrg.subscriptionPackage,
-      new_ai_builder: editedOrg.allowCreateAICourses,
-      new_document_builder: editedOrg.allowCreateCoursesFromDocuments,
       org_id: orgId,
-      new_create_courses: editedOrg.allowCreateCourses,
     });
 
     if (error) {
