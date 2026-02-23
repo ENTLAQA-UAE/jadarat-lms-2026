@@ -4,7 +4,12 @@ ALTER TABLE public.subscription_tiers
   ADD COLUMN IF NOT EXISTS ai_builder       BOOLEAN NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS document_builder BOOLEAN NOT NULL DEFAULT false;
 
--- Update get_subscription_tiers_with_org_count to return the new feature columns
+-- Drop and recreate functions whose return type or parameters changed
+DROP FUNCTION IF EXISTS public.get_subscription_tiers_with_org_count();
+DROP FUNCTION IF EXISTS public.create_new_organization(text, text, text, boolean, boolean, boolean);
+DROP FUNCTION IF EXISTS public.update_organization_details(int, text, text, text, boolean, boolean, boolean);
+
+-- Recreate get_subscription_tiers_with_org_count with new feature columns
 CREATE OR REPLACE FUNCTION public.get_subscription_tiers_with_org_count()
 RETURNS TABLE (
   id                       int,
