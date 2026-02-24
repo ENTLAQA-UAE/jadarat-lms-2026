@@ -21,6 +21,8 @@ import {
   Trophy,
   Award,
   Bot,
+  Bell,
+  Mail,
   Search,
   BookOpenCheck,
   Compass,
@@ -57,6 +59,7 @@ import { Sheet, SheetContent } from "./ui/sheet";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
 import { publicRoute, lmsAdminRoutes as lmsAdminRoutePaths } from "@/utils/routes";
+import NotificationBell from "./notifications/NotificationBell";
 
 // ─── Navigation definitions with icons ───────────────────────────────────────
 
@@ -88,6 +91,7 @@ const orgAdminNav: NavGroup[] = [
       { name: "Organization Settings", href: "/dashboard/organization-settings", icon: Settings },
       { name: "User Management", href: "/dashboard/user-management", icon: Users },
       { name: "Groups Management", href: "/dashboard/groups-management", icon: UsersRound },
+      { name: "Email Config", href: "/dashboard/email-config", icon: Mail },
     ],
   },
 ];
@@ -120,6 +124,10 @@ const lmsAdminNav: NavGroup[] = [
   {
     label: "AI",
     items: [{ name: "AI Config", href: "/dashboard/ai-config", icon: Bot }],
+  },
+  {
+    label: "Communications",
+    items: [{ name: "Notifications", href: "/dashboard/notification-settings", icon: Bell }],
   },
 ];
 
@@ -379,6 +387,9 @@ export default function AppSidebar() {
             </span>
           )}
         </Button>
+
+        {/* Notifications */}
+        <NotificationBell isCollapsed={isCollapsed} isMobile={isMobile} />
 
         {/* Language switcher */}
         <div
