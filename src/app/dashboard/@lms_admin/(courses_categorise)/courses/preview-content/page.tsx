@@ -9,7 +9,9 @@ interface OrganizationFeatures {
 
 
 async function PreviewContentPage({ searchParams }: { searchParams: { co: string } }) {
-  const { user_role, organization_id } = await fetchUserData();
+  const userData = await fetchUserData();
+  const user_role = userData?.user_role ?? '';
+  const organization_id = userData?.organization_id;
   if (user_role !== 'LMSAdmin') {
     return redirect('/dashboard/courses')
   }

@@ -39,7 +39,8 @@ export const GET = async (
   console.log('🔍 Request params:', params);
   const courseSlug = params.path[0];
   const searchPath = params.path.slice(1).join("/");
-  const { organization_id } = await fetchUserData();
+  const userData = await fetchUserData();
+  const organization_id = userData?.organization_id;
 
 
   try {

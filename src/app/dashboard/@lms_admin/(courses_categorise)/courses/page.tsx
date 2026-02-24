@@ -4,7 +4,8 @@ import { CSVButton } from "./CSVButton";
 
 export const dynamic = 'force-dynamic'
 async function CoursePage({ searchParams }: { searchParams: { page?: string, course?: string, department?: string } }) {
-  const { user_role } = await fetchUserData();
+  const userData = await fetchUserData();
+  const user_role = userData?.user_role ?? '';
   return (
     <div className="flex flex-col p-6">
       <div className="flex items-center justify-between">
