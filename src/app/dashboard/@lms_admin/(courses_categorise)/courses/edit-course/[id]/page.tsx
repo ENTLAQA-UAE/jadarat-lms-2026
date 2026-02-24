@@ -24,7 +24,9 @@ async function page({ params }: { params: { id: string } }) {
         const baseUrl = process.env.NODE_ENV === 'development' ? `http://${host}` : `https://${host}`
         
         // Check user role
-        const { user_role, organization_id } = await fetchUserData();
+        const userData = await fetchUserData();
+        const user_role = userData?.user_role ?? '';
+        const organization_id = userData?.organization_id;
         if (user_role !== 'LMSAdmin') {
             redirect('/dashboard/courses')
         }

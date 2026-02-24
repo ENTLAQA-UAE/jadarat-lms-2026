@@ -10,7 +10,8 @@ interface SearchParams {
 }
 
 async function page({searchParams}: {searchParams: SearchParams}) {
-  const { user_role } = await fetchUserData();
+  const userData = await fetchUserData();
+  const user_role = userData?.user_role ?? '';
   if (user_role !== 'LMSAdmin') {
     return redirect('/dashboard/courses')
   }

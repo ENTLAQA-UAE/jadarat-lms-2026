@@ -55,6 +55,9 @@ CREATE POLICY "Authenticated users can insert audit logs"
 -- ============================================================
 -- 3. Updated get_all_courses RPC (with _status_filter)
 -- ============================================================
+-- Drop the old 2-param overload so PostgREST doesn't see ambiguous signatures
+DROP FUNCTION IF EXISTS public.get_all_courses(text, text);
+
 CREATE OR REPLACE FUNCTION public.get_all_courses(
   _name_filter     text DEFAULT NULL,
   _category_filter text DEFAULT NULL,
@@ -93,6 +96,9 @@ $$;
 -- ============================================================
 -- 4. Updated get_enrollment_activity RPC (with enrollment_status)
 -- ============================================================
+-- Drop the old 6-param overload so PostgREST doesn't see ambiguous signatures
+DROP FUNCTION IF EXISTS public.get_enrollment_activity(text, text, text, text, text, text);
+
 CREATE OR REPLACE FUNCTION public.get_enrollment_activity(
   _name              text DEFAULT NULL,
   _course            text DEFAULT NULL,
