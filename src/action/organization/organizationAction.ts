@@ -12,7 +12,7 @@ export async function getOrganizationDetails(domain: string) {
     if (error) {
       return null
     };
-    return data;
+    return data?.[0] ?? null;
   } catch {
     return null;
   }
