@@ -14,15 +14,15 @@ describe('fetchUserData', () => {
   })
 
   it('returns user data on successful RPC call', async () => {
-    const userData = { user_role: 'learner', is_active: true }
+    const rpcRow = { role: 'learner', is_active: true, organization_id: 1 }
     mockSupabase.rpc.mockReturnValueOnce({
-      data: [userData],
+      data: [rpcRow],
       error: null,
     })
 
     const result = await fetchUserData()
-    expect(result).toEqual(userData)
-    expect(mockSupabase.rpc).toHaveBeenCalledWith('get_user_role')
+    expect(result).toEqual({ ...rpcRow, user_role: 'learner' })
+    expect(mockSupabase.rpc).toHaveBeenCalledWith('get_user_details')
   })
 
   it('returns null when RPC returns error', async () => {
