@@ -19,21 +19,21 @@ const PerformanceCard: FC<{
         const metrics = [
             {
                 icon: <BarChartIcon className="w-5 h-5 text-primary-foreground" />,
-                iconBg: "bg-gradient-to-br from-primary to-primary-600",
+                iconBg: "bg-gradient-to-br from-primary to-primary/70",
                 title: "Completion Rate",
                 value: `${(completionRate)?.toLocaleString()}%`,
                 hasProgress: true,
             },
             {
                 icon: <ClockIcon className="w-5 h-5 text-primary-foreground" />,
-                iconBg: "bg-gradient-to-br from-info to-info/80",
+                iconBg: "bg-gradient-to-br from-sky to-sky/70",
                 title: "Average Completion",
                 value: `${avgCompletionDays.toLocaleString()} Days`,
                 hasProgress: false,
             },
             {
                 icon: <UserIcon className="w-5 h-5 text-primary-foreground" />,
-                iconBg: "bg-gradient-to-br from-success to-success/80",
+                iconBg: "bg-gradient-to-br from-success to-success/70",
                 title: "Active Enrollments",
                 value: enrollementsCount.toLocaleString(),
                 hasProgress: false,
@@ -43,7 +43,7 @@ const PerformanceCard: FC<{
         return (
             <Card className="w-full max-w-4xl max-h-[420px]" x-chunk="dashboard-01-chunk-5">
                 <CardHeader>
-                    <CardTitle>Performance Insights</CardTitle>
+                    <CardTitle className="text-base font-semibold">Performance Insights</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 gap-3">
                     {metrics.map((metric) => (

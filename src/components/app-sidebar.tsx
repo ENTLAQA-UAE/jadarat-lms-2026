@@ -27,10 +27,7 @@ import {
   BookOpenCheck,
   Compass,
   Medal,
-  ChevronLeft,
-  ChevronRight,
   LogOut,
-  User,
   Moon,
   Sun,
   PanelLeftClose,
@@ -56,12 +53,11 @@ import {
   TooltipTrigger,
 } from "./ui/tooltip";
 import { Sheet, SheetContent } from "./ui/sheet";
-import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
 import { publicRoute, lmsAdminRoutes as lmsAdminRoutePaths } from "@/utils/routes";
 import NotificationBell from "./notifications/NotificationBell";
 
-// ─── Navigation definitions with icons ───────────────────────────────────────
+// ─── Navigation definitions ─────────────────────────────────────────────────
 
 interface NavItem {
   name: string;
@@ -179,7 +175,7 @@ function getNavForRole(role: string | null): NavGroup[] {
   }
 }
 
-// ─── Sidebar Component ───────────────────────────────────────────────────────
+// ─── Sidebar Component ──────────────────────────────────────────────────────
 
 export default function AppSidebar() {
   const pathname = usePathname();
@@ -235,26 +231,18 @@ export default function AppSidebar() {
 
   if (shouldHide) return null;
 
-  const CollapseIcon = isRTL
-    ? isCollapsed
-      ? ChevronLeft
-      : ChevronRight
-    : isCollapsed
-    ? ChevronRight
-    : ChevronLeft;
-
   const sidebarContent = (
     <div className="flex h-full flex-col">
       {/* ── Logo ── */}
       <div
         className={cn(
-          "flex h-16 items-center border-b border-sidebar-border px-4",
-          isCollapsed && !isMobile ? "justify-center px-2" : "gap-3"
+          "flex h-16 items-center border-b border-white/10 px-5",
+          isCollapsed && !isMobile ? "justify-center px-3" : "gap-3"
         )}
       >
         <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
           {loading ? (
-            <div className="h-8 w-20 animate-pulse rounded bg-sidebar-muted" />
+            <div className="h-8 w-20 animate-pulse rounded bg-white/10" />
           ) : (
             <Image
               src={logo as string}
@@ -262,7 +250,7 @@ export default function AppSidebar() {
               height={32}
               alt="logo"
               className={cn(
-                "h-auto w-auto",
+                "h-auto w-auto brightness-0 invert",
                 isCollapsed && !isMobile ? "max-h-8 max-w-8" : "max-h-10"
               )}
               priority
@@ -271,24 +259,75 @@ export default function AppSidebar() {
         </Link>
 
         {/* Collapse toggle (desktop only) */}
-        {!isMobile && (
+        {!isMobile && !isCollapsed && (
           <Button
             variant="ghost"
             size="icon"
-            className={cn(
-              "ms-auto h-7 w-7 text-sidebar-muted-foreground hover:text-sidebar-foreground",
-              isCollapsed && "ms-0"
-            )}
+            className="ms-auto h-7 w-7 text-white/40 hover:text-white hover:bg-white/10"
             onClick={toggle}
           >
-            {isCollapsed ? (
-              <PanelLeft className="h-4 w-4" />
-            ) : (
-              <PanelLeftClose className="h-4 w-4" />
-            )}
+            <PanelLeftClose className="h-4 w-4" />
+          </Button>
+        )}
+        {!isMobile && isCollapsed && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-white/40 hover:text-white hover:bg-white/10"
+            onClick={toggle}
+          >
+            <PanelLeft className="h-4 w-4" />
           </Button>
         )}
       </div>
+
+      {/* ── User Profile (top position for super-app feel) ── */}
+      {user && (
+        <div
+          className={cn(
+            "border-b border-white/10 px-5 py-4",
+            isCollapsed && !isMobile && "px-3 py-3 flex justify-center"
+          )}
+        >
+          <Link
+            href="/profile"
+            className={cn(
+              "flex items-center gap-3 group",
+              isCollapsed && !isMobile && "justify-center"
+            )}
+          >
+            <Avatar
+              className={cn(
+                "shrink-0 ring-2 ring-white/20 transition-all group-hover:ring-accent/50",
+                isCollapsed && !isMobile ? "h-9 w-9" : "h-10 w-10"
+              )}
+            >
+              <AvatarImage
+                className="exclude-weglot"
+                src={user?.avatar_url}
+              />
+              <AvatarFallback className="exclude-weglot bg-white/10 text-white text-xs font-semibold">
+                {user?.name
+                  ?.split(" ")
+                  .map((n: string) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+            {(!isCollapsed || isMobile) && (
+              <div className="flex min-w-0 flex-1 flex-col">
+                <span className="truncate text-sm font-semibold text-white">
+                  {user?.name}
+                </span>
+                <span className="truncate text-tiny text-white/50">
+                  {role
+                    ? rules[role as keyof typeof rules] || role
+                    : ""}
+                </span>
+              </div>
+            )}
+          </Link>
+        </div>
+      )}
 
       {/* ── Navigation ── */}
       <ScrollArea className="flex-1 px-3 py-4">
@@ -298,13 +337,15 @@ export default function AppSidebar() {
               <div key={gi}>
                 {group.label && (
                   <>
-                    {gi > 0 && <Separator className="my-3 bg-sidebar-border" />}
+                    {gi > 0 && (
+                      <div className="my-3 h-px bg-white/10" />
+                    )}
                     {!isCollapsed || isMobile ? (
-                      <span className="mb-2 block px-3 text-tiny font-medium uppercase tracking-wider text-sidebar-muted-foreground">
+                      <span className="mb-2 block px-3 text-[10px] font-semibold uppercase tracking-widest text-white/40">
                         {group.label}
                       </span>
                     ) : (
-                      <Separator className="my-3 bg-sidebar-border" />
+                      <div className="my-3 h-px bg-white/10" />
                     )}
                   </>
                 )}
@@ -321,19 +362,28 @@ export default function AppSidebar() {
                       href={item.href}
                       onClick={() => isMobile && setOpen(false)}
                       className={cn(
-                        "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                         isActive
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : "text-sidebar-foreground hover:bg-sidebar-muted hover:text-sidebar-foreground",
-                        isCollapsed && !isMobile && "justify-center px-2"
+                          ? "bg-white/[0.12] text-white shadow-sm"
+                          : "text-white/65 hover:bg-white/[0.06] hover:text-white/90",
+                        isCollapsed && !isMobile && "justify-center px-2.5"
                       )}
                     >
+                      {/* Active accent indicator */}
+                      {isActive && (
+                        <span
+                          className={cn(
+                            "absolute top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-full bg-accent",
+                            isRTL ? "right-0" : "left-0"
+                          )}
+                        />
+                      )}
                       <Icon
                         className={cn(
-                          "h-4 w-4 shrink-0",
+                          "h-[18px] w-[18px] shrink-0 transition-colors",
                           isActive
-                            ? "text-sidebar-accent-foreground"
-                            : "text-sidebar-muted-foreground group-hover:text-sidebar-foreground"
+                            ? "text-accent"
+                            : "text-white/50 group-hover:text-white/80"
                         )}
                       />
                       {(!isCollapsed || isMobile) && (
@@ -364,14 +414,14 @@ export default function AppSidebar() {
         </TooltipProvider>
       </ScrollArea>
 
-      {/* ── Footer: User + Controls ── */}
-      <div className="mt-auto border-t border-sidebar-border p-3">
+      {/* ── Footer: Controls ── */}
+      <div className="mt-auto border-t border-white/10 p-3">
         {/* Dark mode toggle */}
         <Button
           variant="ghost"
           size={isCollapsed && !isMobile ? "icon" : "default"}
           className={cn(
-            "w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-muted",
+            "w-full justify-start gap-3 text-white/60 hover:text-white hover:bg-white/10",
             isCollapsed && !isMobile && "justify-center px-2"
           )}
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -401,58 +451,23 @@ export default function AppSidebar() {
           <LanguageSwitcher />
         </div>
 
-        <Separator className="my-2 bg-sidebar-border" />
+        <div className="my-2 h-px bg-white/10" />
 
-        {/* User */}
-        {user ? (
-          <div
-            className={cn(
-              "flex items-center gap-3",
-              isCollapsed && !isMobile && "flex-col gap-2"
-            )}
-          >
-            <Link href="/profile">
-              <Avatar className="h-8 w-8 cursor-pointer exclude-weglot">
-                <AvatarImage
-                  className="exclude-weglot"
-                  src={user?.avatar_url}
-                />
-                <AvatarFallback className="exclude-weglot text-xs">
-                  {user?.name
-                    ?.split(" ")
-                    .map((n: string) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-            </Link>
-            {(!isCollapsed || isMobile) && (
-              <div className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-sm font-medium text-sidebar-foreground">
-                  {user?.name}
-                </span>
-                <span className="truncate text-tiny text-sidebar-muted-foreground">
-                  {role
-                    ? rules[role as keyof typeof rules] || role
-                    : ""}
-                </span>
-              </div>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="ms-auto h-7 w-7 text-sidebar-muted-foreground hover:text-destructive"
-              onClick={onLogout}
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        ) : (
-          <Link href="/login">
-            <Button size="sm" className="w-full">
-              Login
-            </Button>
-          </Link>
-        )}
+        {/* Logout */}
+        <Button
+          variant="ghost"
+          size={isCollapsed && !isMobile ? "icon" : "default"}
+          className={cn(
+            "w-full justify-start gap-3 text-white/60 hover:text-red-400 hover:bg-white/10",
+            isCollapsed && !isMobile && "justify-center px-2"
+          )}
+          onClick={onLogout}
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          {(!isCollapsed || isMobile) && (
+            <span className="text-sm">Logout</span>
+          )}
+        </Button>
       </div>
     </div>
   );
@@ -463,7 +478,7 @@ export default function AppSidebar() {
       {!isMobile && (
         <aside
           className={cn(
-            "fixed inset-y-0 start-0 z-40 flex flex-col border-e border-sidebar-border bg-sidebar transition-[width] duration-200",
+            "fixed inset-y-0 start-0 z-40 flex flex-col gradient-sidebar border-e border-white/[0.08] shadow-lg transition-[width] duration-200",
             isCollapsed ? "w-sidebar-collapsed" : "w-sidebar"
           )}
         >
@@ -471,9 +486,9 @@ export default function AppSidebar() {
         </aside>
       )}
 
-      {/* ── Mobile Hamburger ── */}
+      {/* ── Mobile Header ── */}
       {isMobile && (
-        <header className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-background px-4">
+        <header className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-background px-4 shadow-sm">
           <Button variant="ghost" size="icon" onClick={toggle}>
             <PanelLeft className="h-5 w-5" />
           </Button>
@@ -496,7 +511,7 @@ export default function AppSidebar() {
         <Sheet open={isOpen} onOpenChange={setOpen}>
           <SheetContent
             side={isRTL ? "right" : "left"}
-            className="w-sidebar bg-sidebar p-0"
+            className="w-sidebar gradient-sidebar border-0 p-0"
           >
             {sidebarContent}
           </SheetContent>

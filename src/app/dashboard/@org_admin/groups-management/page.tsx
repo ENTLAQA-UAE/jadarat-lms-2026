@@ -238,7 +238,7 @@ export default function GroupsPage() {
     }, [groupName, organization_id, toast, getGroups])
 
     return (
-        <div className="flex lg:flex-row flex-col gap-4">
+        <div className="flex lg:flex-row flex-col gap-4 p-4 sm:p-6">
             <div className="bg-card p-6 w-full rounded-none">
                 {!loading ? <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-4">

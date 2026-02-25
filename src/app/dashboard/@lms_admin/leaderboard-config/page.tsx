@@ -1,5 +1,9 @@
 import LeaderboardConfigPage from "./LeaderboardConfigPage";
 
 export default function Page() {
-  return <LeaderboardConfigPage />;
+  return (
+    <div className="p-4 sm:p-6">
+      <LeaderboardConfigPage />
+    </div>
+  );
 }

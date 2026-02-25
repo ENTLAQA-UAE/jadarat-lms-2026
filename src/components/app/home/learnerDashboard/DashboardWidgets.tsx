@@ -58,8 +58,8 @@ export default function DashboardWidgets() {
       <Card className="overflow-hidden border border-border/50">
         <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
           <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-              <Target className="h-4 w-4 text-primary" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
+              <Target className="h-4 w-4 text-accent" />
             </div>
             {isRTL ? "التحديات النشطة" : "Active Challenges"}
           </CardTitle>
@@ -81,8 +81,8 @@ export default function DashboardWidgets() {
       <Card className="overflow-hidden border border-border/50">
         <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
           <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10">
-              <Trophy className="h-4 w-4 text-amber-500" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-golden/10">
+              <Trophy className="h-4 w-4 text-golden" />
             </div>
             {isRTL ? "لوحة المتصدرين" : "Leaderboard"}
           </CardTitle>

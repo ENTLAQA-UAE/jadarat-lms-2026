@@ -182,7 +182,7 @@ export default function ProfilePage() {
 
 
   return (
-    <div className="grid min-h-screen w-full grid-cols-1 gap-6 bg-muted/40 p-4 sm:p-8 lg:p-12">
+    <div className="grid min-h-screen w-full grid-cols-1 gap-6 bg-muted/40 p-4 sm:p-6">
       <div className="grid gap-6 sm:grid-cols-[1fr_2fr] lg:grid-cols-[1fr_3fr]">
         <div className="flex flex-col items-center gap-6 rounded-lg bg-background p-6 shadow-sm sm:p-8 lg:p-10">
           <div className="relative">

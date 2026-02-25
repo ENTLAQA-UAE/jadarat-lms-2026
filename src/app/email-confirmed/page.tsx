@@ -30,7 +30,7 @@ export default function EmailConfirmed() {
   };
 
   return (
-    <div className="min-h-screen bg-muted flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 text-center">
         <div className="relative w-48 h-48 mx-auto">
           <motion.svg

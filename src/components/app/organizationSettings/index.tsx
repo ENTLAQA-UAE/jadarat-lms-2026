@@ -22,7 +22,7 @@ export default function Settings() {
   }, []);
 
   return (
-    <div className="w-full h-full p-4">
+    <div className="w-full h-full p-4 sm:p-6">
       <div className="grid gap-4 md:grid-cols-2 grid-cols-1 ">
         <div x-chunk="dashboard-01-chunk-2" className="w-full h-fit col-span-2">
           {isClient && !loadingTheme ? (

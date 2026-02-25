@@ -98,7 +98,7 @@ export default function NavLMS<T extends Data>({ children, data }: NavLMSProps<T
   return (
     <div className="flex min-h-0 w-full flex-col bg-background">
       {/* Sub-navigation tabs for Insights */}
-      <header className="w-full flex flex-wrap items-center gap-2 border-b bg-card px-4 py-2 sm:py-3">
+      <header className="w-full flex flex-wrap items-center gap-2 border-b bg-card shadow-sm px-4 py-2 sm:py-3">
         {navigation.map((item) => {
           const isActive = pathname?.startsWith(item.href)
           return (
@@ -118,7 +118,7 @@ export default function NavLMS<T extends Data>({ children, data }: NavLMSProps<T
       <main className="flex-grow p-4 sm:p-6 overflow-x-hidden">
         <div
           className={cn(
-            'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6',
+            'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6',
             'xl:grid-cols-5'
           )}
         >

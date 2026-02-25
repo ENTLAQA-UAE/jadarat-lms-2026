@@ -353,7 +353,7 @@ export default function Component() {
   }, [selectedUser]);
 
   return (
-    <div className="flex lg:flex-row flex-col gap-4">
+    <div className="flex lg:flex-row flex-col gap-4 p-4 sm:p-6">
       <span className="lg:block hidden">{filtersView}</span>
 
       <Collapsible open={openFilterMobile}>

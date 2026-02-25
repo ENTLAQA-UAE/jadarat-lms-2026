@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase";
 import LearnerDetails from "@/components/shared/LearnerDetails";
 import CourseDetails from "@/components/shared/CourseDetails";
 import ActionButtons from "@/components/shared/ActionButtons";
-import BackButton from "@/components/BackButton";
+import DetailPageLayout from "@/components/shared/DetailPageLayout";
 
 export default function EnrollmentsDetailsPage() {
   const supabase = createClient();
@@ -75,17 +75,13 @@ export default function EnrollmentsDetailsPage() {
   }, [id, supabase, user_id]);
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <BackButton />
-      <div className="flex flex-col md:flex-row justify-between items-center">
-        <h1 className="text-3xl font-bold">Enrollment Details</h1>
-        <div className="space-x-2">
-          <ActionButtons learner={learner} course={courseData} />
-        </div>
-      </div>
-
+    <DetailPageLayout
+      title="Enrollment Details"
+      backHref="/dashboard/enrollments"
+      actions={<ActionButtons learner={learner} course={courseData} />}
+    >
       <LearnerDetails learner={learner} isLoading={isLoading} />
       <CourseDetails course={courseData} learnerName={learner.name} id={id} isLoading={isLoading} learnerId={user_id ? user_id : ""} />
-    </div>
+    </DetailPageLayout>
   );
 }

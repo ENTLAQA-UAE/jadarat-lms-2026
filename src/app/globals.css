@@ -4,7 +4,8 @@
 
 /* ============================================================================
    Jadarat LMS — Brand Theme
-   Primary: #33658a (Blue) | Accent: #f26419 (Orange) | Dark: #2f4858 (Teal)
+   Primary: #33658a (Blue) | Accent: #f26419 (Orange) | Navy: #2f4858
+   Sky: #86bbd8 (Light Blue) | Golden: #f6ae2d (Amber)
 
    Tenant orgs can override --primary-* and --accent via ThemeProvider.
    ============================================================================ */
@@ -68,16 +69,16 @@
     /* ── Radius ── */
     --radius: 0.75rem;
 
-    /* ── Sidebar (#2f4858 Dark Teal tinted) ── */
-    --sidebar-background: 206 18% 96%;
-    --sidebar-foreground: 204 30% 26%;
-    --sidebar-border: 206 12% 90%;
-    --sidebar-accent: 206 46% 37%;
+    /* ── Sidebar (Dark Navy — always dark for super-app feel) ── */
+    --sidebar-background: 204 34% 18%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-border: 204 25% 24%;
+    --sidebar-accent: 21 89% 52%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-muted: 206 12% 88%;
-    --sidebar-muted-foreground: 206 10% 50%;
-    --sidebar-width: 280px;
-    --sidebar-width-collapsed: 68px;
+    --sidebar-muted: 204 30% 22%;
+    --sidebar-muted-foreground: 201 30% 72%;
+    --sidebar-width: 272px;
+    --sidebar-width-collapsed: 72px;
 
     /* ── Chart palette ── */
     --chart-1: 206 46% 37%;
@@ -85,6 +86,18 @@
     --chart-3: 152 60% 40%;
     --chart-4: 38 90% 52%;
     --chart-5: 204 30% 26%;
+
+    /* ── Brand Extended: Sky Blue (#86bbd8) ── */
+    --sky: 201 51% 69%;
+    --sky-foreground: 204 34% 18%;
+
+    /* ── Brand Extended: Golden Amber (#f6ae2d) ── */
+    --golden: 38 92% 57%;
+    --golden-foreground: 0 0% 100%;
+
+    /* ── Brand Extended: Dark Navy (#2f4858) ── */
+    --navy: 204 34% 26%;
+    --navy-foreground: 0 0% 100%;
   }
 
   .dark {
@@ -142,14 +155,22 @@
     --input: 204 15% 18%;
     --ring: 206 50% 55%;
 
-    /* ── Sidebar ── */
-    --sidebar-background: 204 25% 10%;
-    --sidebar-foreground: 206 15% 85%;
-    --sidebar-border: 204 20% 18%;
-    --sidebar-accent: 206 50% 55%;
+    /* ── Brand Extended (dark mode) ── */
+    --sky: 201 45% 55%;
+    --sky-foreground: 0 0% 100%;
+    --golden: 38 85% 52%;
+    --golden-foreground: 0 0% 100%;
+    --navy: 204 30% 14%;
+    --navy-foreground: 210 20% 90%;
+
+    /* ── Sidebar (deeper in dark mode) ── */
+    --sidebar-background: 204 30% 10%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-border: 204 20% 16%;
+    --sidebar-accent: 21 82% 55%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-muted: 204 15% 16%;
-    --sidebar-muted-foreground: 206 10% 55%;
+    --sidebar-muted: 204 25% 14%;
+    --sidebar-muted-foreground: 206 15% 55%;
 
     /* ── Chart palette ── */
     --chart-1: 206 50% 55%;
@@ -288,9 +309,22 @@
   background: linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--accent) / 0.06));
 }
 
-/* Sidebar gradient: deep teal depth effect */
+/* Sidebar gradient: dark navy depth (always dark) */
 .gradient-sidebar {
-  background: linear-gradient(180deg, hsl(var(--primary-700)), hsl(var(--primary-900)));
+  background: linear-gradient(180deg, hsl(204 34% 22%), hsl(204 34% 15%));
+}
+.dark .gradient-sidebar {
+  background: linear-gradient(180deg, hsl(204 30% 12%), hsl(204 30% 8%));
+}
+
+/* CTA gradient: orange → golden (buttons, banners, hero actions) */
+.gradient-cta {
+  background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--golden)));
+}
+
+/* Progress gradient: primary → sky blue (progress bars, loading) */
+.gradient-progress {
+  background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--sky)));
 }
 
 /* Glow effect for primary elements */

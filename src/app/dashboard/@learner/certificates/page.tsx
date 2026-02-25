@@ -9,8 +9,9 @@ async function CertificatesPage() {
   let { data} = await supabase.rpc('get_user_certificates');
 
   return (
-    <CertificatesCardPage userCertificates={data} />
-   
+    <div className="p-4 sm:p-6">
+      <CertificatesCardPage userCertificates={data} />
+    </div>
   )
 }
 
