@@ -117,7 +117,7 @@ const TableAction = ({ row, categoriesData }: {
 
       // Upload new image if one was selected
       if (image && Number(organization_id) > 0) {
-        const uploadedImage = await uploadImage(`category_${values.name_en}`, image, organization_id, toast);
+        const uploadedImage = await uploadImage(`category_${values.name_en}`, image, organization_id);
         if (uploadedImage) {
           imageUrl = uploadedImage.signedUrl;
         }

@@ -55,7 +55,7 @@ export default function GroupsPage() {
             })
         }
         else setGroups(data)
-    }, [toast])
+    }, [])
 
     useEffect(() => {
         if (!loading) {

@@ -89,7 +89,7 @@ export default function EditCourseDetails({ categories, courseData, courseId, ba
     let imageUrl = courseDetails?.thumbnail;
     // upload image to supabase storage
     if (data.image) {
-      const image = await uploadImage(`course_${courseId}`, data.image as any, courseDetails?.organization_id ?? 0, toast);
+      const image = await uploadImage(`course_${courseId}`, data.image as any, courseDetails?.organization_id ?? 0);
       if (image) {
         imageUrl = image.signedUrl;
       }

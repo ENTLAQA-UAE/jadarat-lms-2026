@@ -13,7 +13,7 @@ interface ExtractedFile {
     publicUrl: string;
 }
 
-export const uploadImage = async (name: string, file: File, organization_id: string | number, _toast?: any) => {
+export const uploadImage = async (name: string, file: File, organization_id: string | number) => {
     const supabase = createClient();
     const { data, error } = await supabase.storage.from(`LMS Resources/${organization_id}`).upload(name, file, {
         cacheControl: '3600',

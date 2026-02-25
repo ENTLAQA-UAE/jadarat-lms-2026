@@ -139,7 +139,7 @@ export default function Branding() {
         // Upload logo if selected
         if (logoFile) {
             const name = "logo." + logoFile.name.split('.')[1];
-            const logoURL = await uploadImage(name, logoFile, organization_id, toast);
+            const logoURL = await uploadImage(name, logoFile, organization_id);
             if (logoURL?.signedUrl) {
                 updatedData.new_logo = logoURL.signedUrl;
             } else {
@@ -151,7 +151,7 @@ export default function Branding() {
         // Upload auth background if selected
         if (authBgFile) {
             const name = "auth-background." + authBgFile.name.split('.')[1];
-            const authBgURL = await uploadImage(name, authBgFile, organization_id, toast);
+            const authBgURL = await uploadImage(name, authBgFile, organization_id);
             if (authBgURL?.signedUrl) {
                 updatedData.new_auth = authBgURL.signedUrl;
             } else {

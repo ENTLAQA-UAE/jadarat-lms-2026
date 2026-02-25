@@ -248,8 +248,7 @@ export default function RegisterForm() {
         uploadResult = await uploadImage(
           name,
           image,
-          Number(organizationId),
-          toast
+          Number(organizationId)
         );
         if (uploadResult?.signedUrl) {
           setImageUrl(uploadResult.signedUrl);

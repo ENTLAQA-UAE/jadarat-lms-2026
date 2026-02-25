@@ -76,7 +76,7 @@ export default function CourseDetails({ categories, features }: { categories: Co
 
          if (data.imagePreview || data.image) {
             try {
-               const uploadedImage = await uploadImage(`course_${data.slug}`, data.image as any, organization_id, toast);
+               const uploadedImage = await uploadImage(`course_${data.slug}`, data.image as any, organization_id);
                if (uploadedImage) {
                   imageUrl = uploadedImage.signedUrl;
                   dataToSend.imagePreview = imageUrl;

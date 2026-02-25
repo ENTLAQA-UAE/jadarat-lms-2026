@@ -9,8 +9,7 @@ export const generateCertificate = async (
   name: string,
   orgName: string,
   setGeneratingCertificate: (value: boolean) => void,
-  setSharingCertificate: (value: boolean) => void,
-  _toast?: any
+  setSharingCertificate: (value: boolean) => void
 ) => {
   try {
     if (share) setSharingCertificate(true);
