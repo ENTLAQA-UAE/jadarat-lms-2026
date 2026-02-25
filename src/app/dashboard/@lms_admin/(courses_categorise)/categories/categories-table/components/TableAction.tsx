@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { useLanguage } from '@/context/language.context';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { deleteImageFromStorage } from '@/utils/deleteImageFromStorage';
@@ -51,7 +51,6 @@ const TableAction = ({ row, categoriesData }: {
     image: string | null
   }[]
 }) => {
-  const { toast } = useToast();
   const { settings: { organization_id } } = useAppSelector(state => state.organization);
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -103,7 +102,11 @@ const TableAction = ({ row, categoriesData }: {
   };
 
   const handleToast = (title: string, description: string, variant: 'default' | 'destructive') => {
-    toast({ title, description, variant });
+    if (variant === 'destructive') {
+      toast.error(title, { description });
+    } else {
+      toast.success(title, { description });
+    }
   };
 
 
