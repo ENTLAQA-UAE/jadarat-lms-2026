@@ -9,7 +9,6 @@ import { debounce } from '@/utils/debounce';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { getCategoriesOptions } from '@/action/lms-admin/categories/categoriesActions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAppSelector } from '@/hooks/redux.hook';
 import { CourseStatusBadge } from '@/components/shared/StatusBadge';
 
 const STATUS_OPTIONS = [
@@ -20,7 +19,6 @@ const STATUS_OPTIONS = [
 ];
 
 function CoursesFilter() {
-    const { settings } = useAppSelector(state => state.organization);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [categoryOptions, setCategoryOptions] = useState<{ id: string, name: string }[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -31,11 +29,12 @@ function CoursesFilter() {
         async function fetchCategoryOptions() {
             setIsLoading(true);
             try {
-                const data = await getCategoriesOptions(+settings.organization_id);
+                const data = await getCategoriesOptions();
                 setCategoryOptions(data);
-                setIsLoading(false);
             } catch (error) {
                 console.error('Failed to fetch category options:', error);
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchCategoryOptions();

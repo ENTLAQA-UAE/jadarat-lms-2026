@@ -9,12 +9,10 @@ import { debounce } from '@/utils/debounce';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { getCategoriesOptions } from '@/action/lms-admin/categories/categoriesActions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAppSelector } from '@/hooks/redux.hook';
 
 
 function CoursesFilter() {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const { settings } = useAppSelector(state => state.organization);
     const [categoryOptions, setCategoryOptions] = useState<{ id: string, name: string}[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const searchParams = useSearchParams();
@@ -24,15 +22,16 @@ function CoursesFilter() {
         async function fetchCategoryOptions() {
             setIsLoading(true);
             try {
-                const data = await getCategoriesOptions(+settings.organization_id);
+                const data = await getCategoriesOptions();
                 setCategoryOptions(data);
-                setIsLoading(false);
             } catch (error) {
                 console.error('Failed to fetch category options:', error);
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchCategoryOptions();
-    }, [settings.organization_id]);
+    }, []);
 
     const handleDebouncedFilterChange = debounce((columnId: string, value: string | null) => {
         const params = new URLSearchParams(searchParams.toString());

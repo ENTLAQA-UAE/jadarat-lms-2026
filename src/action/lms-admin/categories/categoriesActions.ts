@@ -2,12 +2,13 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-export const getCategoriesOptions = async (organization_id: number) => {
+export const getCategoriesOptions = async () => {
   const supabase = await createClient();
-  // const { data, error } = await supabase.rpc('get_categories_options');
-  const { data, error } = await supabase.from('categories').select('id, name').eq('organization_id', organization_id).order('name', { ascending: true });
+  const { data, error } = await supabase.rpc('get_categories');
   if (error) {
-    throw new Error(`Error fetching categories options: ${error.message}`);
+    console.error('Error fetching categories options:', error.message);
+    return [];
   }
-  return data;
+  // Map to { id, name } shape expected by the filter component
+  return (data ?? []).map((c: { id: number; name: string }) => ({ id: c.id, name: c.name }));
 }

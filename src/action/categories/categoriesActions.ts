@@ -50,25 +50,39 @@ const fetchDataById = async (rpcName: string, params: object) => { // Changed co
 };
 
 export const fetchAllCategories = async () => {
-    const supabase = await createClient();
-    const { data, error } = await supabase.rpc('get_all_categories', {
-        _name_filter: null,
-    });
-    if (error) {
-        throw new Error(`Error fetching categories: ${error.message}`);
+    try {
+        const supabase = await createClient();
+        const { data, error } = await supabase.rpc('get_all_categories', {
+            _name_filter: null,
+        });
+        if (error) {
+            console.error('Error fetching categories:', error.message);
+            return [];
+        }
+        return data ?? [];
+    } catch (error: any) {
+        console.error('Error fetching categories:', error.message);
+        return [];
     }
-    return data;
 }
 export const fetchAllCategoriesFiltered = async (filters: any, page: number, pageSize: number) => {
-    const supabase = await createClient();
+    try {
+        const supabase = await createClient();
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize - 1;
 
-    const { data, error, count } = await supabase.rpc('get_all_categories', {
-        _name_filter: filters.name ?? null,
-    }, { count: 'exact' }).range((page - 1) * pageSize, page * pageSize);
-    if (error) {
-        throw new Error(`Error fetching categories: ${error.message}`);
+        const { data, error, count } = await supabase.rpc('get_all_categories', {
+            _name_filter: filters.name ?? null,
+        }, { count: 'exact' }).range(start, end);
+        if (error) {
+            console.error('Error fetching categories:', error.message);
+            return { data: [], count: 0 };
+        }
+        return { data: data ?? [], count: count ?? 0 };
+    } catch (error: any) {
+        console.error('Error fetching categories:', error.message);
+        return { data: [], count: 0 };
     }
-    return { data, count };
 }
 
 export const addCategory = async (name: string, image: string | null, ar_name: string) => await fetchDataById('add_category', { _name: name, _image: image ?? null, _ar_name: ar_name });
