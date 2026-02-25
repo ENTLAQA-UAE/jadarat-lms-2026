@@ -16,7 +16,7 @@ import {
     DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { updateCourseStatus } from '@/action/lms-admin/insights/courses/courseStatusAction';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
 const statusOptions: { value: CoursePublishStatus; label: string }[] = [
@@ -27,7 +27,6 @@ const statusOptions: { value: CoursePublishStatus; label: string }[] = [
 
 export const ActionsCell = ({ course }: { course: Course }) => {
     const [isUpdating, setIsUpdating] = useState(false);
-    const { toast } = useToast();
     const router = useRouter();
 
     const handleStatusChange = async (newStatus: CoursePublishStatus) => {
@@ -37,23 +36,18 @@ export const ActionsCell = ({ course }: { course: Course }) => {
         try {
             const result = await updateCourseStatus(course.course_id, newStatus);
             if (result.error) {
-                toast({
-                    title: 'Error',
+                toast.error('Error', {
                     description: result.error,
-                    variant: 'destructive',
                 });
             } else {
-                toast({
-                    title: 'Status Updated',
+                toast.success('Status Updated', {
                     description: `Course status changed to "${newStatus}"`,
                 });
                 router.refresh();
             }
         } catch {
-            toast({
-                title: 'Error',
+            toast.error('Error', {
                 description: 'Failed to update course status',
-                variant: 'destructive',
             });
         } finally {
             setIsUpdating(false);

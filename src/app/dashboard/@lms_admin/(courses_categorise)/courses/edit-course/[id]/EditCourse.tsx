@@ -6,7 +6,7 @@ import { CoursePreview } from '../../add-course/CoursePreview'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Edit, Eye } from 'lucide-react'
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { updateCourse } from '@/action/lms-admin/insights/courses/course/courseAction'
 import { switchScormFile, uploadImage } from '@/utils/uploadFile'
 import { deleteImageFromStorage } from '@/utils/deleteImageFromStorage'
@@ -54,7 +54,6 @@ export default function EditCourseDetails({ categories, courseData, courseId, ba
     create_courses: boolean
   }
 }) {
-  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [courseDetails, setCourseDetails] = useState<CourseData | null>(null)
   const [isScormModalOpen, setIsScormModalOpen] = useState(false)
@@ -119,14 +118,11 @@ export default function EditCourseDetails({ categories, courseData, courseId, ba
         if (imageUrl) {
           await deleteImageFromStorage(`${courseDetails?.organization_id}/course_${courseId}`);
         }
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: errorMessage,
-          variant: "destructive",
         });
       } else {
-        toast({
-          title: "Success",
+        toast.success("Success", {
           description: "Course details updated successfully!",
         });
       }
@@ -155,19 +151,15 @@ export default function EditCourseDetails({ categories, courseData, courseId, ba
           launch_path: result.launchPath
         }).eq('id', courseId)
         if (error) {
-          toast({
-            title: "Error",
+          toast.error("Error", {
             description: error.message,
-            variant: "destructive",
           });
         }
       }
     } catch (err) {
       console.error("Error updating SCORM file:", err)
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to update SCORM file",
-        variant: "destructive",
       })
     } finally {
       setIsLoading(false)

@@ -1,5 +1,6 @@
 import { DownloadFile } from "@/utils/downloadFile";
 import { createClient } from "./supabase/client";
+import { toast } from "sonner";
 
 export const generateCertificate = async (
   share: boolean,
@@ -9,7 +10,7 @@ export const generateCertificate = async (
   orgName: string,
   setGeneratingCertificate: (value: boolean) => void,
   setSharingCertificate: (value: boolean) => void,
-  toast: any
+  _toast?: any
 ) => {
   try {
     if (share) setSharingCertificate(true);
@@ -58,10 +59,8 @@ export const generateCertificate = async (
     }
   } catch (error) {
     console.error("Error generating certificate:", error);
-    toast({
-      title: "Error",
+    toast.error("Error", {
       description: "Failed to generate the certificate.",
-      variant: "destructive",
     });
   } finally {
     setGeneratingCertificate(false);

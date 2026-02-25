@@ -9,11 +9,10 @@ import { X } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { coursesTitlesAndIds } from '@/action/lms-admin/insights/courses/coursesAction'
 import { enrollLearnersToCourses, getStudentsData } from '@/action/students/studentsActions'
-import { useToast } from '@/components/ui/use-toast'
+import { toast } from 'sonner'
 
 
 function ActionEnrollmentTable() {
-    const { toast } = useToast()
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [learners, setLearners] = useState<{ id: string; name: string }[]>([]);
@@ -104,22 +103,19 @@ function ActionEnrollmentTable() {
         const { errorMessage, loading } = await enrollLearnersToCourses(learnersIds, coursesIds);
         if (loading) {
             setLoading(true);
-            toast({
-                title: 'Enrolling learners...',
+            toast('Enrolling learners...', {
                 description: 'Please wait while we enroll learners to courses',
             });
         }
         if (errorMessage) {
             console.error('Enrollment failed:', errorMessage);
-            toast({
-                title: 'Enrollment failed',
+            toast.error('Enrollment failed', {
                 description: errorMessage,
-                variant: 'destructive',
             });
             setLoading(false);
         } else {
-            toast({
-                title: 'Enrollment successful',
+            console.log('Enrollment successful');
+            toast.success('Enrollment successful', {
                 description: 'Learners enrolled successfully',
             });
             setLoading(false);

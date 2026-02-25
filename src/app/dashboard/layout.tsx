@@ -1,7 +1,6 @@
 import { fetchUserData } from '@/action/authAction';
 import InactiveEmail from '@/components/InactiveEmail';
 import SidebarLayout from '@/components/sidebar-layout';
-import { Toaster } from '@/components/ui/sonner';
 import { createClient } from '@/utils/supabase/server';
 
 export default async function Layout({
@@ -71,7 +70,6 @@ export default async function Layout({
       {(user_role === 'LMSAdmin' || user_role === 'learningManager') && is_active && lms_admin}
       {user_role === 'organizationAdmin' && is_active && org_admin}
       {user_role === 'superAdmin' && is_active && super_admin}
-      <Toaster richColors />
     </SidebarLayout>
   );
 }

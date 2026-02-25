@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic';
 import './globals.css';
 import localFont from 'next/font/local';
 import { Toaster } from '@/components/ui/sonner';
-import { Toaster as Toast } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import NextTopLoader from 'nextjs-toploader';
 import SetupProvider from '@/context/setup.context';
@@ -156,8 +155,7 @@ export default async function RootLayout({
               <AppThemeProvider>
                 <NextTopLoader showSpinner={false} />
                 {children}
-                <Toaster />
-                <Toast />
+                <Toaster richColors />
               </AppThemeProvider>
             </SetupProvider>
           </LangugageProvider>

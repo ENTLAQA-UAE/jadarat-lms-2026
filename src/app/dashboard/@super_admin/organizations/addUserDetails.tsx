@@ -110,10 +110,8 @@ export default function AddUser({ setOpenAddUser, selectedOrganization }: { setO
                 });
 
             if (addUserError) {
-                toast({
-                    title: "Error",
+                toast.error("Error", {
                     description: addUserError.message,
-                    variant: "destructive"
                 })
                 await adminSupabase.auth.admin.deleteUser(email)
                 return

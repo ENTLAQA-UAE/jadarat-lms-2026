@@ -14,7 +14,7 @@ import { Save } from 'lucide-react';
 import { CourseDetailsPageProps, ScormEnum } from './types';
 import { useLanguage } from '@/context/language.context';
 import { CourseOutcome, LearningOutcome } from './CourseOutCome';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { ZipUploader } from './ZipUploader';
 
@@ -73,7 +73,6 @@ interface CourseFormProps {
 }
 
 export function CourseForm({ onSave, onChange, isLoading, initialData = {}, categories, onScormFileUpdate }: CourseFormProps) {
-  const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(initialData.imagePreview || null);
   const [image, setImage] = useState<File | null>(null);
   const { isRTL } = useLanguage();
@@ -99,10 +98,8 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
   const onSubmit = (data: CourseFormData) => {
     if (isScormFlow) {
       if (scormFile === null) {
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: "Please upload a SCORM package file.",
-          variant: "destructive"
         });
         return;
       }
@@ -123,10 +120,8 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
     }
 
     if (!image) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Please upload a valid image file (JPEG, PNG, or WebP).",
-        variant: "destructive"
       });
       return;
     }
