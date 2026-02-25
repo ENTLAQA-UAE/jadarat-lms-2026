@@ -67,7 +67,7 @@ function CategoryHeader() {
 
             // Upload image if one was selected
             if (image && Number(organization_id) > 0) {
-                const uploadedImage = await uploadImage(`category_${Date.now()}`, image, organization_id, toast);
+                const uploadedImage = await uploadImage(`category_${Date.now()}`, image, organization_id);
                 if (uploadedImage) {
                     imageUrl = uploadedImage.signedUrl;
                 }
