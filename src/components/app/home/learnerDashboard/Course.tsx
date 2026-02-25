@@ -27,9 +27,8 @@ function Course({
   const percentage = course?.percentage ?? -1;
 
   return (
-    <Card key={course?.id} className="group overflow-hidden border border-border/50 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+    <Card key={course?.id} className="group overflow-hidden transition-all duration-200 hover:shadow-soft hover:-translate-y-0.5">
       <CardHeader className="exclude-weglot p-0">
-        {/* Image with hover zoom + gradient overlay */}
         <div className="relative overflow-hidden">
           <Image
             src={course?.thumbnail || ""}
@@ -39,26 +38,26 @@ function Course({
             layout="responsive"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             loading="lazy"
-            className="aspect-video w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
           />
-          {/* Gradient overlay on hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* Subtle overlay on hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
 
-          {/* Category badge floating on image */}
-          <div className="absolute top-3 start-3 z-10">
-            <Badge variant="secondary" className="bg-card/90 backdrop-blur-sm text-[11px] font-medium shadow-sm border-0">
+          {/* Category badge */}
+          <div className="absolute top-2.5 start-2.5 z-10">
+            <Badge variant="secondary" className="bg-white/90 dark:bg-black/60 backdrop-blur-md text-[10px] font-medium shadow-xs border-0 text-foreground">
               {isRTL ? course?.category_ar_name : course?.category_name}
             </Badge>
           </div>
 
-          {/* Progress badge on image (if in progress) */}
+          {/* Progress badge */}
           {percentage >= 0 && (
-            <div className="absolute top-3 end-3 z-10">
+            <div className="absolute top-2.5 end-2.5 z-10">
               <Badge
                 variant={completed ? "success" : "secondary"}
                 className={completed
-                  ? "shadow-sm"
-                  : "bg-card/90 backdrop-blur-sm shadow-sm border-0"
+                  ? "text-[10px]"
+                  : "bg-white/90 dark:bg-black/60 backdrop-blur-md shadow-xs border-0 text-[10px] text-foreground"
                 }
               >
                 {completed ? (isRTL ? "مكتمل" : "Completed") : `${percentage}%`}
@@ -67,8 +66,8 @@ function Course({
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-3 p-4">
-        <h3 dir="auto" className="font-semibold text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-200 exclude-weglot">
+      <CardContent className="space-y-2.5 p-4">
+        <h3 dir="auto" className="font-medium text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-150 exclude-weglot">
           {isFullCourseType(course) ? course.title : course.name}
         </h3>
 
@@ -79,16 +78,16 @@ function Course({
             amountOfWords={17}
           />
         ) : (
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <Progress
               value={percentage}
-              className="h-1.5 w-full"
+              className="h-1 w-full"
               gradient={percentage > 50}
               progressClassName={completed ? "bg-success" : undefined}
             />
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-              <span>{percentage}% {isRTL ? "مكتمل" : "complete"}</span>
-            </div>
+            <p className="text-[11px] text-muted-foreground tabular-nums">
+              {percentage}% {isRTL ? "مكتمل" : "complete"}
+            </p>
           </div>
         )}
         <CourseButtonActions course={course} completed={completed} />

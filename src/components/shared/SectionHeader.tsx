@@ -25,14 +25,14 @@ export default function SectionHeader({
         className
       )}
     >
-      <h2 className="text-title text-foreground">{title}</h2>
+      <h2 className="text-sm font-semibold tracking-tight text-foreground">{title}</h2>
       {action && (
         <Link
           href={action.href}
-          className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
         >
           {action.label}
-          <ArrowRight className="h-3.5 w-3.5" />
+          <ArrowRight className="h-3 w-3" />
         </Link>
       )}
       {children}

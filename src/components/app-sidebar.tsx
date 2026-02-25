@@ -236,22 +236,22 @@ export default function AppSidebar() {
       {/* ── Logo ── */}
       <div
         className={cn(
-          "flex h-16 items-center border-b border-white/10 px-5",
+          "flex h-14 items-center border-b border-white/[0.06] px-4",
           isCollapsed && !isMobile ? "justify-center px-3" : "gap-3"
         )}
       >
         <Link href="/dashboard" className="flex items-center gap-2 min-w-0">
           {loading ? (
-            <div className="h-8 w-20 animate-pulse rounded bg-white/10" />
+            <div className="h-7 w-20 animate-pulse rounded-md bg-white/[0.06]" />
           ) : (
             <Image
               src={logo as string}
-              width={isCollapsed && !isMobile ? 32 : 120}
-              height={32}
+              width={isCollapsed && !isMobile ? 28 : 110}
+              height={28}
               alt="logo"
               className={cn(
-                "h-auto w-auto brightness-0 invert",
-                isCollapsed && !isMobile ? "max-h-8 max-w-8" : "max-h-10"
+                "h-auto w-auto brightness-0 invert opacity-90",
+                isCollapsed && !isMobile ? "max-h-7 max-w-7" : "max-h-8"
               )}
               priority
             />
@@ -260,55 +260,51 @@ export default function AppSidebar() {
 
         {/* Collapse toggle (desktop only) */}
         {!isMobile && !isCollapsed && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="ms-auto h-7 w-7 text-white/40 hover:text-white hover:bg-white/10"
+          <button
+            className="ms-auto flex h-6 w-6 items-center justify-center rounded-md text-white/30 transition-colors hover:text-white/70 hover:bg-white/[0.06]"
             onClick={toggle}
             aria-label="Collapse sidebar"
           >
-            <PanelLeftClose className="h-4 w-4" />
-          </Button>
+            <PanelLeftClose className="h-3.5 w-3.5" />
+          </button>
         )}
         {!isMobile && isCollapsed && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-white/40 hover:text-white hover:bg-white/10"
+          <button
+            className="flex h-6 w-6 items-center justify-center rounded-md text-white/30 transition-colors hover:text-white/70 hover:bg-white/[0.06]"
             onClick={toggle}
             aria-label="Expand sidebar"
           >
-            <PanelLeft className="h-4 w-4" />
-          </Button>
+            <PanelLeft className="h-3.5 w-3.5" />
+          </button>
         )}
       </div>
 
-      {/* ── User Profile (top position for super-app feel) ── */}
+      {/* ── User Profile ── */}
       {user && (
         <div
           className={cn(
-            "border-b border-white/10 px-5 py-4",
+            "border-b border-white/[0.06] px-4 py-3",
             isCollapsed && !isMobile && "px-3 py-3 flex justify-center"
           )}
         >
           <Link
             href="/profile"
             className={cn(
-              "flex items-center gap-3 group",
-              isCollapsed && !isMobile && "justify-center"
+              "flex items-center gap-2.5 group rounded-lg p-1.5 -m-1.5 transition-colors hover:bg-white/[0.04]",
+              isCollapsed && !isMobile && "justify-center p-1 -m-1"
             )}
           >
             <Avatar
               className={cn(
-                "shrink-0 ring-2 ring-white/20 transition-all group-hover:ring-accent/50",
-                isCollapsed && !isMobile ? "h-9 w-9" : "h-10 w-10"
+                "shrink-0 ring-1 ring-white/10 transition-all group-hover:ring-white/25",
+                isCollapsed && !isMobile ? "h-8 w-8" : "h-8 w-8"
               )}
             >
               <AvatarImage
                 className="exclude-weglot"
                 src={user?.avatar_url}
               />
-              <AvatarFallback className="exclude-weglot bg-white/10 text-white text-xs font-semibold">
+              <AvatarFallback className="exclude-weglot bg-white/[0.08] text-white/80 text-[11px] font-medium">
                 {user?.name
                   ?.split(" ")
                   .map((n: string) => n[0])
@@ -317,10 +313,10 @@ export default function AppSidebar() {
             </Avatar>
             {(!isCollapsed || isMobile) && (
               <div className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-sm font-semibold text-white">
+                <span className="truncate text-[13px] font-medium text-white/90">
                   {user?.name}
                 </span>
-                <span className="truncate text-tiny text-white/50">
+                <span className="truncate text-[11px] text-white/40">
                   {role
                     ? rules[role as keyof typeof rules] || role
                     : ""}
@@ -332,22 +328,22 @@ export default function AppSidebar() {
       )}
 
       {/* ── Navigation ── */}
-      <ScrollArea className="flex-1 px-3 py-4">
+      <ScrollArea className="flex-1 px-2.5 py-3">
         <TooltipProvider delayDuration={0}>
-          <nav className="flex flex-col gap-1">
+          <nav className="flex flex-col gap-0.5">
             {navGroups.map((group, gi) => (
               <div key={gi}>
                 {group.label && (
                   <>
                     {gi > 0 && (
-                      <div className="my-3 h-px bg-white/10" />
+                      <div className="my-2.5 mx-2 h-px bg-white/[0.06]" />
                     )}
                     {!isCollapsed || isMobile ? (
-                      <span className="mb-2 block px-3 text-[10px] font-semibold uppercase tracking-widest text-white/40">
+                      <span className="mb-1.5 mt-1 block px-2.5 text-[10px] font-medium uppercase tracking-wider text-white/30">
                         {group.label}
                       </span>
                     ) : (
-                      <div className="my-3 h-px bg-white/10" />
+                      <div className="my-2.5 mx-2 h-px bg-white/[0.06]" />
                     )}
                   </>
                 )}
@@ -364,28 +360,28 @@ export default function AppSidebar() {
                       href={item.href}
                       onClick={() => isMobile && setOpen(false)}
                       className={cn(
-                        "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                        "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] font-medium transition-all duration-150",
                         isActive
-                          ? "bg-white/[0.12] text-white shadow-sm"
-                          : "text-white/65 hover:bg-white/[0.06] hover:text-white/90",
-                        isCollapsed && !isMobile && "justify-center px-2.5"
+                          ? "bg-white/[0.08] text-white"
+                          : "text-white/50 hover:bg-white/[0.04] hover:text-white/80",
+                        isCollapsed && !isMobile && "justify-center px-2"
                       )}
                     >
-                      {/* Active accent indicator */}
+                      {/* Active indicator */}
                       {isActive && (
                         <span
                           className={cn(
-                            "absolute top-1/2 -translate-y-1/2 h-5 w-[3px] rounded-full bg-accent",
+                            "absolute top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-primary-400",
                             isRTL ? "right-0" : "left-0"
                           )}
                         />
                       )}
                       <Icon
                         className={cn(
-                          "h-[18px] w-[18px] shrink-0 transition-colors",
+                          "h-4 w-4 shrink-0 transition-colors",
                           isActive
-                            ? "text-accent"
-                            : "text-white/50 group-hover:text-white/80"
+                            ? "text-primary-400"
+                            : "text-white/40 group-hover:text-white/60"
                         )}
                       />
                       {(!isCollapsed || isMobile) && (
@@ -417,13 +413,13 @@ export default function AppSidebar() {
       </ScrollArea>
 
       {/* ── Footer: Controls ── */}
-      <div className="mt-auto border-t border-white/10 p-3">
+      <div className="mt-auto border-t border-white/[0.06] p-2.5 space-y-0.5">
         {/* Dark mode toggle */}
         <Button
           variant="ghost"
           size={isCollapsed && !isMobile ? "icon" : "default"}
           className={cn(
-            "w-full justify-start gap-3 text-white/60 hover:text-white hover:bg-white/10",
+            "w-full justify-start gap-2.5 text-[13px] text-white/45 hover:text-white/80 hover:bg-white/[0.04]",
             isCollapsed && !isMobile && "justify-center px-2"
           )}
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -435,7 +431,7 @@ export default function AppSidebar() {
             <Moon className="h-4 w-4 shrink-0" />
           )}
           {(!isCollapsed || isMobile) && (
-            <span className="text-sm">
+            <span>
               {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </span>
           )}
@@ -447,21 +443,21 @@ export default function AppSidebar() {
         {/* Language switcher */}
         <div
           className={cn(
-            "mt-1 flex items-center",
-            isCollapsed && !isMobile ? "justify-center" : "px-3"
+            "flex items-center",
+            isCollapsed && !isMobile ? "justify-center" : "px-2.5"
           )}
         >
           <LanguageSwitcher />
         </div>
 
-        <div className="my-2 h-px bg-white/10" />
+        <div className="my-1.5 mx-2 h-px bg-white/[0.06]" />
 
         {/* Logout */}
         <Button
           variant="ghost"
           size={isCollapsed && !isMobile ? "icon" : "default"}
           className={cn(
-            "w-full justify-start gap-3 text-white/60 hover:text-red-400 hover:bg-white/10",
+            "w-full justify-start gap-2.5 text-[13px] text-white/45 hover:text-red-400 hover:bg-white/[0.04]",
             isCollapsed && !isMobile && "justify-center px-2"
           )}
           onClick={onLogout}
@@ -469,7 +465,7 @@ export default function AppSidebar() {
         >
           <LogOut className="h-4 w-4 shrink-0" />
           {(!isCollapsed || isMobile) && (
-            <span className="text-sm">Logout</span>
+            <span>Logout</span>
           )}
         </Button>
       </div>
@@ -482,7 +478,7 @@ export default function AppSidebar() {
       {!isMobile && (
         <aside
           className={cn(
-            "fixed inset-y-0 start-0 z-40 flex flex-col gradient-sidebar border-e border-white/[0.08] shadow-lg transition-[width] duration-200",
+            "fixed inset-y-0 start-0 z-40 flex flex-col gradient-sidebar border-e border-white/[0.06] transition-[width] duration-200 ease-smooth",
             isCollapsed ? "w-sidebar-collapsed" : "w-sidebar"
           )}
         >
@@ -492,7 +488,7 @@ export default function AppSidebar() {
 
       {/* ── Mobile Header ── */}
       {isMobile && (
-        <header className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-background px-4 shadow-sm">
+        <header className="sticky top-0 z-50 flex h-12 items-center gap-3 border-b border-border/60 bg-background/80 backdrop-blur-xl px-4">
           <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle sidebar">
             <PanelLeft className="h-5 w-5" />
           </Button>
