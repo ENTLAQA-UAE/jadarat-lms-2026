@@ -33,7 +33,7 @@ import {
   resolveSubscriptionRequest,
 } from "@/action/super-admin/orgnizations/organizationsActions";
 import { createClient } from "@/utils/supabase/client";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner";
 import { Check, X, Users, BookOpen, UserCog, Calendar } from "lucide-react";
 
@@ -137,13 +137,11 @@ export function SubscriptionSheet({
     );
 
     if (success) {
-      toast({ title: "Success", description: "Subscription updated." });
+      toast.success("Success", { description: "Subscription updated." });
       onUpdated();
     } else {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: errorMessage || "Failed to update subscription.",
-        variant: "destructive",
       });
     }
 
@@ -161,15 +159,12 @@ export function SubscriptionSheet({
 
     if (success) {
       setRequests((prev) => prev.filter((r) => r.id !== requestId));
-      toast({
-        title: "Success",
+      toast.success("Success", {
         description: `Request ${status}.`,
       });
     } else {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: errorMessage || "Failed to resolve request.",
-        variant: "destructive",
       });
     }
   };

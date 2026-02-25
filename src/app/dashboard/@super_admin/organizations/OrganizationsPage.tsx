@@ -28,7 +28,7 @@ import { columns } from "./columns";
 import FilterTable from "./FilterTable";
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner";
 import { uploadImage } from "@/utils/uploadFile";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 // Import action functions
 import {
@@ -136,10 +136,8 @@ export default function OrganizationsPage({
 
       if (errorMessage) {
         setErrorMessage(errorMessage);
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: errorMessage,
-          variant: "destructive",
         });
         return;
       }
@@ -165,38 +163,31 @@ export default function OrganizationsPage({
             if (updateError) {
               console.error("Error updating organization logo:", updateError);
               setErrorMessage(updateError);
-              toast({
-                title: "Error",
+              toast.error("Error", {
                 description: updateError,
-                variant: "destructive",
               });
             }
           } else {
             // Handle error if uploadImage failed
             const uploadError = "Failed to upload logo image.";
             setErrorMessage(uploadError);
-            toast({
-              title: "Error",
+            toast.error("Error", {
               description: uploadError,
-              variant: "destructive",
             });
           }
         }
 
         await refershOrgTable();
         setCreateDialogOpen(false);
-        toast({
-          title: "Success",
+        toast.success("Success", {
           description: "Organization created successfully.",
         });
       }
     } catch (error: any) {
       console.error("Error creating organization:", error.message);
       setErrorMessage(error.message);
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: error.message,
-        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -224,10 +215,8 @@ export default function OrganizationsPage({
 
       if (errorMessage) {
         setErrorMessage(errorMessage);
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: errorMessage,
-          variant: "destructive",
         });
         return;
       }
@@ -274,8 +263,7 @@ export default function OrganizationsPage({
         await refershOrgTable();
         setCurrentOrganization(null);
         setEditDialogOpen(false);
-        toast({
-          title: "Success",
+        toast.success("Success", {
           description: "Organization updated successfully.",
         });
       } else if (errorMessage) {

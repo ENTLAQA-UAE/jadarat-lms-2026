@@ -8,13 +8,12 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useAppSelector } from "@/hooks/redux.hook"
 import { createClient } from "@/utils/supabase"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Save } from "lucide-react"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
 import CourseSkelton from "./skeletons/CourseSkelton"
 
 export default function Courses() {
-    const { toast } = useToast();
     const { settings: { courseExpirationEnabled, courseExpirationPeriod, courseSelfEntrollmentPolicy, primaryColor }, loading: LoadingTheme } = useAppSelector(state => state.organization);
     const { user: { organization_id } } = useAppSelector(state => state.user);
 
@@ -36,22 +35,18 @@ export default function Courses() {
             })
 
         if (error) {
-            toast({
-                title: "Error while updating",
+            toast.error("Error while updating", {
                 description: error.message,
-                variant: "destructive"
             })
         }
         else {
-            toast({
-                title: "Saved",
+            toast.success("Saved", {
                 description: "Courses settings saved successfully.",
-                variant: "success"
             })
         }
 
         setIsLoading(false)
-    }, [expirationDays, expirationEnabled, organization_id, selfEnrollmentEnabled, toast]);
+    }, [expirationDays, expirationEnabled, organization_id, selfEnrollmentEnabled]);
 
     useEffect(() => {
         if (!LoadingTheme) {

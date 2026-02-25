@@ -8,7 +8,7 @@ import { useAppSelector } from "@/hooks/redux.hook"
 import { createClient } from "@/utils/supabase"
 import { Save, RotateCcw } from "lucide-react"
 import UploadImageInput from "@/components/uploadInput"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { uploadImage } from "@/utils/uploadFile"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
 import BrandingSkelton from "./skeletons/BrandingSkelton"
@@ -116,7 +116,6 @@ function ColorPreview({ primary, secondary }: { primary: string; secondary: stri
 }
 
 export default function Branding() {
-    const { toast } = useToast();
     const { settings: { logo, authBackground, name, primaryColor, secondaryColor }, loading: LoadingTheme } = useAppSelector(state => state.organization);
     const { user: { organization_id } } = useAppSelector(state => state.user);
     const [isLoading, setIsLoading] = useState(false)
@@ -186,10 +185,8 @@ export default function Branding() {
                 })
 
             if (error) {
-                toast({
-                    title: "Error while updating",
+                toast.error("Error while updating", {
                     description: error.message,
-                    variant: "destructive"
                 })
             } else {
                 // Update Redux so TenantBranding applies the new colors immediately
@@ -199,17 +196,13 @@ export default function Branding() {
                         secondaryColor: updatedData.new_secondary_color ?? secondaryColor,
                     }))
                 }
-                toast({
-                    title: "Saved",
+                toast.success("Saved", {
                     description: "Branding saved successfully.",
-                    variant: "success"
                 })
             }
         } else {
-            toast({
-                title: "No changes",
+            toast("No changes", {
                 description: "No changes were detected to save.",
-                variant: "default"
             })
         }
 

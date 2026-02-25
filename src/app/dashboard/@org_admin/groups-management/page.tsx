@@ -5,7 +5,7 @@ import { ArrowDown, ArrowUp, Plus } from "lucide-react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { createClient } from "@/utils/supabase"
 import { useAppSelector } from "@/hooks/redux.hook"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -29,7 +29,6 @@ import { Group } from "./types"
 import HeadTitleTableSkeleton from "@/components/skeleton/HeadTitleTableSkeleton"
 
 export default function GroupsPage() {
-    const { toast } = useToast();
     const { settings: { primaryColor }, loading } = useAppSelector(state => state.organization);
     const { user: { organization_id } } = useAppSelector(state => state.user);
 
@@ -51,10 +50,8 @@ export default function GroupsPage() {
         let { data, error } = await supabase
             .rpc('get_groups_with_user_count')
         if (error) {
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: error.message,
-                variant: "destructive"
             })
         }
         else setGroups(data)
@@ -154,22 +151,18 @@ export default function GroupsPage() {
                 group_id: selectedToModify?.id
             })
         if (error)
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: error.message,
-                variant: "destructive"
             })
         else {
-            toast({
-                title: "Success",
+            toast.success("Success", {
                 description: `${selectedToModify?.name} group has been updated successfully.`,
-                variant: "success"
             })
             setGroups(st => st.map(e => e.id === selectedToModify?.id ? { ...e, name: selectedToModify.name } : e))
             setSelectedToModify(undefined)
         }
         setIsAdding(false)
-    }, [toast, selectedToModify?.name, selectedToModify?.id])
+    }, [selectedToModify?.name, selectedToModify?.id])
 
     const deleteGroup = useCallback(async () => {
         setIsAdding(true)
@@ -188,16 +181,12 @@ export default function GroupsPage() {
             })
 
         if (error)
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: error.message,
-                variant: "destructive"
             })
         else {
-            toast({
-                title: "Success",
+            toast.success("Success", {
                 description: selectedToModify?.name ? `${selectedToModify?.name} group has been deleted successfully.` : "Selected groups has beed deleted succssfully.",
-                variant: "success"
             })
             if (selectedToModify?.id) {
                 setGroups(st => st.filter(e => e.id !== selectedToModify?.id))
@@ -208,7 +197,7 @@ export default function GroupsPage() {
             }
         }
         setIsAdding(false)
-    }, [selectedToModify?.id, selectedToModify?.name, selectedGroups, toast])
+    }, [selectedToModify?.id, selectedToModify?.name, selectedGroups])
 
     const addNewGroup = useCallback(async () => {
         setIsAdding(true)
@@ -219,23 +208,19 @@ export default function GroupsPage() {
                 orgid: organization_id
             })
         if (error)
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: error.message,
-                variant: "destructive"
             })
         else {
-            toast({
-                title: "Success",
+            toast.success("Success", {
                 description: `${groupName} group has been created successfully.`,
-                variant: "success"
             })
             getGroups()
             setGroupName('')
             setOpenAdd(false)
         }
         setIsAdding(false)
-    }, [groupName, organization_id, toast, getGroups])
+    }, [groupName, organization_id, getGroups])
 
     return (
         <div className="flex lg:flex-row flex-col gap-4 p-4 sm:p-6">
