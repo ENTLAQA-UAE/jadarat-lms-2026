@@ -100,34 +100,28 @@ export default function AddUser({ setOpenAddUser }: { setOpenAddUser: Dispatch<S
                 })
 
             if (addUserError) {
-                toast({
-                    title: "Error",
+                toast.error("Error", {
                     description: addUserError.message,
-                    variant: "destructive"
                 })
                 await adminSupabase.auth.admin.deleteUser(email)
                 return
             }
 
-            toast({
-                title: 'Add user status',
+            toast.success('Add user status', {
                 description: `User with email ${email} has been created successfully.\nand have received an invitation link.`,
-                variant: "success"
             })
             setOpenAddUser(false)
             window.dispatchEvent(new CustomEvent('refreshUsers'))
 
         } catch (err: any) {
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: err.message,
-                variant: "destructive"
             })
         } finally {
             setIsLoading(false)
             window.dispatchEvent(new CustomEvent('refreshUsers'))
         }
-    }, [setOpenAddUser, toast])
+    }, [setOpenAddUser])
 
     return (
         <>

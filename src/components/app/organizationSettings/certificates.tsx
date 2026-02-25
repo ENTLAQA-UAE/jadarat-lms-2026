@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
 import { createClient } from "@/utils/supabase";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppSelector } from "@/hooks/redux.hook";
 import type { CertificateTemplateJSON } from "@/components/certificate-builder/types";
@@ -17,7 +17,6 @@ const CertificateBuilder = dynamic(
 );
 
 export default function Certificate() {
-    const { toast } = useToast();
     const { settings, loading: loadingTheme } = useAppSelector((state) => state.organization);
     const { user } = useAppSelector((state) => state.user);
     const organizationId = settings.organization_id || user.organization_id;
