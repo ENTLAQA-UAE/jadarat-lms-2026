@@ -14,7 +14,7 @@ import { Save } from 'lucide-react';
 import { CourseDetailsPageProps, ScormEnum } from './types';
 import { useLanguage } from '@/context/language.context';
 import { CourseOutcome, LearningOutcome } from './CourseOutCome';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { useSearchParams } from 'next/navigation';
 import { ZipUploader } from './ZipUploader';
 
@@ -30,7 +30,23 @@ const courseSchema = z.object({
     id: z.string(),
     text: z.string().min(1, { message: "Outcome text is required" })
   })),
-  scormFile: z.any().optional(),
+  scormFile: z
+    .any()
+    .optional()
+    .refine(
+      (file) => {
+        if (!file || !(file instanceof File)) return true; // optional, so no file is OK
+        return file.name.endsWith('.zip');
+      },
+      { message: "Only .zip files are allowed for SCORM packages" }
+    )
+    .refine(
+      (file) => {
+        if (!file || !(file instanceof File)) return true;
+        return file.size <= 500 * 1024 * 1024; // 500MB
+      },
+      { message: "File size must be less than 500MB" }
+    ),
   scormVersion: z.nativeEnum(ScormEnum).optional(),
   isScorm: z.boolean().optional(),
 });
@@ -57,7 +73,6 @@ interface CourseFormProps {
 }
 
 export function CourseForm({ onSave, onChange, isLoading, initialData = {}, categories, onScormFileUpdate }: CourseFormProps) {
-  const { toast } = useToast();
   const [imagePreview, setImagePreview] = useState<string | null>(initialData.imagePreview || null);
   const [image, setImage] = useState<File | null>(null);
   const { isRTL } = useLanguage();
@@ -81,13 +96,10 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
   });
 
   const onSubmit = (data: CourseFormData) => {
-    console.log("data ===>", data);
     if (isScormFlow) {
       if (scormFile === null) {
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: "Please upload a SCORM package file.",
-          variant: "destructive"
         });
         return;
       }
@@ -108,10 +120,8 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
     }
 
     if (!image) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Please upload a valid image file (JPEG, PNG, or WebP).",
-        variant: "destructive"
       });
       return;
     }
@@ -174,7 +184,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.title && <p className="text-sm text-destructive mt-1">{errors.title.message}</p>}
+            {errors.title && <p role="alert" className="text-sm text-destructive mt-1">{errors.title.message}</p>}
           </div>
 
           <div>
@@ -195,7 +205,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.description && <p className="text-sm text-destructive mt-1">{errors.description.message}</p>}
+            {errors.description && <p role="alert" className="text-sm text-destructive mt-1">{errors.description.message}</p>}
           </div>
 
           <div>
@@ -222,7 +232,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 </Select>
               )}
             />
-            {errors.level && <p className="text-sm text-destructive mt-1">{errors.level.message}</p>}
+            {errors.level && <p role="alert" className="text-sm text-destructive mt-1">{errors.level.message}</p>}
           </div>
 
           <div>
@@ -261,7 +271,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 </Select>
               )}
             />
-            {errors.category_id && <p className="text-sm text-destructive mt-1">{errors.category_id.message}</p>}
+            {errors.category_id && <p role="alert" className="text-sm text-destructive mt-1">{errors.category_id.message}</p>}
           </div>
 
           <CourseOutcome
@@ -297,7 +307,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
             <p className="text-sm text-muted-foreground mt-1">
               A valid slug should only contain lowercase letters, numbers, and hyphens (e.g., <code>course-title</code>).
             </p>
-            {errors.slug && <p className="text-sm text-destructive mt-1">{errors.slug.message}</p>}
+            {errors.slug && <p role="alert" className="text-sm text-destructive mt-1">{errors.slug.message}</p>}
           </div>
 
           <div>
@@ -319,7 +329,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.timeline && <p className="text-sm text-destructive mt-1">{errors.timeline.message}</p>}
+            {errors.timeline && <p role="alert" className="text-sm text-destructive mt-1">{errors.timeline.message}</p>}
           </div>
 
           {isScormFlow && (
@@ -355,7 +365,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                   )}
                 />
                 {errors.scormVersion && (
-                  <p className="text-sm text-destructive mt-1">{errors.scormVersion.message}</p>
+                  <p role="alert" className="text-sm text-destructive mt-1">{errors.scormVersion.message}</p>
                 )}
               </div>
               {selectedScormVersion ? (

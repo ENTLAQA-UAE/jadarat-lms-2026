@@ -272,6 +272,7 @@ export default function WelcomePage() {
                           size="icon"
                           className="h-4 w-4"
                           onClick={() => setShowPassword(!showPassword)}
+                          aria-label={showPassword ? "Hide password" : "Show password"}
                         >
                           {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </Button>
@@ -325,6 +326,7 @@ export default function WelcomePage() {
                         size="icon"
                         className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
                         onClick={() => setShowRepeatPassword(!showRepeatPassword)}
+                        aria-label={showRepeatPassword ? "Hide password" : "Show password"}
                       >
                         {showRepeatPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                       </Button>

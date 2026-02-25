@@ -112,6 +112,7 @@ export default function PropertiesPanel({
                     size="sm"
                     className="h-8 w-8 p-0"
                     onClick={() => onSetCanvasBgImage(undefined)}
+                    aria-label={isAr ? "إزالة صورة الخلفية" : "Remove background image"}
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>

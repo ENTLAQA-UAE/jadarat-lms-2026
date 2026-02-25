@@ -12,7 +12,7 @@ import { createClient } from "@/utils/supabase"
 import { useAppSelector } from "@/hooks/redux.hook"
 import { countries } from "@/lib/controllers/countries"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 
 import { Group } from "../groups-management/types"
 
@@ -20,7 +20,6 @@ import { User } from './types'
 import { useLanguage } from "@/context/language.context"
 
 export default function UserDetails({ selectedUser }: { selectedUser?: User }) {
-    const { toast } = useToast()
     const { settings: { primaryColor } } = useAppSelector(state => state.organization);
     const { user } = useAppSelector(state => state.user);
     const { isRTL } = useLanguage()
@@ -80,22 +79,18 @@ export default function UserDetails({ selectedUser }: { selectedUser?: User }) {
                 user_id: selectedUser.id
             })
         if (error) {
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: error.message,
-                variant: "destructive"
             })
         }
         else {
-            toast({
-                title: "User Update",
+            toast.success("User Update", {
                 description: "User details have been updated successfully.",
-                variant: "success"
             })
         }
         window.dispatchEvent(new CustomEvent('refreshUsers'))
         setIsLoading(false)
-    }, [city, country, department, grade, group, selectedUser, name, role, status, title, toast])
+    }, [city, country, department, grade, group, selectedUser, name, role, status, title])
 
     const countryOptions = useMemo(() =>
         countries.map(item => (

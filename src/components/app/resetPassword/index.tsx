@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useAppSelector } from "@/hooks/redux.hook"
 import { fulldomain } from "@/utils/getFullDomain"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { LanguageSwitcher } from "@/components/languageSwithcer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,7 +30,6 @@ const scheme = z.object({
 
 const ResetPasswordPage = () => {
     const { back } = useRouter()
-    const { toast } = useToast()
     const { settings: { authBackground, logo, primaryColor }, loading: LoadingTheme } = useAppSelector(state => state.organization);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -49,29 +48,23 @@ const ResetPasswordPage = () => {
         })
 
         if (error == null) {
-            toast({
-                title: "Congratulation",
+            toast.success("Congratulation", {
                 description: "If you have already registered account, We have sent you a password reset link.",
                 duration: 10000,
-                variant: "success"
             })
         } else if (error.message === "For security purposes, you can only request this once every 60 seconds") {
-            toast({
-                title: "Please wait",
+            toast.error("Please wait", {
                 description: "You have to wait 1 minute to send a reset password request again",
                 duration: 10000,
-                variant: "destructive"
             })
         } else {
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: error.message,
                 duration: 10000,
-                variant: "destructive"
             })
         }
         setLoading(false);
-    }, [toast])
+    }, [])
 
     return (
         <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] h-screen">
@@ -113,7 +106,7 @@ const ResetPasswordPage = () => {
                             />
                             <div>
                                 {form.formState.errors.root ?
-                                    <p className="text-caption font-medium text-destructive text-center">
+                                    <p role="alert" className="text-caption font-medium text-destructive text-center">
                                         {form.formState.errors.root?.message ?? ""}
                                     </p>
                                     : <></>}

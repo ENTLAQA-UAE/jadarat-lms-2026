@@ -7,8 +7,6 @@ export const deleteImageFromStorage = async (imageKey: string) => {
   const { error } = await supabase.storage.from('LMS Resources').remove([imageKey]);
   if (error) {
    console.error('Failed to delete image from storage:', error);
-  } else {
-   console.log('Image deleted successfully:', imageKey);
   }
  } catch (error) {
   console.error('Error deleting image:', error);

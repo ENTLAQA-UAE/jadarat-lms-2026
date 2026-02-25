@@ -84,7 +84,6 @@ const LoginPage = () => {
           .select('*')
           .eq('id', user?.id)
           .single()
-        console.log(user)
         const organizationDetails = await getOrganizationDetails(fulldomain! ?? null)
         dispatch(setOrganizationSettings({
           authBackground: organizationDetails.auth_bg ?? '/side.png',
@@ -216,7 +215,7 @@ const LoginPage = () => {
         />
         <div>
           {form.formState.errors.root && (
-            <p className="text-caption font-medium text-destructive text-center">
+            <p role="alert" className="text-caption font-medium text-destructive text-center">
               {form.formState.errors.root?.message ?? ""}
             </p>
           )}

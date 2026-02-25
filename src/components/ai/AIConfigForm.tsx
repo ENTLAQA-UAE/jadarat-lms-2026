@@ -233,6 +233,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
               onClick={() => setShowApiKey(!showApiKey)}
               className="absolute top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               style={{ [isRTL ? "left" : "right"]: "0.75rem" }}
+              aria-label={showApiKey ? t("Hide API key", "إخفاء مفتاح API") : t("Show API key", "إظهار مفتاح API")}
             >
               {showApiKey ? (
                 <EyeOff className="h-4 w-4" />
@@ -447,7 +448,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
           </span>
         )}
         {saveStatus === "error" && (
-          <span className="flex items-center gap-1 text-sm text-destructive">
+          <span role="alert" className="flex items-center gap-1 text-sm text-destructive">
             <AlertCircle className="h-4 w-4" />
             {t("Failed to save", "فشل في الحفظ")}
           </span>

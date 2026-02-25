@@ -15,7 +15,6 @@ function NonAuthHOC({ component: Component }: NonAuthHOCType) {
     useEffect(() => {
         setIsClient(true)
     }, [])
-    console.log(authBackground)
     return (
         <>
             {isClient && <div className="w-full relative lg:grid  lg:grid-cols-2">

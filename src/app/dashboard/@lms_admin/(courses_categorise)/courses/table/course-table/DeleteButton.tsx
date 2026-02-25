@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { deleteCourse } from '@/action/lms-admin/insights/courses/course/courseAction';
 
 interface DeleteButtonProps {
@@ -15,22 +15,18 @@ interface DeleteButtonProps {
 export function DeleteButton({ courseId }: DeleteButtonProps) {
  const [isDialogOpen, setIsDialogOpen] = useState(false);
  const [isLoading, setIsLoading] = useState(false);
- const { toast } = useToast();
 
  const handleDelete = async () => {
   setIsLoading(true);
   const { error } = await deleteCourse(courseId);
   if (error) {
-   toast({
-    title: 'Error',
+   toast.error('Error', {
     description: 'Failed to delete course : ' + error.message,
-    variant: 'destructive',
    });
    setIsDialogOpen(false);
    setIsLoading(false);
   } else {
-   toast({
-    title: 'Success',
+   toast.success('Success', {
     description: 'Course deleted successfully',
    });
    setIsLoading(false);
@@ -41,7 +37,7 @@ export function DeleteButton({ courseId }: DeleteButtonProps) {
  return (
   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
    <DialogTrigger asChild>
-    <Button size='icon' variant='outline'>
+    <Button size='icon' variant='outline' aria-label="Delete course">
      <Trash className='w-5 h-5' />
     </Button>
    </DialogTrigger>

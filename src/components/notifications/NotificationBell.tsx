@@ -39,6 +39,7 @@ export default function NotificationBell({
             "relative w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-muted",
             isCollapsed && !isMobile && "justify-center px-2"
           )}
+          aria-label="Notifications"
         >
           <div className="relative">
             <Bell className="h-4 w-4 shrink-0" />

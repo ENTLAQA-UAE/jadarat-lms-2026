@@ -39,7 +39,6 @@ export async function POST(
 
       case 'PutParam':
         // Handle saving AICC data
-        console.log('AICC Data received:', aiccData)
         return new NextResponse('error=0\nerror_text=Successful', { headers })
 
       case 'ExitAU':

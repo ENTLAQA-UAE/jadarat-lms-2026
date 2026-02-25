@@ -59,8 +59,7 @@ export default function CreateAccount() {
 
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-
-    console.log(values)
+    // TODO: implement form submission
   }
 
   return (

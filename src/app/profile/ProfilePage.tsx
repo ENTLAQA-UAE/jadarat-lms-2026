@@ -11,7 +11,7 @@ import { FormControl, Form, FormField, FormItem, FormLabel, FormMessage } from "
 import { useAppSelector } from "@/hooks/redux.hook"
 import { Camera, Loader2 } from 'lucide-react'
 import { createAdminClient, createClient } from "@/utils/supabase"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { uploadImage } from "@/utils/uploadFile"
 import { useDispatch } from "react-redux"
@@ -60,7 +60,6 @@ export default function ProfilePage() {
   const { user } = useAppSelector(state => state.user);
 
   const dispatch = useDispatch();
-  const { toast } = useToast();
   const [passwordStrength, setPasswordStrength] = useState(0);
 
 
@@ -95,7 +94,7 @@ export default function ProfilePage() {
     const name = `userImage.${image.name.split(".").pop()}`;
     try {
       setIsLoading(true)
-      const uploadedImageUrl = await uploadImage(`user_${user.id}_${Date.now()}`, image, user.organization_id, toast);
+      const uploadedImageUrl = await uploadImage(`user_${user.id}_${Date.now()}`, image, user.organization_id);
       if (uploadedImageUrl && uploadedImageUrl.signedUrl) {
         await updateUserAvatar(user.id, uploadedImageUrl.signedUrl);
 
@@ -105,20 +104,16 @@ export default function ProfilePage() {
           // Dispatch the updated user data
           dispatch(setUser({ ...updatedUserData, avatar_url: uploadedImageUrl.signedUrl }));
           setIsLoading(false)
-          toast({
-            title: "Success",
+          toast.success("Success", {
             description: "Profile picture updated successfully.",
-            variant: "success",
           });
           setIsUploadOpen(false);
         }
       }
     } catch (error) {
       setIsLoading(false)
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to update profile picture.",
-        variant: "destructive",
       });
     }
   };
@@ -163,17 +158,12 @@ export default function ProfilePage() {
         setIsPasswordOpen(false)
         form.reset()
         setPasswordStrength(0)
-        toast({
-          title: "Password Updated",
+        toast.success("Password Updated", {
           description: "Your password has been successfully updated.",
-          variant: "success"
         })
       } else {
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: error.message || "An error occurred while updating the password.",
-          variant: "destructive"
-
         });
       }
     }

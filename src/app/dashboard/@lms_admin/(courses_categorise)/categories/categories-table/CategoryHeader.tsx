@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { uploadImage } from '@/utils/uploadFile';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusCircle, X } from 'lucide-react';
@@ -22,7 +22,6 @@ const formSchema = z.object({
 });
 
 function CategoryHeader() {
-    const { toast } = useToast();
     const { settings: { organization_id } } = useAppSelector(state => state.organization);
     const [isLoading, setIsLoading] = useState(false);
     const [image, setImage] = useState<File | null>(null);
@@ -54,7 +53,11 @@ function CategoryHeader() {
     };
 
     const handleToast = (title: string, description: string, variant: 'default' | 'destructive') => {
-        toast({ title, description, variant });
+        if (variant === 'destructive') {
+            toast.error(title, { description });
+        } else {
+            toast.success(title, { description });
+        }
     };
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -64,7 +67,7 @@ function CategoryHeader() {
 
             // Upload image if one was selected
             if (image && Number(organization_id) > 0) {
-                const uploadedImage = await uploadImage(`category_${Date.now()}`, image, organization_id, toast);
+                const uploadedImage = await uploadImage(`category_${Date.now()}`, image, organization_id);
                 if (uploadedImage) {
                     imageUrl = uploadedImage.signedUrl;
                 }
@@ -168,6 +171,7 @@ function CategoryHeader() {
                                                         handleRemoveImage();
                                                         field.onChange(null);
                                                     }}
+                                                    aria-label="Remove image"
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </Button>

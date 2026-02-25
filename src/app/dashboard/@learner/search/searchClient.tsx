@@ -12,9 +12,6 @@ import CourseCardSkeleton from "@/components/skeleton/CourseCardSkeleton";
 const SearchClient = (
     { courses, userCourses }: { courses: CoursesType[], userCourses: CoursesType[] }
 ) => {
-    console.log("courses=>", courses);
-    console.log("userCourses=>", userCourses);
-
     const isFullCourseType = (course: CoursesType | FullCourseTypes): course is FullCourseTypes => {
         return (course as FullCourseTypes).title !== undefined;
     };

@@ -86,9 +86,7 @@ export function MFASetup() {
  }
 
  async function handleDisableMFA() {
-  console.log('handleDisableMFA called')
   const { factorId } = await checkMFAStatusAction()
-  console.log('factorId:', factorId)
   setIsDisabling(true)
   try {
     await unenrollMFAAction(factorId!)

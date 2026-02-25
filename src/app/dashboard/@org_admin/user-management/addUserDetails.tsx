@@ -12,7 +12,7 @@ import { createAdminClient, createClient } from "@/utils/supabase"
 import { useAppSelector } from "@/hooks/redux.hook"
 import { countries } from "@/lib/controllers/countries"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -36,7 +36,6 @@ const scheme = z.object({
 })
 
 export default function AddUser({ setOpenAddUser }: { setOpenAddUser: Dispatch<SetStateAction<boolean>> }) {
-    const { toast } = useToast()
     const { settings: { primaryColor } } = useAppSelector(state => state.organization);
 
     const [groups, setGroups] = useState<Group[]>([])
@@ -79,10 +78,8 @@ export default function AddUser({ setOpenAddUser }: { setOpenAddUser: Dispatch<S
             })
 
             if (error) {
-                toast({
-                    title: "Error",
+                toast.error("Error", {
                     description: error.message,
-                    variant: "destructive"
                 })
                 return
             }
@@ -103,34 +100,28 @@ export default function AddUser({ setOpenAddUser }: { setOpenAddUser: Dispatch<S
                 })
 
             if (addUserError) {
-                toast({
-                    title: "Error",
+                toast.error("Error", {
                     description: addUserError.message,
-                    variant: "destructive"
                 })
                 await adminSupabase.auth.admin.deleteUser(email)
                 return
             }
 
-            toast({
-                title: 'Add user status',
+            toast.success('Add user status', {
                 description: `User with email ${email} has been created successfully.\nand have received an invitation link.`,
-                variant: "success"
             })
             setOpenAddUser(false)
             window.dispatchEvent(new CustomEvent('refreshUsers'))
 
         } catch (err: any) {
-            toast({
-                title: "Error",
+            toast.error("Error", {
                 description: err.message,
-                variant: "destructive"
             })
         } finally {
             setIsLoading(false)
             window.dispatchEvent(new CustomEvent('refreshUsers'))
         }
-    }, [setOpenAddUser, toast])
+    }, [setOpenAddUser])
 
     return (
         <>

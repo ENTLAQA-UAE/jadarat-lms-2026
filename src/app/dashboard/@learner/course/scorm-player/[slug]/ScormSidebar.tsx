@@ -93,7 +93,6 @@ export function ScormSidebar({ data, slug, courseId }: ScormSidebarProps) {
           console.error('Error updating course progress:', error)
         }
         if (success) {
-          console.log('Course progress updated successfully')
           setLastLocation(data.lessonLocation)
         }
       }

@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { useLanguage } from '@/context/language.context';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { deleteImageFromStorage } from '@/utils/deleteImageFromStorage';
@@ -51,7 +51,6 @@ const TableAction = ({ row, categoriesData }: {
     image: string | null
   }[]
 }) => {
-  const { toast } = useToast();
   const { settings: { organization_id } } = useAppSelector(state => state.organization);
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -103,7 +102,11 @@ const TableAction = ({ row, categoriesData }: {
   };
 
   const handleToast = (title: string, description: string, variant: 'default' | 'destructive') => {
-    toast({ title, description, variant });
+    if (variant === 'destructive') {
+      toast.error(title, { description });
+    } else {
+      toast.success(title, { description });
+    }
   };
 
 
@@ -114,7 +117,7 @@ const TableAction = ({ row, categoriesData }: {
 
       // Upload new image if one was selected
       if (image && Number(organization_id) > 0) {
-        const uploadedImage = await uploadImage(`category_${values.name_en}`, image, organization_id, toast);
+        const uploadedImage = await uploadImage(`category_${values.name_en}`, image, organization_id);
         if (uploadedImage) {
           imageUrl = uploadedImage.signedUrl;
         }
@@ -162,11 +165,11 @@ const TableAction = ({ row, categoriesData }: {
 
   return (
     <div className="flex items-center gap-2">
-      <Button size="icon" variant="outline" onClick={handleEditClick}>
+      <Button size="icon" variant="outline" onClick={handleEditClick} aria-label="Edit category">
         <Edit className="w-5 h-5" />
       </Button>
 
-      <Button size="icon" variant="outline" onClick={handleDeleteClick}>
+      <Button size="icon" variant="outline" onClick={handleDeleteClick} aria-label="Delete category">
         <Trash className="w-5 h-5" />
       </Button>
 
@@ -348,6 +351,7 @@ const ImageUploadField = ({
                 handleRemoveImage();
                 field.onChange(null);
               }}
+              aria-label="Remove image"
             >
               <X className="h-4 w-4" />
             </Button>

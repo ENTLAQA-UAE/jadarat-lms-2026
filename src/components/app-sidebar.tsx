@@ -265,6 +265,7 @@ export default function AppSidebar() {
             size="icon"
             className="ms-auto h-7 w-7 text-white/40 hover:text-white hover:bg-white/10"
             onClick={toggle}
+            aria-label="Collapse sidebar"
           >
             <PanelLeftClose className="h-4 w-4" />
           </Button>
@@ -275,6 +276,7 @@ export default function AppSidebar() {
             size="icon"
             className="h-7 w-7 text-white/40 hover:text-white hover:bg-white/10"
             onClick={toggle}
+            aria-label="Expand sidebar"
           >
             <PanelLeft className="h-4 w-4" />
           </Button>
@@ -425,6 +427,7 @@ export default function AppSidebar() {
             isCollapsed && !isMobile && "justify-center px-2"
           )}
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          aria-label="Toggle theme"
         >
           {theme === "dark" ? (
             <Sun className="h-4 w-4 shrink-0" />
@@ -462,6 +465,7 @@ export default function AppSidebar() {
             isCollapsed && !isMobile && "justify-center px-2"
           )}
           onClick={onLogout}
+          aria-label="Logout"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           {(!isCollapsed || isMobile) && (
@@ -489,7 +493,7 @@ export default function AppSidebar() {
       {/* ── Mobile Header ── */}
       {isMobile && (
         <header className="sticky top-0 z-50 flex h-14 items-center gap-3 border-b bg-background px-4 shadow-sm">
-          <Button variant="ghost" size="icon" onClick={toggle}>
+          <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle sidebar">
             <PanelLeft className="h-5 w-5" />
           </Button>
           <Link href="/dashboard">

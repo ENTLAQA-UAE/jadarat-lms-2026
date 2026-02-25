@@ -8,7 +8,7 @@ import { useAppSelector } from "@/hooks/redux.hook"
 import { createClient } from "@/utils/supabase"
 import { Save, RotateCcw } from "lucide-react"
 import UploadImageInput from "@/components/uploadInput"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { uploadImage } from "@/utils/uploadFile"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
 import BrandingSkelton from "./skeletons/BrandingSkelton"
@@ -65,13 +65,14 @@ function ColorPickerField({
                         size="icon"
                         onClick={() => onChange(defaultValue)}
                         title="Reset to default"
+                        aria-label="Reset to default color"
                     >
                         <RotateCcw className="h-4 w-4" />
                     </Button>
                 )}
             </div>
             {!isValid && value.length > 0 && (
-                <p className="text-xs text-destructive">Enter a valid hex color (e.g. #33658a)</p>
+                <p role="alert" className="text-xs text-destructive">Enter a valid hex color (e.g. #33658a)</p>
             )}
         </div>
     )
@@ -115,7 +116,6 @@ function ColorPreview({ primary, secondary }: { primary: string; secondary: stri
 }
 
 export default function Branding() {
-    const { toast } = useToast();
     const { settings: { logo, authBackground, name, primaryColor, secondaryColor }, loading: LoadingTheme } = useAppSelector(state => state.organization);
     const { user: { organization_id } } = useAppSelector(state => state.user);
     const [isLoading, setIsLoading] = useState(false)
@@ -139,7 +139,7 @@ export default function Branding() {
         // Upload logo if selected
         if (logoFile) {
             const name = "logo." + logoFile.name.split('.')[1];
-            const logoURL = await uploadImage(name, logoFile, organization_id, toast);
+            const logoURL = await uploadImage(name, logoFile, organization_id);
             if (logoURL?.signedUrl) {
                 updatedData.new_logo = logoURL.signedUrl;
             } else {
@@ -151,7 +151,7 @@ export default function Branding() {
         // Upload auth background if selected
         if (authBgFile) {
             const name = "auth-background." + authBgFile.name.split('.')[1];
-            const authBgURL = await uploadImage(name, authBgFile, organization_id, toast);
+            const authBgURL = await uploadImage(name, authBgFile, organization_id);
             if (authBgURL?.signedUrl) {
                 updatedData.new_auth = authBgURL.signedUrl;
             } else {
@@ -185,10 +185,8 @@ export default function Branding() {
                 })
 
             if (error) {
-                toast({
-                    title: "Error while updating",
+                toast.error("Error while updating", {
                     description: error.message,
-                    variant: "destructive"
                 })
             } else {
                 // Update Redux so TenantBranding applies the new colors immediately
@@ -198,17 +196,13 @@ export default function Branding() {
                         secondaryColor: updatedData.new_secondary_color ?? secondaryColor,
                     }))
                 }
-                toast({
-                    title: "Saved",
+                toast.success("Saved", {
                     description: "Branding saved successfully.",
-                    variant: "success"
                 })
             }
         } else {
-            toast({
-                title: "No changes",
+            toast("No changes", {
                 description: "No changes were detected to save.",
-                variant: "default"
             })
         }
 

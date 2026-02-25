@@ -42,7 +42,6 @@ import {
 } from '@/components/ui/select';
 import { countries } from '@/lib/controllers/countries';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
 import { uploadImage } from '@/utils/uploadFile';
 import { LanguageSwitcher } from '@/components/languageSwithcer';
 
@@ -56,7 +55,6 @@ const calculatePasswordStrength = (password: string) => {
 };
 
 export default function RegisterForm() {
-  const { toast } = useToast();
   const {
     settings: { logo, registerationDomain },
   } = useAppSelector((state) => state.organization);
@@ -250,8 +248,7 @@ export default function RegisterForm() {
         uploadResult = await uploadImage(
           name,
           image,
-          Number(organizationId),
-          toast
+          Number(organizationId)
         );
         if (uploadResult?.signedUrl) {
           setImageUrl(uploadResult.signedUrl);
@@ -269,7 +266,6 @@ export default function RegisterForm() {
         },
       });
       if (signUpError) {
-        console.log(signUpError);
         return;
       }
 
@@ -301,12 +297,9 @@ export default function RegisterForm() {
       ]);
 
       if (insertError) {
-        console.log(insertError);
         // 3. If insertion fails, delete the user from auth
         await adminSupabase.auth.admin.deleteUser(userId);
         throw insertError;
-      } else {
-        console.log('User added successfully');
       }
     } catch (error) {
       console.error('Error during user registration:', error);
@@ -421,6 +414,7 @@ export default function RegisterForm() {
                                 size="icon"
                                 className="absolute ltr:right-0 rtl:left-0 top-0 h-full"
                                 onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
                               >
                                 {showPassword ? (
                                   <EyeOff className="h-4 w-4" />
@@ -688,6 +682,7 @@ export default function RegisterForm() {
                                       handleRemoveImage();
                                       field.onChange(null); // Reset the image in the form
                                     }}
+                                    aria-label="Remove image"
                                   >
                                     <X className="h-4 w-4" />
                                   </Button>

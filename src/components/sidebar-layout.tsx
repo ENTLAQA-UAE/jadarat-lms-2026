@@ -11,6 +11,7 @@ function SidebarLayoutInner({ children }: { children: React.ReactNode }) {
     <>
       <AppSidebar />
       <main
+        id="main-content"
         className={cn(
           "min-h-screen transition-[margin] duration-200",
           !isMobile && "ms-[var(--sidebar-width)]",

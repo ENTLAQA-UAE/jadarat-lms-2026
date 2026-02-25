@@ -34,6 +34,7 @@ export default function MobileCourseDrawer({
       <SheetTrigger asChild>
         <button
           className='w-11 h-11 cursor-pointer  text-primary-foreground flex justify-center items-center rounded-full bg-accent'
+          aria-label="Open course progress"
         >
           <ArrowRight className="h-5 w-5" />
         </button>

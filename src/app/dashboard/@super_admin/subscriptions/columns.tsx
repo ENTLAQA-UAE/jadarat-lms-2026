@@ -86,16 +86,16 @@ export const columns: ColumnDef<Subscription>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => console.log('View', subscription)}>
+            <DropdownMenuItem onClick={() => {}}>
               <Eye className="mr-2 h-4 w-4" />
               View
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log('Edit', subscription)}>
+            <DropdownMenuItem onClick={() => {}}>
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => console.log('Delete', subscription)}
+              onClick={() => {}}
             >
               <Trash className="mr-2 h-4 w-4" />
               Delete

@@ -35,6 +35,7 @@ export default function DetailPageLayout({
               size="icon"
               className="h-9 w-9 shrink-0"
               onClick={() => router.push(backHref)}
+              aria-label="Go back"
             >
               <BackArrow className="h-4 w-4" />
             </Button>

@@ -3,7 +3,7 @@
 import {  useEffect, useState } from 'react'
 import { CourseForm } from './CourseForm'
 import { CoursePreview } from './CoursePreview'
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { CourseDetailsPageProps, ScormEnum } from './types'
 import { uploadImage } from '@/utils/uploadFile'
 import { useAppSelector } from '@/hooks/redux.hook'
@@ -16,7 +16,6 @@ import { createCoassembleCourse } from '@/action/coassemble/coassemble'
 
 
 export default function CourseDetails({ categories, features }: { categories: CourseDetailsPageProps[], features: { ai_builder: boolean; document_builder: boolean } }) {
-   const { toast } = useToast()
    const router = useRouter();
    const searchParams = useSearchParams();
    const flow = searchParams.get('flow');
@@ -77,7 +76,7 @@ export default function CourseDetails({ categories, features }: { categories: Co
 
          if (data.imagePreview || data.image) {
             try {
-               const uploadedImage = await uploadImage(`course_${data.slug}`, data.image as any, organization_id, toast);
+               const uploadedImage = await uploadImage(`course_${data.slug}`, data.image as any, organization_id);
                if (uploadedImage) {
                   imageUrl = uploadedImage.signedUrl;
                   dataToSend.imagePreview = imageUrl;
@@ -86,10 +85,8 @@ export default function CourseDetails({ categories, features }: { categories: Co
             } catch (error) {
                console.error("Image upload failed:", error);
                setIsLoading(false);
-               toast({
-                  title: "Error",
+               toast.error("Error", {
                   description: "Failed to upload image. Please try again.",
-                  variant: "destructive",
                });
                return;
             }
@@ -103,17 +100,14 @@ export default function CourseDetails({ categories, features }: { categories: Co
                   organization_id,
                   toast,
                );
-               console.log('uploadedScorm =>', uploadedScorm)
                if (uploadedScorm) {
                   dataToSend.launchPath = uploadedScorm.launchPath;
                }
             } catch (error) {
                console.error("SCORM upload failed:", error);
                setIsLoading(false);
-               toast({
-                  title: "Error",
+               toast.error("Error", {
                   description: "Failed to upload SCORM package. Please try again.",
-                  variant: "destructive",
                });
                return;
             }
@@ -141,23 +135,19 @@ export default function CourseDetails({ categories, features }: { categories: Co
                await deleteImageFromStorage(uploadedImageKey);
             }
             setIsLoading(false);
-            toast({
-               title: "Error",
+            toast.error("Error", {
                description: errorMessage,
-               variant: "destructive",
             });
          } else {
             setIsLoading(false);
 
             if (flow === 'scorm') {
-               toast({
-                  title: "Success",
+               toast.success("Success", {
                   description: "SCORM course uploaded successfully!",
                });
             } else {
                router.push(`/dashboard/courses/add-course/build-course?url=${coassembleUrl?.split('/').pop()}&courseId=${courseData}`);
-               toast({
-                  title: "Success",
+               toast.success("Success", {
                   description: "Course details saved successfully!",
                });
             }
@@ -165,10 +155,8 @@ export default function CourseDetails({ categories, features }: { categories: Co
       } catch (error) {
          console.error("An error occurred while saving the course:", error);
          setIsLoading(false);
-         toast({
-            title: "Error",
+         toast.error("Error", {
             description: "An unexpected error occurred. Please try again.",
-            variant: "destructive",
          });
 
          if (uploadedImageKey) {

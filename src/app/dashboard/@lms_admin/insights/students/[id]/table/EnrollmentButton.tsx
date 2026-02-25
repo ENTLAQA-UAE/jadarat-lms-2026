@@ -25,13 +25,12 @@ import { coursesTitlesAndIds } from "@/action/lms-admin/insights/courses/courses
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { enrolToCourse } from "@/action/students/studentsActions";
 import { useParams } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 // Fetcher function for SWR
 const fetcher = (action: () => Promise<any>) => action();
 
 export default function EnrollmentButton() {
-  const { toast } = useToast();
   const { id: userId } = useParams<{ id: string }>();
   const {
     data: courses,
@@ -58,32 +57,21 @@ export default function EnrollmentButton() {
       const { errorMessage } = await enrolToCourse(selectedCourse, userId);
       if (errorMessage) {
         if (errorMessage.includes("already")) {
-          toast({
-            title: "User already enrolled",
-            variant: "default",
-          });
+          toast("User already enrolled");
         } else {
-          toast({
-            title: "Error",
+          toast.error("Error", {
             description: errorMessage,
-            variant: "destructive",
           });
         }
       } else {
-        toast({
-          title: "Enrollment Successful",
+        toast.success("Enrollment Successful", {
           description: `You have been enrolled in the course successfully.`,
-          variant: "success",
         });
         setIsDialogOpen(false); // Close the dialog
-        // Optionally, trigger a page update here
-        // window.location.reload(); // Uncomment to reload the page
       }
     } catch (err: any) {
-      toast({
-        title: "Enrollment Failed",
+      toast.error("Enrollment Failed", {
         description: `An error occurred: ${err.message}`,
-        variant: "destructive",
       });
     } finally {
       setIsSending(false);

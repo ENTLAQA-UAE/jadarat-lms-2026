@@ -95,19 +95,19 @@ export function CourseOutcome({ outcomes, setOutcomes }: CourseOutcomeProps) {
       <div className="flex space-x-2 ml-2">
        {editingId === outcome.id ? (
         <>
-         <Button onClick={saveEdit} type='button' size="icon" variant="ghost">
+         <Button onClick={saveEdit} type='button' size="icon" variant="ghost" aria-label="Save outcome">
           <Save className="w-4 h-4" />
          </Button>
-         <Button onClick={cancelEdit} type='button' size="icon" variant="ghost">
+         <Button onClick={cancelEdit} type='button' size="icon" variant="ghost" aria-label="Cancel editing">
           <X className="w-4 h-4" />
          </Button>
         </>
        ) : (
         <>
-         <Button onClick={() => startEditing(outcome.id)} type='button' size="icon" variant="ghost">
+         <Button onClick={() => startEditing(outcome.id)} type='button' size="icon" variant="ghost" aria-label="Edit outcome">
           <Edit className="w-4 h-4" />
          </Button>
-         <Button onClick={() => removeOutcome(outcome.id)} type='button' size="icon" variant="ghost" className="text-destructive">
+         <Button onClick={() => removeOutcome(outcome.id)} type='button' size="icon" variant="ghost" className="text-destructive" aria-label="Remove outcome">
           <X className="w-4 h-4" />
          </Button>
         </>

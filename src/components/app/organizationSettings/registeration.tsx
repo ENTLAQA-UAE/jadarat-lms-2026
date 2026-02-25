@@ -10,11 +10,10 @@ import { useAppSelector } from "@/hooks/redux.hook"
 import { createClient } from "@/utils/supabase"
 import { Save } from "lucide-react"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import RegistrationSkelton from "./skeletons/RegistrationSkelton"
 
 export default function Registeration() {
-    const { toast } = useToast();
     const { settings: { registerationDomain, registerationEnabled, registerationRequireApproval, registerationRequireSpecificDomain, primaryColor }, loading: LoadingTheme } = useAppSelector(state => state.organization);
     const { user: { organization_id } } = useAppSelector(state => state.user);
 
@@ -44,22 +43,18 @@ export default function Registeration() {
             })
 
         if (error) {
-            toast({
-                title: "Error while updating",
+            toast.error("Error while updating", {
                 description: error.message,
-                variant: "destructive"
             })
         }
         else {
-            toast({
-                title: "Saved",
+            toast.success("Saved", {
                 description: "Registration settings saved successfully.",
-                variant: "success"
             })
         }
 
         setIsLoading(false)
-    }, [allowAnyDomain, domain, enableRegistration, organization_id, requireApproval, toast])
+    }, [allowAnyDomain, domain, enableRegistration, organization_id, requireApproval])
 
     useEffect(() => {
         if (!LoadingTheme) {

@@ -76,7 +76,7 @@ export function ZipUploader({ onFileUpdate }: ZipUploaderProps) {
         <div className="mt-4 p-4 bg-muted rounded">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-foreground">{file.name}</span>
-            <Button variant="ghost" size="sm" onClick={handleRemove}>
+            <Button variant="ghost" size="sm" onClick={handleRemove} aria-label="Remove file">
               <X className="h-4 w-4" />
             </Button>
           </div>

@@ -9,11 +9,10 @@ import { X } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { coursesTitlesAndIds } from '@/action/lms-admin/insights/courses/coursesAction'
 import { enrollLearnersToCourses, getStudentsData } from '@/action/students/studentsActions'
-import { useToast } from '@/components/ui/use-toast'
+import { toast } from 'sonner'
 
 
 function ActionEnrollmentTable() {
-    const { toast } = useToast()
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [learners, setLearners] = useState<{ id: string; name: string }[]>([]);
@@ -41,8 +40,6 @@ function ActionEnrollmentTable() {
         setLearnersError(null);
         try {
             const { data, errorMessage } = await getStudentsData();
-            console.log("data=>", data);
-            console.log("errorMessage=>", errorMessage);
             if (errorMessage) {
                 setLearnersError(errorMessage);
             } else {
@@ -106,23 +103,19 @@ function ActionEnrollmentTable() {
         const { errorMessage, loading } = await enrollLearnersToCourses(learnersIds, coursesIds);
         if (loading) {
             setLoading(true);
-            toast({
-                title: 'Enrolling learners...',
+            toast('Enrolling learners...', {
                 description: 'Please wait while we enroll learners to courses',
             });
         }
         if (errorMessage) {
             console.error('Enrollment failed:', errorMessage);
-            toast({
-                title: 'Enrollment failed',
+            toast.error('Enrollment failed', {
                 description: errorMessage,
-                variant: 'destructive',
             });
             setLoading(false);
         } else {
             console.log('Enrollment successful');
-            toast({
-                title: 'Enrollment successful',
+            toast.success('Enrollment successful', {
                 description: 'Learners enrolled successfully',
             });
             setLoading(false);
@@ -152,12 +145,12 @@ function ActionEnrollmentTable() {
                                 onChange={(e) => setLearnerSearch(e.target.value)}
                             />
                             {learnersLoading && <p>Loading learners...</p>}
-                            {learnersError && <p className="text-sm text-destructive">{learnersError}</p>}
+                            {learnersError && <p role="alert" className="text-sm text-destructive">{learnersError}</p>}
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {selectedLearners.map(learner => (
                                     <Badge key={learner.id} variant="secondary">
                                         {learner.name}
-                                        <button onClick={() => handleRemoveLearner(learner.id)} className="ml-1">
+                                        <button onClick={() => handleRemoveLearner(learner.id)} className="ml-1" aria-label={`Remove ${learner.name}`}>
                                             <X className="h-3 w-3" />
                                         </button>
                                     </Badge>
@@ -186,12 +179,12 @@ function ActionEnrollmentTable() {
                                 onChange={(e) => setCourseSearch(e.target.value)}
                             />
                             {coursesLoading && <p>Loading courses...</p>}
-                            {coursesError && <p className="text-sm text-destructive">{coursesError}</p>}
+                            {coursesError && <p role="alert" className="text-sm text-destructive">{coursesError}</p>}
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {selectedCourses.map(course => (
                                     <Badge key={course.course_id} variant="secondary">
                                         {course.title}
-                                        <button onClick={() => handleRemoveCourse(course.course_id)} className="ml-1">
+                                        <button onClick={() => handleRemoveCourse(course.course_id)} className="ml-1" aria-label={`Remove ${course.title}`}>
                                             <X className="h-3 w-3" />
                                         </button>
                                     </Badge>

@@ -48,9 +48,7 @@ export default function Player({
   }
   useEffect(() => {
     if (parsedData?.progress?.p > progressValue) {
-      console.log("parsedData.progress.p =>>", parsedData.progress.p)
       setProgressValue(Math.round(parsedData.progress.p))
-      console.log("progressValue =>>", progressValue)
     }
   }, [parsedData, progressValue])
 
@@ -106,7 +104,6 @@ export default function Player({
         scormData.suspendData ||
         scormData.lessonLocation
       )
-      console.log('shouldUpdate', shouldUpdate)
       if (shouldUpdate) {
         const progressValues = ['passed', 'completed'].includes(lessonStatusLower ?? '')
           ? 100
@@ -122,7 +119,7 @@ export default function Player({
           console.error('Error updating course progress:', error)
         }
         if (success) {
-          console.log('Course progress updated successfully')
+          // progress updated
         }
       }
     }

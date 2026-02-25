@@ -13,28 +13,23 @@ export class ScormAPI {
   };
 
   LMSInitialize(str: string): string {
-    console.log("LMSInitialize", str);
     return "true";
   }
 
   LMSFinish(str: string): string {
-    console.log("LMSFinish", str);
     return "true";
   }
 
   LMSGetValue(element: string): string {
-    console.log("LMSGetValue", element);
     return this.data[element] || "";
   }
 
   LMSSetValue(element: string, value: string): string {
-    console.log("LMSSetValue", element, value);
     this.data[element] = value;
     return "true";
   }
 
   LMSCommit(str: string): string {
-    console.log("LMSCommit", str);
     return "true";
   }
 
