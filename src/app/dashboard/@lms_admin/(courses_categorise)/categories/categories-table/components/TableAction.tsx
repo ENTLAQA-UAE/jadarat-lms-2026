@@ -162,11 +162,11 @@ const TableAction = ({ row, categoriesData }: {
 
   return (
     <div className="flex items-center gap-2">
-      <Button size="icon" variant="outline" onClick={handleEditClick}>
+      <Button size="icon" variant="outline" onClick={handleEditClick} aria-label="Edit category">
         <Edit className="w-5 h-5" />
       </Button>
 
-      <Button size="icon" variant="outline" onClick={handleDeleteClick}>
+      <Button size="icon" variant="outline" onClick={handleDeleteClick} aria-label="Delete category">
         <Trash className="w-5 h-5" />
       </Button>
 
@@ -348,6 +348,7 @@ const ImageUploadField = ({
                 handleRemoveImage();
                 field.onChange(null);
               }}
+              aria-label="Remove image"
             >
               <X className="h-4 w-4" />
             </Button>

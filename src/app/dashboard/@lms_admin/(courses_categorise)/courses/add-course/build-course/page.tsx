@@ -14,14 +14,12 @@ function BuildCoursePage() {
          if (message.origin !== 'https://coassemble.com') return;
          const payload = JSON.parse(message.data);
          if (payload?.data?.id && courseId) {
-            console.log("payload =>", payload);
             let { data, error } = await supabase
                .rpc('add_coassemble_id', {
                   _coassemble_id: payload.data.id.toString(),
                   _course_id: +courseId
                })
             if (error) console.error(error)
-            else console.log(data)
          }
       }, [courseId]
    );

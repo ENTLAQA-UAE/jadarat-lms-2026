@@ -42,7 +42,6 @@ import {
 } from '@/components/ui/select';
 import { countries } from '@/lib/controllers/countries';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
 import { uploadImage } from '@/utils/uploadFile';
 import { LanguageSwitcher } from '@/components/languageSwithcer';
 
@@ -56,7 +55,6 @@ const calculatePasswordStrength = (password: string) => {
 };
 
 export default function RegisterForm() {
-  const { toast } = useToast();
   const {
     settings: { logo, registerationDomain },
   } = useAppSelector((state) => state.organization);

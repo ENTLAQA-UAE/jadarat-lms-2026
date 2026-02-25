@@ -41,7 +41,7 @@ export function DeleteButton({ courseId }: DeleteButtonProps) {
  return (
   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
    <DialogTrigger asChild>
-    <Button size='icon' variant='outline'>
+    <Button size='icon' variant='outline' aria-label="Delete course">
      <Trash className='w-5 h-5' />
     </Button>
    </DialogTrigger>

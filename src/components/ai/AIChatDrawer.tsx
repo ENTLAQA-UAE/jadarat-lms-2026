@@ -124,12 +124,14 @@ export function AIChatDrawer({ enabled = true, lang = "en" }: AIChatDrawerProps)
               onClick={handleNewChat}
               className="rounded-lg p-1.5 transition-colors hover:bg-white/20"
               title={isRTL ? "محادثة جديدة" : "New chat"}
+              aria-label={isRTL ? "محادثة جديدة" : "New chat"}
             >
               <Trash2 className="h-4 w-4" />
             </button>
             <button
               onClick={() => setIsOpen(false)}
               className="rounded-lg p-1.5 transition-colors hover:bg-white/20"
+              aria-label={isRTL ? "إغلاق" : "Close"}
             >
               <X className="h-4 w-4" />
             </button>
@@ -229,6 +231,7 @@ export function AIChatDrawer({ enabled = true, lang = "en" }: AIChatDrawerProps)
           <button
             onClick={scrollToBottom}
             className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-full bg-background p-1.5 shadow-md transition-colors hover:bg-muted"
+            aria-label={isRTL ? "انتقل إلى الأسفل" : "Scroll to bottom"}
           >
             <ChevronDown className="h-4 w-4 text-muted-foreground" />
           </button>
@@ -251,6 +254,7 @@ export function AIChatDrawer({ enabled = true, lang = "en" }: AIChatDrawerProps)
               onClick={handleSend}
               disabled={!inputValue.trim() || isLoading}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-40 disabled:hover:bg-primary"
+              aria-label={isRTL ? "إرسال الرسالة" : "Send message"}
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

@@ -70,6 +70,7 @@ export default function UploadImageInput({ label, defaultValue, className, image
                         <button
                             className="absolute -top-4 ltr:-right-5 rtl:-left-5 bg-muted text-foreground rounded-full p-1 hover:bg-muted/80 focus:outline-none focus:ring-0 focus:ring-offset-2 focus:ring-ring"
                             onClick={handleRemoveLogo}
+                            aria-label="Remove image"
                         >
                             <X className="h-4 w-4" />
                         </button>

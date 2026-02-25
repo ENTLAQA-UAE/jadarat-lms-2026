@@ -12,7 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createAdminClient } from '@/utils/supabase';
 import { createClient } from '@/utils/supabase/client';
 import { useAppSelector } from '@/hooks/redux.hook';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogContent,
@@ -35,7 +35,6 @@ import HeadTitleTableSkeleton from '@/components/skeleton/HeadTitleTableSkeleton
 import useWindowSize from '@/hooks/useWindowSize';
 
 export default function Component() {
-  const { toast } = useToast();
   const { loading } = useAppSelector((state) => state.organization);
   const {
     user: { organization_id },
@@ -78,25 +77,21 @@ export default function Component() {
       });
       if (error) {
         console.error('Error fetching users:', error);
-        toast({
-          title: 'Error',
+        toast.error('Error', {
           description: error.message,
-          variant: 'destructive',
         });
       } else {
         setUsers(data);
       }
     } catch (error) {
       console.error('Unexpected error fetching users:', error);
-      toast({
-        title: 'Error',
+      toast.error('Error', {
         description: 'An unexpected error occurred while fetching users.',
-        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
-  }, [organization_id, toast]);
+  }, [organization_id]);
 
   useEffect(() => {
     window.addEventListener('refreshUsers', getUsers);
@@ -123,39 +118,33 @@ export default function Component() {
         );
 
         if (error == null) {
-          toast({
-            title: 'Success',
+          toast.success('Success', {
             description: `Reset password link has been sent to ${selectedUser.email}`,
             duration: 10000,
-            variant: 'success',
           });
         } else if (
           error.message ===
           'For security purposes, you can only request this once every 60 seconds'
         ) {
-          toast({
-            title: 'Please wait',
+          toast.error('Please wait', {
             description:
               'You have to wait 1 minute to send a reset password link',
             duration: 10000,
-            variant: 'destructive',
           });
         } else {
           throw error;
         }
       } catch (error) {
         console.error('Error sending reset password:', error);
-        toast({
-          title: 'Error',
+        toast.error('Error', {
           description: 'An error occurred while sending the reset password link.',
           duration: 10000,
-          variant: 'destructive',
         });
       } finally {
         setSelectedUser(undefined);
       }
     }
-  }, [selectedUser?.email, toast]);
+  }, [selectedUser?.email]);
 
   const handleDisableUser = useCallback(async () => {
     setShowDisableUserModal(false);
@@ -170,12 +159,10 @@ export default function Component() {
         });
 
         if (error == null) {
-          toast({
-            title: 'Success',
+          toast.success('Success', {
             description: `User with email ${selectedUser.email} has been ${selectedUser.is_active ? 'deactivated' : 'activated'
               } successfully.`,
             duration: 10000,
-            variant: 'success',
           });
           setSelectedUser({
             ...selectedUser,
@@ -191,17 +178,15 @@ export default function Component() {
         }
       } catch (error) {
         console.error('Error updating user status:', error);
-        toast({
-          title: 'Error',
+        toast.error('Error', {
           description: 'An error occurred while updating the user status.',
           duration: 10000,
-          variant: 'destructive',
         });
       } finally {
         setSelectedUser(undefined);
       }
     }
-  }, [organization_id, selectedUser, toast]);
+  }, [organization_id, selectedUser]);
 
   const handleDeleteUser = useCallback(async () => {
     setShowDeleteUserModal(false);
@@ -223,11 +208,9 @@ export default function Component() {
             if (error) {
               throw error;
             }
-            toast({
-              title: 'Success',
+            toast.success('Success', {
               description: `User with email ${selectedUser.email} has been deleted successfully.`,
               duration: 10000,
-              variant: 'success',
             });
             setUsers((st) => st.filter((e) => e.id !== selectedUser.id));
           }
@@ -236,17 +219,15 @@ export default function Component() {
         }
       } catch (error) {
         console.error('Error deleting user:', error);
-        toast({
-          title: 'Error',
+        toast.error('Error', {
           description: 'An error occurred while deleting the user.',
           duration: 10000,
-          variant: 'destructive',
         });
       } finally {
         setSelectedUser(undefined);
       }
     }
-  }, [organization_id, selectedUser?.email, selectedUser?.id, toast]);
+  }, [organization_id, selectedUser?.email, selectedUser?.id]);
 
   const departments = useMemo(() => {
     let departments: string[] = [];

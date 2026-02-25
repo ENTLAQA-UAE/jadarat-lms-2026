@@ -112,10 +112,8 @@ export default function ProfilePage() {
       }
     } catch (error) {
       setIsLoading(false)
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to update profile picture.",
-        variant: "destructive",
       });
     }
   };
@@ -160,17 +158,12 @@ export default function ProfilePage() {
         setIsPasswordOpen(false)
         form.reset()
         setPasswordStrength(0)
-        toast({
-          title: "Password Updated",
+        toast.success("Password Updated", {
           description: "Your password has been successfully updated.",
-          variant: "success"
         })
       } else {
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: error.message || "An error occurred while updating the password.",
-          variant: "destructive"
-
         });
       }
     }

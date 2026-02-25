@@ -30,7 +30,6 @@ export default async function CompletionsDataTablePage({ searchParams }: { searc
 
   if ('data' in completionsResponse && Array.isArray(completionsResponse.data)) {
     const { data, count } = completionsResponse;
-    console.log(data)
     return (
       <CompletionsDataTable
         completionsData={data}

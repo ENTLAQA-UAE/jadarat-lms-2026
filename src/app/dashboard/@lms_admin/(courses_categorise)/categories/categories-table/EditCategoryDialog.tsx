@@ -39,7 +39,6 @@ function EditCategoryDialog({ category, isOpen, onClose }: { category: any, isOp
 
  const onSubmit = (values: z.infer<typeof formSchema>) => {
   // Submit updated category details
-  console.log("Updated values:", values);
   onClose();  // Close the dialog after submission
  };
 

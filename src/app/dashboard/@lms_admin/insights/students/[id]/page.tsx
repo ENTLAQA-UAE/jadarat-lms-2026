@@ -158,7 +158,7 @@ export default function LearnerProfilePage(props: { params: any }) {
           await fetchUserCoursesCount(props.params.id);
         setLearnerInsights({ allCourses, completedCourses, activeCourses }); // Set data correctly
       } catch (err) {
-        console.log("Failed to load learner insights.");
+        // silently handled
       }
     };
 

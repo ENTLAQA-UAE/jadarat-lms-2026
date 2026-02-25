@@ -8,7 +8,7 @@ export default function DownloadCertificateButton() {
     size="sm"
     variant="outline"
     className="w-[60%] cursor-pointer"
-    onClick={() => console.log('id')}
+    onClick={() => {}}
    >
     <p className="flex gap-4">
      {/* <DownloadCloud size={25} className="h-4 w-4" /> */}

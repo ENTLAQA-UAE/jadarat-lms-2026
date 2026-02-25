@@ -65,6 +65,7 @@ function ColorPickerField({
                         size="icon"
                         onClick={() => onChange(defaultValue)}
                         title="Reset to default"
+                        aria-label="Reset to default color"
                     >
                         <RotateCcw className="h-4 w-4" />
                     </Button>

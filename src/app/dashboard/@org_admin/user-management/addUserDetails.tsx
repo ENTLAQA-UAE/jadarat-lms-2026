@@ -12,7 +12,7 @@ import { createAdminClient, createClient } from "@/utils/supabase"
 import { useAppSelector } from "@/hooks/redux.hook"
 import { countries } from "@/lib/controllers/countries"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -36,7 +36,6 @@ const scheme = z.object({
 })
 
 export default function AddUser({ setOpenAddUser }: { setOpenAddUser: Dispatch<SetStateAction<boolean>> }) {
-    const { toast } = useToast()
     const { settings: { primaryColor } } = useAppSelector(state => state.organization);
 
     const [groups, setGroups] = useState<Group[]>([])
@@ -79,10 +78,8 @@ export default function AddUser({ setOpenAddUser }: { setOpenAddUser: Dispatch<S
             })
 
             if (error) {
-                toast({
-                    title: "Error",
+                toast.error("Error", {
                     description: error.message,
-                    variant: "destructive"
                 })
                 return
             }

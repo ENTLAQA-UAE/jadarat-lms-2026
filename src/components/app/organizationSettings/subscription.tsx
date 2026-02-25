@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useAppSelector } from "@/hooks/redux.hook"
 import { createClient } from "@/utils/supabase"
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import LoadingSpinner from "@/components/loading-spinner/loading-spinner"
 import { ArrowRight, AlertCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -25,7 +25,6 @@ const options: any = {
 
 export default function Subscription() {
     const { numbers } = useLanguage()
-    const { toast } = useToast();
     const { subscription, loading } = useAppSelector(state => state.organization);
     const { user: { organization_id } } = useAppSelector(state => state.user);
 
@@ -53,10 +52,8 @@ export default function Subscription() {
             let { data, error } = await supabase
                 .rpc('get_subscription_usage')
             if (error) {
-                toast({
-                    title: "Error",
+                toast.error("Error", {
                     description: error.message,
-                    variant: "destructive"
                 })
             }
             else setCounts(data);
@@ -65,7 +62,7 @@ export default function Subscription() {
         if (!loading)
             getNoOfUsers();
 
-    }, [loading, toast])
+    }, [loading])
 
     const handleSubmit = useCallback(async () => {
         const supabase = createClient();
@@ -80,17 +77,15 @@ export default function Subscription() {
             })
         if (error) {
             setIsLoading(false);
-            toast({
-                title: "Submitting request failed.",
+            toast.error("Submitting request failed.", {
                 description: error.message,
-                variant: "destructive"
             })
             return;
         }
 
         setIsLoading(false);
         setRequestSent(true)
-    }, [numCourses, numCreators, numUsers, organization_id, toast]);
+    }, [numCourses, numCreators, numUsers, organization_id]);
     const handleCloseModal = () => {
         setIsModalOpen(false)
         setTimeout(() => {

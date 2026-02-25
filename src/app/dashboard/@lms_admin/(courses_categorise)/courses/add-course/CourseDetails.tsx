@@ -103,7 +103,6 @@ export default function CourseDetails({ categories, features }: { categories: Co
                   organization_id,
                   toast,
                );
-               console.log('uploadedScorm =>', uploadedScorm)
                if (uploadedScorm) {
                   dataToSend.launchPath = uploadedScorm.launchPath;
                }

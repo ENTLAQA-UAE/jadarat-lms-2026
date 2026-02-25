@@ -130,6 +130,7 @@ export default function CertificateBuilder({
               size="sm"
               className="h-8 w-8 p-0"
               onClick={handleClose}
+              aria-label={isAr ? "إغلاق" : "Close"}
             >
               <X className="h-4 w-4" />
             </Button>

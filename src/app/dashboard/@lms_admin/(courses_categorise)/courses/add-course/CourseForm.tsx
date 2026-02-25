@@ -97,7 +97,6 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
   });
 
   const onSubmit = (data: CourseFormData) => {
-    console.log("data ===>", data);
     if (isScormFlow) {
       if (scormFile === null) {
         toast({

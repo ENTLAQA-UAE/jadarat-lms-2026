@@ -168,6 +168,7 @@ function CategoryHeader() {
                                                         handleRemoveImage();
                                                         field.onChange(null);
                                                     }}
+                                                    aria-label="Remove image"
                                                 >
                                                     <X className="h-4 w-4" />
                                                 </Button>

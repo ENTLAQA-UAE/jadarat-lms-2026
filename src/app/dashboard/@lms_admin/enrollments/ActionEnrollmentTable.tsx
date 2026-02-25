@@ -154,7 +154,7 @@ function ActionEnrollmentTable() {
                                 {selectedLearners.map(learner => (
                                     <Badge key={learner.id} variant="secondary">
                                         {learner.name}
-                                        <button onClick={() => handleRemoveLearner(learner.id)} className="ml-1">
+                                        <button onClick={() => handleRemoveLearner(learner.id)} className="ml-1" aria-label={`Remove ${learner.name}`}>
                                             <X className="h-3 w-3" />
                                         </button>
                                     </Badge>
@@ -188,7 +188,7 @@ function ActionEnrollmentTable() {
                                 {selectedCourses.map(course => (
                                     <Badge key={course.course_id} variant="secondary">
                                         {course.title}
-                                        <button onClick={() => handleRemoveCourse(course.course_id)} className="ml-1">
+                                        <button onClick={() => handleRemoveCourse(course.course_id)} className="ml-1" aria-label={`Remove ${course.title}`}>
                                             <X className="h-3 w-3" />
                                         </button>
                                     </Badge>

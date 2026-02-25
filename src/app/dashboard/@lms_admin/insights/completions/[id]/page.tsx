@@ -45,7 +45,6 @@ export default function EnrollmentsDetailsPage() {
 
         if (data?.length > 0) {
           const userData = data[0];
-          console.log(data)
           setLearner({
             name: userData.user_name,
             department: userData.department,

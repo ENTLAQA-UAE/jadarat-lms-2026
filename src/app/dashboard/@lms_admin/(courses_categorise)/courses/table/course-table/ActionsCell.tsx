@@ -64,7 +64,7 @@ export const ActionsCell = ({ course }: { course: Course }) => {
 
     return (
         <div className='flex items-center gap-2'>
-            <Button asChild size={'icon'} variant={"outline"}>
+            <Button asChild size={'icon'} variant={"outline"} aria-label="Edit course">
                 <Link href={`/dashboard/courses/edit-course/${course.course_id}`}>
                     <Edit className='w-5 h-5' />
                 </Link>
