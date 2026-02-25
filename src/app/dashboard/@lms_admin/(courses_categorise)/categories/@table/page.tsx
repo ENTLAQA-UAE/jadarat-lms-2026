@@ -16,17 +16,14 @@ export default async function CategoryDataTablePage({ searchParams, userRole }: 
     name: searchParams.name ?? null,
   };
   
-  const  {data ,count}  = await fetchAllCategoriesFiltered(filters, page, pageSize);
-  if (data) {
-    return (
-      <CategoryTable
-        AllCategories={data}
-        page={page}
-        pageSize={pageSize}
-        filters={filters}
-        count={count ?? 0}
-      />
-    );
-  }
-  return null;
+  const { data, count } = await fetchAllCategoriesFiltered(filters, page, pageSize);
+  return (
+    <CategoryTable
+      AllCategories={data}
+      page={page}
+      pageSize={pageSize}
+      filters={filters}
+      count={count ?? 0}
+    />
+  );
 }

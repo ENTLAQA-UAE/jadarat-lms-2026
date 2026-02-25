@@ -18,18 +18,14 @@ export default async function CoursesDataTablePage({ searchParams ,userRole}: { 
     status: searchParams.status ?? null,
   };
 
-  const result = await fetchAllCourses(page, pageSize, filters);
-  if (result) {
-    const { data, count } = result;
-    return (
-      <CourseTable
-        courses={data}
-        count={count ?? 0}
-        currentPage={page}
-        pageSize={pageSize}
-        userRole={userRole}
-      />
-    );
-  }
-  return null;
+  const { data, count } = await fetchAllCourses(page, pageSize, filters);
+  return (
+    <CourseTable
+      courses={data}
+      count={count ?? 0}
+      currentPage={page}
+      pageSize={pageSize}
+      userRole={userRole}
+    />
+  );
 }
