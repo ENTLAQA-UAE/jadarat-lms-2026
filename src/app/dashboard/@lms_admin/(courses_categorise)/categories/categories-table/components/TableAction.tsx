@@ -109,45 +109,54 @@ const TableAction = ({ row, categoriesData }: {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
-    let imageUrl: string | null = null;
-    if (image && Number(organization_id) > 0) {
-      const uploadedImage = await uploadImage(`category_${values.name_en}`, image, organization_id, toast);
-      if (uploadedImage) {
-        imageUrl = uploadedImage.signedUrl;
+    try {
+      let imageUrl: string | null = row.original.image ?? null;
+
+      // Upload new image if one was selected
+      if (image && Number(organization_id) > 0) {
+        const uploadedImage = await uploadImage(`category_${values.name_en}`, image, organization_id, toast);
+        if (uploadedImage) {
+          imageUrl = uploadedImage.signedUrl;
+        }
       }
-    }
 
-    const { loading, errorMessage } = await editCategory(
-      row.original.id,
-      values.name_en ?? row.original.name,
-      imageUrl,
-      values.name_ar ?? row.original.ar_name
-    );
+      const { errorMessage } = await editCategory(
+        row.original.id,
+        values.name_en ?? row.original.name,
+        imageUrl,
+        values.name_ar ?? row.original.ar_name
+      );
 
-    if (loading) {
-      handleToast('Editing Category...', 'Please wait while the category is being edited.', 'default');
-    } else if (errorMessage) {
-      handleToast('Category Editing Failed', errorMessage, 'destructive');
-      deleteImageFromStorage(`${organization_id}/category_${values.name_en}`)
-      setIsLoading(false);
-    } else {
-      handleToast('Category Edited', 'Category edited successfully.', 'default');
+      if (errorMessage) {
+        handleToast('Category Editing Failed', errorMessage, 'destructive');
+        if (image) {
+          deleteImageFromStorage(`${organization_id}/category_${values.name_en}`);
+        }
+      } else {
+        handleToast('Category Edited', 'Category edited successfully.', 'default');
+        setOpen(false);
+      }
+    } catch (error: any) {
+      handleToast('Category Editing Failed', error?.message || 'An unexpected error occurred', 'destructive');
+    } finally {
       setIsLoading(false);
     }
   };
 
   const onDeleteSubmit = async (values: z.infer<typeof deleteFormSchema>) => {
     setIsLoading(true);
-    const { loading, errorMessage } = await deleteCategory(+row.original.id, +values.newCategoryId);
-    if (loading) {
-      handleToast('Deleting Category...', 'Please wait while the category is being deleted.', 'default');
-    } else if (errorMessage) {
-      handleToast('Category Deletion Failed', errorMessage, 'destructive');
+    try {
+      const { errorMessage } = await deleteCategory(+row.original.id, +values.newCategoryId);
+      if (errorMessage) {
+        handleToast('Category Deletion Failed', errorMessage, 'destructive');
+      } else {
+        handleToast('Category Deleted', 'Category deleted successfully.', 'default');
+        setDeleteOpen(false);
+      }
+    } catch (error: any) {
+      handleToast('Category Deletion Failed', error?.message || 'An unexpected error occurred', 'destructive');
+    } finally {
       setIsLoading(false);
-    } else {
-      handleToast('Category Deleted', 'Category deleted successfully.', 'default');
-      setIsLoading(false);
-      setDeleteOpen(false);
     }
   };
 

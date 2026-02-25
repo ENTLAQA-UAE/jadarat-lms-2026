@@ -59,31 +59,34 @@ function CategoryHeader() {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsLoading(true);
-        let imageUrl: string | null = null;
-        if (image && Number(organization_id) > 0) {
-            const uploadedImage = await uploadImage(`category_${Date.now()}`, image, organization_id, toast);
-            if (uploadedImage) {
-                imageUrl = uploadedImage.signedUrl;
+        try {
+            let imageUrl: string | null = null;
 
+            // Upload image if one was selected
+            if (image && Number(organization_id) > 0) {
+                const uploadedImage = await uploadImage(`category_${Date.now()}`, image, organization_id, toast);
+                if (uploadedImage) {
+                    imageUrl = uploadedImage.signedUrl;
+                }
             }
 
-            const { loading, errorMessage } = await addCategory(values.name_en, imageUrl, values.name_ar);
+            // Always create the category (image is optional)
+            const { errorMessage } = await addCategory(values.name_en, imageUrl, values.name_ar);
 
-            if (loading) {
-                handleToast('Adding Category...', 'Please wait while the category is being added.', 'default');
-
-            } else if (errorMessage) {
+            if (errorMessage) {
                 handleToast('Category Adding Failed', errorMessage, 'destructive');
-                setIsLoading(false);
             } else {
                 handleToast('Category Added', 'Category added successfully.', 'default');
-                setIsLoading(false);
-                form.reset()
-                setProfileImagePreview(null)
-                setOpen(false)
+                form.reset();
+                setProfileImagePreview(null);
+                setImage(null);
+                setOpen(false);
             }
+        } catch (error: any) {
+            handleToast('Category Adding Failed', error?.message || 'An unexpected error occurred', 'destructive');
+        } finally {
+            setIsLoading(false);
         }
-        setIsLoading(false);
     };
 
     return (
