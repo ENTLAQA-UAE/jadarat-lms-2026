@@ -8,7 +8,7 @@ function SentEmail({ email }: { email: string }) {
     <div className="min-h-screen bg-muted flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 text-center">
         <Mail className="mx-auto h-24 w-24 text-primary" />
-        <h1 className="text-3xl font-bold">Check your email</h1>
+        <h1 className="text-xl font-semibold tracking-tight">Check your email</h1>
         <p className="text-muted-foreground">
           We've sent a confirmation email to {email}. Please check your inbox
           and follow the instructions to complete your registration.

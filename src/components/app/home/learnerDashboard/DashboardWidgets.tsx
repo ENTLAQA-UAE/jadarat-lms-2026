@@ -53,9 +53,9 @@ export default function DashboardWidgets() {
   const { isRTL } = useLanguage();
 
   return (
-    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {/* Challenges Widget */}
-      <Card className="overflow-hidden border border-border/50">
+      <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
           <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
@@ -64,13 +64,13 @@ export default function DashboardWidgets() {
             {isRTL ? "التحديات النشطة" : "Active Challenges"}
           </CardTitle>
           <Link href="/dashboard/achievements">
-            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-primary h-8">
+            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-foreground h-7">
               {isRTL ? "عرض الكل" : "View All"}
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3 w-3" />
             </Button>
           </Link>
         </CardHeader>
-        <CardContent className="space-y-3 px-5 pb-5">
+        <CardContent className="space-y-2.5 px-5 pb-5">
           {MOCK_CHALLENGES.map((challenge) => (
             <ChallengeCard key={challenge.id} challenge={challenge} />
           ))}
@@ -78,7 +78,7 @@ export default function DashboardWidgets() {
       </Card>
 
       {/* Leaderboard Preview Widget */}
-      <Card className="overflow-hidden border border-border/50">
+      <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
           <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-golden/10">
@@ -87,9 +87,9 @@ export default function DashboardWidgets() {
             {isRTL ? "لوحة المتصدرين" : "Leaderboard"}
           </CardTitle>
           <Link href="/dashboard/leaderboard">
-            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-primary h-8">
+            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-foreground h-7">
               {isRTL ? "عرض الكل" : "View All"}
-              <ArrowRight className="h-3.5 w-3.5" />
+              <ArrowRight className="h-3 w-3" />
             </Button>
           </Link>
         </CardHeader>

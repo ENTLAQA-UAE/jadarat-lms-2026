@@ -65,7 +65,7 @@ export default function Courses() {
                 <CardTitle>Course Settings</CardTitle>
                 <CardDescription>Manage your course settings here.</CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-8">
+            <CardContent className="grid gap-6">
                 <div className="grid gap-2">
                     <div className="flex items-center justify-between">
                         <Label htmlFor="expiration-enabled">Course Expiration</Label>

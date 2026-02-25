@@ -98,7 +98,7 @@ export default function PointsConfigPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Points Configuration</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Points Configuration</h1>
           <p className="text-muted-foreground">
             Configure how many points learners earn for each action. Points drive levels, leaderboard rankings, and badge progression.
           </p>

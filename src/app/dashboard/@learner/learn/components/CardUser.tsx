@@ -6,7 +6,7 @@ import { BookOpen } from "lucide-react"
 
 export default function Component() {
  return (
-  <Card className="w-full max-w-md shadow-lg">
+  <Card className="w-full max-w-md shadow-soft">
    <CardHeader className="flex flex-row items-center gap-4">
     <div className="rounded-full bg-primary p-2">
      <BookOpen className="h-6 w-6 text-primary-foreground" />

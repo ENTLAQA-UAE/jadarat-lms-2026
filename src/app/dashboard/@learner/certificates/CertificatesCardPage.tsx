@@ -49,7 +49,7 @@ export default function CertificatesCardPage({ userCertificates }: { userCertifi
                 </DialogContent>
               </Dialog>
               <div className="p-4 mt-4" dir="auto">
-                <h2 className="text-xl font-bold mb-2">{certificate.title}</h2>
+                <h2 className="text-xl font-semibold mb-2">{certificate.title}</h2>
                 <ReadMore text={certificate.description} amountOfWords={14} id={certificate.id.toString()} />
                 <Separator className="my-2 bg-transparent border-transparent" />
                 <p className="text-muted-foreground text-sm" dir="auto">Issued: {new Date(certificate.created_at).toDateString()}</p>

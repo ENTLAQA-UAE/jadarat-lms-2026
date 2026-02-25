@@ -186,7 +186,7 @@ export default function LeaderboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <h1 className="text-xl font-semibold tracking-tight flex items-center gap-2">
             <Trophy className="h-6 w-6 text-warning" />
             Leaderboard
           </h1>
@@ -214,7 +214,7 @@ export default function LeaderboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{mockTotalLearners}</p>
+            <p className="text-xl font-semibold tracking-tight">{mockTotalLearners}</p>
             <p className="text-xs text-muted-foreground mt-1">
               Active in your organization
             </p>
@@ -229,7 +229,7 @@ export default function LeaderboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-success">
+            <p className="text-xl font-semibold tracking-tight text-success">
               +1
             </p>
             <p className="text-xs text-muted-foreground mt-1">

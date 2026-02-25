@@ -33,14 +33,14 @@ export default function DetailPageLayout({
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9 shrink-0"
+              className="h-8 w-8 shrink-0"
               onClick={() => router.push(backHref)}
               aria-label="Go back"
             >
               <BackArrow className="h-4 w-4" />
             </Button>
           )}
-          <h1 className="text-heading tracking-tight text-foreground">
+          <h1 className="text-lg font-semibold tracking-tight text-foreground">
             {title}
           </h1>
         </div>

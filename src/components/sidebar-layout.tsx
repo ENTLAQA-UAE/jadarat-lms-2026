@@ -13,7 +13,7 @@ function SidebarLayoutInner({ children }: { children: React.ReactNode }) {
       <main
         id="main-content"
         className={cn(
-          "min-h-screen transition-[margin] duration-200",
+          "min-h-screen transition-[margin] duration-200 ease-smooth",
           !isMobile && "ms-[var(--sidebar-width)]",
           !isMobile && isCollapsed && "ms-[var(--sidebar-width-collapsed)]"
         )}

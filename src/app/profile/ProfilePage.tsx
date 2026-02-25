@@ -173,8 +173,8 @@ export default function ProfilePage() {
 
   return (
     <div className="grid min-h-screen w-full grid-cols-1 gap-6 bg-muted/40 p-4 sm:p-6">
-      <div className="grid gap-6 sm:grid-cols-[1fr_2fr] lg:grid-cols-[1fr_3fr]">
-        <div className="flex flex-col items-center gap-6 rounded-lg bg-background p-6 shadow-sm sm:p-8 lg:p-10">
+      <div className="grid gap-4 sm:grid-cols-[1fr_2fr] lg:grid-cols-[1fr_3fr]">
+        <div className="flex flex-col items-center gap-4 rounded-lg bg-background p-6 shadow-sm sm:p-8 lg:p-10">
           <div className="relative">
             <Avatar className="h-24 w-24 rounded-full">
               <AvatarImage src={`${user.avatar_url}`} />
@@ -199,7 +199,7 @@ export default function ProfilePage() {
           </div>
 
         </div>
-        <div className="flex flex-col gap-6 rounded-lg bg-background p-6 shadow-sm sm:p-8 lg:p-10 ">
+        <div className="flex flex-col gap-4 rounded-lg bg-background p-6 shadow-sm sm:p-8 lg:p-10 ">
           <div className="grid gap-2">
             <div className="text-sm font-medium text-muted-foreground">Full Name</div>
             <div className="text-lg font-medium exclude-weglot">{!user.name ? <Skeleton className="w-[200px] h-[23px]" /> : user.name}</div>

@@ -44,7 +44,7 @@ const LearnerDetails: React.FC<LearnerDetailsProps> = ({ learner }) => {
           </AvatarFallback>
         </Avatar>
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold exclude-weglot">{learner.name}</h2>
+          <h2 className="text-2xl font-semibold exclude-weglot">{learner.name}</h2>
           <p className="text-muted-foreground exclude-weglot">
             {learner.email}
           </p>

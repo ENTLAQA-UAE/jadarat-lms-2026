@@ -43,7 +43,7 @@ export default function CategoryTable({ AllCategories, page, pageSize, filters ,
     <>
       <div className='flex flex-col mt-4 px-1'>
         <div className='flex items-center justify-between'>
-          <h1 className="text-2xl font-bold">Categories</h1>
+          <h1 className="text-2xl font-semibold">Categories</h1>
           <CSVButton/>
         </div>
         <DataTableComponent

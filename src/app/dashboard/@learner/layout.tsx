@@ -29,7 +29,7 @@ export default async function LearnerLayout({ children }: { children: ReactNode 
   return (
     <>
       <div className="flex min-h-0 w-full flex-col">
-        <main className="flex-1 p-4 sm:p-6">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
       <AIChatDrawer enabled={chatEnabled} lang={userLang} />
     </>

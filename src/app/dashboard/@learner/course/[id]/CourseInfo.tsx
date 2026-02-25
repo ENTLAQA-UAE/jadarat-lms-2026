@@ -192,7 +192,7 @@ async function CourseInfo({ courseInfo, organizationDetails, userData }: { cours
         <div className="grid gap-4 text-center md:text-start ">
           <div className="flex   flex-col md:flex-row items-center gap-2">
             <Book className="w-6 h-6  text-primary" />
-            <h1 className="text-2xl  font-bold tracking-tighter md:text-3xl mt-2 exclude-weglot">
+            <h1 className="text-xl  font-semibold tracking-tight mt-2 exclude-weglot">
               {courseInfo?.course_title}
             </h1>
           </div>

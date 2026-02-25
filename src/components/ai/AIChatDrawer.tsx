@@ -91,7 +91,7 @@ export function AIChatDrawer({ enabled = true, lang = "en" }: AIChatDrawerProps)
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-700 text-primary-foreground shadow-lg transition-all hover:scale-105 hover:shadow-xl"
+          className="fixed bottom-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-700 text-primary-foreground shadow-elevated transition-all hover:scale-105 hover:shadow-xl"
           style={{ [isRTL ? "left" : "right"]: "1.5rem" }}
           aria-label={isRTL ? "مساعد الذكاء الاصطناعي" : "AI Assistant"}
         >
@@ -201,7 +201,7 @@ export function AIChatDrawer({ enabled = true, lang = "en" }: AIChatDrawerProps)
               </div>
               <div
                 className={cn(
-                  "max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed",
+                  "max-w-[80%] rounded-xl px-3.5 py-2.5 text-sm leading-relaxed",
                   msg.role === "user"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-foreground"
@@ -217,7 +217,7 @@ export function AIChatDrawer({ enabled = true, lang = "en" }: AIChatDrawerProps)
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/10 to-accent/10 text-primary">
                 <Bot className="h-3.5 w-3.5" />
               </div>
-              <div className="rounded-2xl bg-muted px-3.5 py-2.5">
+              <div className="rounded-xl bg-muted px-3.5 py-2.5">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               </div>
             </div>

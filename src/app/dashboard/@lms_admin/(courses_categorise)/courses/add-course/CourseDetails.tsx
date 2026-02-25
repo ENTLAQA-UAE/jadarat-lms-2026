@@ -176,7 +176,7 @@ export default function CourseDetails({ categories, features }: { categories: Co
 
    return (
       isClient && <div className="p-4">
-         <h1 className="text-2xl font-bold mb-6">Course Management</h1>
+         <h1 className="text-2xl font-semibold mb-6">Course Management</h1>
          <div className="flex flex-col lg:flex-row gap-6">
             <div className="w-full lg:w-2/3">
                <CourseForm

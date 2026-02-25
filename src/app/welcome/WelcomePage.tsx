@@ -237,7 +237,7 @@ export default function WelcomePage() {
           <span className="sr-only">Acme Inc</span>
         </div>
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Welcome to Jadarat
           </h1>
           <p className="text-muted-foreground">

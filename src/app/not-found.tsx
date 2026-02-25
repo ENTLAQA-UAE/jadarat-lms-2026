@@ -61,7 +61,7 @@ export default function Custom404() {
      }}
     />
    </motion.svg>
-   <h1 className="text-4xl font-bold mb-4">404 - Page Not Found</h1>
+   <h1 className="text-2xl font-semibold tracking-tight mb-4">404 - Page Not Found</h1>
    <p className="text-xl mb-8">Oops! The page you're looking for couldn't be found.</p>
    
     <Button asChild >

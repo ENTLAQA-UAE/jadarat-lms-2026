@@ -7,7 +7,7 @@ import React from "react";
 function Error({ error }: { error: Error }) {
   return (
     <div className="flex  h-screen flex-col items-center gap-4  justify-center  w-full">
-      <h1 className="text-2xl font-bold text-destructive">
+      <h1 className="text-xl font-semibold tracking-tight text-destructive">
         Course Not Found!
       </h1>
       <Button>

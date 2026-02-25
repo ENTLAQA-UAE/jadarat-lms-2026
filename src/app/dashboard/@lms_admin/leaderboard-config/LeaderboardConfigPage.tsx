@@ -70,7 +70,7 @@ export default function LeaderboardConfigPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">
             <Trophy className="h-6 w-6" />
             Leaderboard Configuration
           </h1>
