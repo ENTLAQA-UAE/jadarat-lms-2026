@@ -7,7 +7,6 @@ export async function setupMFAAction() {
 
   // First check existing factors
   const { data: factorData, error: listError } = await supabase.auth.mfa.listFactors()
-  console.log('Existing factors:', factorData)
   if (listError) throw listError
 
   // Enroll new TOTP factor
@@ -15,7 +14,6 @@ export async function setupMFAAction() {
     factorType: 'totp',
     friendlyName: `authenticator-${Date.now()}`
   })
-  console.log('Enrollment result:', { data, error })
   if (error) throw error
 
   if (data.type !== 'totp' || !data.totp) {
@@ -79,7 +77,6 @@ export async function
 export async function unenrollMFAAction(factorId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase.auth.mfa.unenroll({ factorId })
-  console.log('Unenrollment result:', { data, error })
   if (error) throw error
   return { success: true }
 }

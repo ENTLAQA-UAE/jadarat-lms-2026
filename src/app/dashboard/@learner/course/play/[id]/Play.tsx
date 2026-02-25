@@ -246,14 +246,19 @@ export default function CourseViewer({ params }: { params: { id: string } }) {
           />
         </div>
 
-        {courseURL && (
+        {courseURL ? (
           <iframe
+            title="Course content"
             src={courseURL}
             className="w-full relative h-[calc(100vh)]"
             frameBorder="0"
             allowFullScreen
             loading="lazy"
           />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-muted-foreground">Loading course content...</p>
+          </div>
         )}
 
         {/* <div className="absolute bg-[#FED141] text-black w-full z-[33] h-[8px] top-[2px] bottom-13">

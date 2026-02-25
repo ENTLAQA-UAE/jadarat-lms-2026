@@ -279,7 +279,6 @@ export const switchScormFile = async (
 
         // Upload the new SCORM package
         const result = await uploadScormFile(name, file, organization_id, toast)
-        console.log("result =>>", result)
         return result
 
     } catch (error) {

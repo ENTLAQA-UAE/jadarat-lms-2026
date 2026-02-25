@@ -30,7 +30,23 @@ const courseSchema = z.object({
     id: z.string(),
     text: z.string().min(1, { message: "Outcome text is required" })
   })),
-  scormFile: z.any().optional(),
+  scormFile: z
+    .any()
+    .optional()
+    .refine(
+      (file) => {
+        if (!file || !(file instanceof File)) return true; // optional, so no file is OK
+        return file.name.endsWith('.zip');
+      },
+      { message: "Only .zip files are allowed for SCORM packages" }
+    )
+    .refine(
+      (file) => {
+        if (!file || !(file instanceof File)) return true;
+        return file.size <= 500 * 1024 * 1024; // 500MB
+      },
+      { message: "File size must be less than 500MB" }
+    ),
   scormVersion: z.nativeEnum(ScormEnum).optional(),
   isScorm: z.boolean().optional(),
 });
@@ -174,7 +190,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.title && <p className="text-sm text-destructive mt-1">{errors.title.message}</p>}
+            {errors.title && <p role="alert" className="text-sm text-destructive mt-1">{errors.title.message}</p>}
           </div>
 
           <div>
@@ -195,7 +211,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.description && <p className="text-sm text-destructive mt-1">{errors.description.message}</p>}
+            {errors.description && <p role="alert" className="text-sm text-destructive mt-1">{errors.description.message}</p>}
           </div>
 
           <div>
@@ -222,7 +238,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 </Select>
               )}
             />
-            {errors.level && <p className="text-sm text-destructive mt-1">{errors.level.message}</p>}
+            {errors.level && <p role="alert" className="text-sm text-destructive mt-1">{errors.level.message}</p>}
           </div>
 
           <div>
@@ -261,7 +277,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 </Select>
               )}
             />
-            {errors.category_id && <p className="text-sm text-destructive mt-1">{errors.category_id.message}</p>}
+            {errors.category_id && <p role="alert" className="text-sm text-destructive mt-1">{errors.category_id.message}</p>}
           </div>
 
           <CourseOutcome

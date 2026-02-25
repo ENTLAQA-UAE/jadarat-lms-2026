@@ -86,29 +86,48 @@ export function DataTableComponent<TData>({ columns, data, renderToolbar, action
       </div>
 
       {/* Mobile card layout */}
-      {renderMobileCard && (
-        <div className="md:hidden space-y-3">
-          {data.length > 0 ? (
-            table.getRowModel().rows.map((row) => (
-              <React.Fragment key={row.id}>
-                {renderMobileCard(row.original)}
-              </React.Fragment>
-            ))
-          ) : (
-            <p className="text-center text-muted-foreground py-8">No data available</p>
-          )}
-        </div>
-      )}
+      <div className="md:hidden space-y-3">
+        {data.length > 0 ? (
+          table.getRowModel().rows.map((row) => (
+            <React.Fragment key={row.id}>
+              {renderMobileCard ? (
+                renderMobileCard(row.original)
+              ) : (
+                <div className="rounded-lg border bg-card p-4 space-y-2 shadow-sm">
+                  {row.getVisibleCells().slice(0, 4).map((cell) => {
+                    const headerText =
+                      typeof cell.column.columnDef.header === 'string'
+                        ? cell.column.columnDef.header
+                        : cell.column.id;
+                    return (
+                      <div key={cell.id} className="flex justify-between items-start gap-2 text-sm">
+                        <span className="font-medium text-muted-foreground shrink-0">
+                          {headerText}
+                        </span>
+                        <span className="text-end">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </React.Fragment>
+          ))
+        ) : (
+          <p className="text-center text-muted-foreground py-8">No data available</p>
+        )}
+      </div>
 
       {/* Desktop table layout */}
-      <div className={`rounded-md border grid ${renderMobileCard ? 'hidden md:grid' : ''}`}>
+      <div className="rounded-md border hidden md:grid">
         <ScrollArea className="h-[80vh]" dir={isRTL ? 'rtl' : "ltr"}>
           <Table>
             <TableHeader className='bg-primary sticky top-0 z-[3]'>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead className={`text-primary-foreground rtl:text-start ${header.column.columnDef.meta?.headerClassName}`} key={header.id + Math.random()}>
+                    <TableHead className={`text-primary-foreground rtl:text-start ${header.column.columnDef.meta?.headerClassName}`} key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -125,11 +144,11 @@ export function DataTableComponent<TData>({ columns, data, renderToolbar, action
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     className="w-[200px] "
-                    key={row.id + Math.random()}
+                    key={row.id}
                     data-state={row.getIsSelected() && 'selected'}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell className={cell.column.columnDef.meta?.cellClassName} key={cell.id + Math.random()}>
+                      <TableCell className={cell.column.columnDef.meta?.cellClassName} key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()

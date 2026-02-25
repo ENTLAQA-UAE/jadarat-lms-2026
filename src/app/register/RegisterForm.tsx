@@ -269,7 +269,6 @@ export default function RegisterForm() {
         },
       });
       if (signUpError) {
-        console.log(signUpError);
         return;
       }
 
@@ -301,12 +300,9 @@ export default function RegisterForm() {
       ]);
 
       if (insertError) {
-        console.log(insertError);
         // 3. If insertion fails, delete the user from auth
         await adminSupabase.auth.admin.deleteUser(userId);
         throw insertError;
-      } else {
-        console.log('User added successfully');
       }
     } catch (error) {
       console.error('Error during user registration:', error);
