@@ -53,10 +53,10 @@ export default async function Login() {
                         </div>
                     </div>
                 </div>
-                <div className="hidden bg-primary-50 lg:block">
+                <div className="hidden bg-gradient-to-br from-navy via-primary-800 to-primary-700 lg:block">
                     <div className="relative flex h-full items-center justify-center overflow-hidden">
-                        <div className="absolute right-0 top-1/2 h-64 w-64 -translate-y-1/2 translate-x-1/3 rounded-full bg-primary/30 blur-3xl" />
-                        <div className="absolute bottom-0 left-0 h-64 w-64 translate-y-1/3 -translate-x-1/3 rounded-full bg-accent/30 blur-3xl" />
+                        <div className="absolute right-0 top-1/2 h-64 w-64 -translate-y-1/2 translate-x-1/3 rounded-full bg-sky/20 blur-3xl" />
+                        <div className="absolute bottom-0 left-0 h-64 w-64 translate-y-1/3 -translate-x-1/3 rounded-full bg-accent/20 blur-3xl" />
                         <Image
                             src={org?.auth_bg ?? auth}
                             alt="Login hero image"

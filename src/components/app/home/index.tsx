@@ -9,6 +9,8 @@ import CardSkeletonStatus from './skeletonAdmin/CardSkeletonStatus';
 import { Activity, UserPlus, ShieldCheck, Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import PageHeader from '@/components/shared/PageHeader';
+import SectionHeader from '@/components/shared/SectionHeader';
 
 const CardStatus = dynamic(() => import('@/app/dashboard/@lms_admin/insights/CardStatus'), {
   loading: () => <CardSkeletonStatus />,
@@ -107,25 +109,26 @@ function PerformanceLoadingSkeleton() {
 export default async function HomePage() {
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <main className="flex flex-1 flex-col gap-6 p-4 md:gap-10 md:p-8 overflow-hidden">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Overview of your organization&apos;s learning activity.</p>
-        </div>
+      <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 overflow-hidden">
+        <PageHeader title="Dashboard" description="Overview of your organization's learning activity" />
 
         <section aria-label="Statistics overview">
+          <SectionHeader title="Overview" className="mb-4" />
           <Suspense fallback={<CardStatusSkeleton />}>
             <StatsSection />
           </Suspense>
         </section>
 
-        <section aria-label="Charts and performance" className="grid gap-6 lg:grid-cols-3 xl:grid-cols-4">
-          <Suspense>
-            <GraphSection />
-          </Suspense>
-          <Suspense fallback={<PerformanceLoadingSkeleton />}>
-            <PerformanceDataSection />
-          </Suspense>
+        <section aria-label="Charts and performance">
+          <SectionHeader title="Analytics" className="mb-4" />
+          <div className="grid gap-6 lg:grid-cols-3 xl:grid-cols-4">
+            <Suspense>
+              <GraphSection />
+            </Suspense>
+            <Suspense fallback={<PerformanceLoadingSkeleton />}>
+              <PerformanceDataSection />
+            </Suspense>
+          </div>
         </section>
       </main>
     </div>

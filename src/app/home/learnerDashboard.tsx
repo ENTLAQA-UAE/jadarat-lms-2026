@@ -1,19 +1,18 @@
 "use client";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import Course from "@/components/app/home/learnerDashboard/Course";
 import Sliders from "@/components/app/home/learnerDashboard/Sliders";
 import ContinueLearningHero from "@/components/app/home/learnerDashboard/ContinueLearningHero";
 import StatsRow from "@/components/app/home/learnerDashboard/StatsRow";
 import DashboardWidgets from "@/components/app/home/learnerDashboard/DashboardWidgets";
 import DropdownFilter from "@/components/DropdownFilter";
-import Link from "next/link";
 import { Category, SliderType } from "./types";
 import { useRouter } from "next/navigation";
 import { RecommendedCourses } from "@/components/ai/RecommendedCourses";
-import { Search, ArrowRight, BookOpen, GraduationCap, Compass } from "lucide-react";
+import { Search } from "lucide-react";
 import { useLanguage } from "@/context/language.context";
+import SectionHeader from "@/components/shared/SectionHeader";
 
 export default function LearnerDashboard({
   categories,
@@ -80,18 +79,17 @@ export default function LearnerDashboard({
 
       {/* Continue Courses Section */}
       {inProgressCourses.length > 0 && (
-        <Section
-          title={isRTL ? "أكمل دوراتك" : "Continue Learning"}
-          link="/dashboard/learn"
-          icon={<BookOpen className="h-5 w-5 text-primary" />}
-          isRTL={isRTL}
-        >
+        <section className="space-y-4">
+          <SectionHeader
+            title={isRTL ? "أكمل دوراتك" : "Continue Learning"}
+            action={{ label: isRTL ? "عرض الكل" : "View All", href: "/dashboard/learn" }}
+          />
           <CourseGrid>
             {inProgressCourses.slice(0, 3).map((course) => (
               <Course key={course.course_id} course={course} />
             ))}
           </CourseGrid>
-        </Section>
+        </section>
       )}
 
       {/* AI Recommended Courses */}
@@ -104,19 +102,17 @@ export default function LearnerDashboard({
       <DashboardWidgets />
 
       {/* Discover Courses Section */}
-      <Section
-        title={isRTL ? "اكتشف الدورات" : "Discover Courses"}
-        link="/dashboard/discover"
-        icon={<Compass className="h-5 w-5 text-primary" />}
-        isRTL={isRTL}
-        extraContent={
+      <section className="space-y-4">
+        <SectionHeader
+          title={isRTL ? "اكتشف الدورات" : "Discover Courses"}
+          action={{ label: isRTL ? "عرض الكل" : "View All", href: "/dashboard/discover" }}
+        >
           <DropdownFilter
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
             categories={categories}
           />
-        }
-      >
+        </SectionHeader>
         {filteredOrgCourses.length === 0 ? (
           <EmptyState
             message={isRTL ? "لا توجد دورات متاحة حالياً" : "No courses available yet"}
@@ -129,15 +125,14 @@ export default function LearnerDashboard({
             ))}
           </CourseGrid>
         )}
-      </Section>
+      </section>
 
       {/* Completed Courses Section */}
-      <Section
-        title={isRTL ? "الدورات المكتملة" : "Completed Courses"}
-        link="/dashboard/learn"
-        icon={<GraduationCap className="h-5 w-5 text-success" />}
-        isRTL={isRTL}
-      >
+      <section className="space-y-4">
+        <SectionHeader
+          title={isRTL ? "الدورات المكتملة" : "Completed Courses"}
+          action={{ label: isRTL ? "عرض الكل" : "View All", href: "/dashboard/learn" }}
+        />
         {completedCourses.length === 0 ? (
           <EmptyState
             message={isRTL ? "لم تكمل أي دورة بعد" : "No completed courses yet"}
@@ -150,56 +145,12 @@ export default function LearnerDashboard({
             ))}
           </CourseGrid>
         )}
-      </Section>
+      </section>
     </div>
   );
 }
 
 /* ── Helper Components ── */
-
-const Section = ({
-  title,
-  link,
-  icon,
-  isRTL,
-  children,
-  extraContent,
-}: {
-  title: string;
-  link?: string;
-  icon?: React.ReactNode;
-  isRTL?: boolean;
-  children: React.ReactNode;
-  extraContent?: React.ReactNode;
-}) => (
-  <section className="space-y-4">
-    <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
-      <div className="flex items-center gap-2.5">
-        {icon}
-        <h2 className="text-xl font-semibold tracking-tight md:text-2xl">
-          {title}
-        </h2>
-      </div>
-      <div className="flex items-center gap-2">
-        {extraContent}
-        {link && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="shrink-0 gap-1.5 text-muted-foreground hover:text-primary"
-            asChild
-          >
-            <Link href={link}>
-              {isRTL ? "عرض الكل" : "View All"}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        )}
-      </div>
-    </div>
-    {children}
-  </section>
-);
 
 const CourseGrid = ({ children }: { children: React.ReactNode }) => (
   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{children}</div>

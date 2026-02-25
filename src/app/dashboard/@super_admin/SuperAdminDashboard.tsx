@@ -20,7 +20,7 @@ export default function SuperAdminDashboard({
 }) {
   if (loading) {
     return (
-      <div className="p-8 space-y-8">
+      <div className="p-4 sm:p-6 space-y-6">
         <h1 className="text-3xl font-bold">Super Admin Dashboard</h1>
         <div>Loading.....</div>
       </div>
@@ -29,7 +29,7 @@ export default function SuperAdminDashboard({
 
   if (errorMessage || !dashboardData) {
     return (
-      <div className="p-8 space-y-8">
+      <div className="p-4 sm:p-6 space-y-6">
         <h1 className="text-3xl font-bold">Super Admin Dashboard</h1>
         <div className="text-destructive">{errorMessage || 'Failed to load dashboard data.'}</div>
       </div>
@@ -79,7 +79,7 @@ export default function SuperAdminDashboard({
   })) ?? [];
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 sm:p-6 space-y-6">
       <h1 className="text-3xl font-bold">Super Admin Dashboard</h1>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {statsData.map((stat, index) => (

@@ -19,15 +19,22 @@ import { CircleX } from "lucide-react";
 import CoursesDataInsightsTablePage from "./@table/page";
 import { useSearchParams } from "next/navigation";
 
+const BRAND_PALETTE = ['#33658a', '#86bbd8', '#f26419', '#f6ae2d', '#2f4858'];
+
 function generateDynamicColors(length: number): string[] {
-  const hueStep = 360 / length; // evenly distribute hues
   const colors: string[] = [];
 
   for (let i = 0; i < length; i++) {
-    const h = (i * hueStep + Math.random() * (hueStep / 3)) % 360;
-    const s = 65 + Math.random() * 20; // saturation between 65 and 85
-    const l = 50 + Math.random() * 10; // lightness between 50 and 60
-    colors.push(hslToHex(h, s, l));
+    if (i < BRAND_PALETTE.length) {
+      colors.push(BRAND_PALETTE[i]);
+    } else {
+      // Generate additional colors based on hue distribution for overflow
+      const hueStep = 360 / length;
+      const h = (i * hueStep + Math.random() * (hueStep / 3)) % 360;
+      const s = 65 + Math.random() * 20;
+      const l = 50 + Math.random() * 10;
+      colors.push(hslToHex(h, s, l));
+    }
   }
 
   return colors;
@@ -47,7 +54,7 @@ function hslToHex(h: number, s: number, l: number): string {
 }
 
 const ErrorCard = ({ title, error }: { title: string; error: string }) => (
-  <Card className="w-full hover:shadow-md transition-shadow duration-200">
+  <Card className="w-full shadow-sm hover:shadow-md transition-shadow duration-200">
     <CardHeader>
       <CardTitle className="text-destructive flex items-center">
         {title} <CircleX className="ml-2" />
@@ -66,9 +73,9 @@ const BarChartCard = ({
   barChartData: any[];
   dynamicColors: string[];
 }) => (
-  <Card className="w-full flex flex-col justify-between hover:shadow-md transition-shadow duration-200">
+  <Card className="w-full flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-200">
     <CardHeader>
-      <CardTitle>New Courses per Month</CardTitle>
+      <CardTitle className="text-base font-semibold">New Courses per Month</CardTitle>
     </CardHeader>
     <CardContent>
       <div className="h-[200px]">
@@ -76,7 +83,7 @@ const BarChartCard = ({
           <BarChart data={barChartData}>
             <XAxis dataKey="month" />
             <Tooltip />
-            <Bar dataKey="course_count" fill="hsl(var(--primary))">
+            <Bar dataKey="course_count" fill="#33658a">
               {barChartData.map((data, index) => (
                 <Cell
                   key={index}
@@ -92,20 +99,20 @@ const BarChartCard = ({
 );
 
 const STATUS_COLORS: Record<string, string> = {
-  Published: 'hsl(var(--success))',
-  Draft: 'hsl(var(--warning, 45 93% 47%))',
-  Archived: 'hsl(var(--muted-foreground))',
+  Published: '#33658a',
+  Draft: '#f6ae2d',
+  Archived: '#2f4858',
 };
 
 const CourseStatusPieChart = ({ data }: { data: { name: string; value: number }[] }) => {
   if (!data || data.length === 0) return null;
 
-  const colors = data.map((d) => STATUS_COLORS[d.name] || 'hsl(var(--primary))');
+  const colors = data.map((d) => STATUS_COLORS[d.name] || '#86bbd8');
 
   return (
-    <Card className="w-full hover:shadow-md transition-shadow duration-200">
+    <Card className="w-full shadow-sm hover:shadow-md transition-shadow duration-200">
       <CardHeader>
-        <CardTitle>Course Status Distribution</CardTitle>
+        <CardTitle className="text-base font-semibold">Course Status Distribution</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[200px]">
@@ -117,7 +124,7 @@ const CourseStatusPieChart = ({ data }: { data: { name: string; value: number }[
                 cy="50%"
                 labelLine={false}
                 outerRadius={80}
-                fill="hsl(var(--primary))"
+                fill="#33658a"
                 dataKey="value"
               >
                 {data.map((entry, index) => (
@@ -153,9 +160,9 @@ const PieChartCard = ({
   pieChartData: any[];
   dynamicColors: string[];
 }) => (
-  <Card className="w-full hover:shadow-md transition-shadow duration-200">
+  <Card className="w-full shadow-sm hover:shadow-md transition-shadow duration-200">
     <CardHeader>
-      <CardTitle>Courses by Category</CardTitle>
+      <CardTitle className="text-base font-semibold">Courses by Category</CardTitle>
     </CardHeader>
     <CardContent>
       <div className="h-[200px]">
@@ -167,7 +174,7 @@ const PieChartCard = ({
               cy="50%"
               labelLine={false}
               outerRadius={80}
-              fill="hsl(var(--primary))"
+              fill="#33658a"
               dataKey="value"
             >
               {pieChartData.map((entry, index) => (

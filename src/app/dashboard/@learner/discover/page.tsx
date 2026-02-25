@@ -13,7 +13,9 @@ async function page() {
   ])
 
   return (
-    <SearchPage courses={organizationCourses} userCourses={userCourses} categories={categories} />
+    <div className="p-4 sm:p-6">
+      <SearchPage courses={organizationCourses} userCourses={userCourses} categories={categories} />
+    </div>
   )
 }
 

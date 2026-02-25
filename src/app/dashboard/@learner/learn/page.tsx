@@ -9,11 +9,15 @@ const LeanerPage = async () => {
     if (!userCourse || !Array.isArray(userCourse)) {
       console.error('Invalid user course data:', userCourse);
       return (
-        <div>Error: Invalid course data received. Please try again later.</div>
+        <div className="p-4 sm:p-6">Error: Invalid course data received. Please try again later.</div>
       );
     }
 
-    return <UserCoursesLeaner userCourses={userCourse ?? []}/>;
+    return (
+      <div className="p-4 sm:p-6">
+        <UserCoursesLeaner userCourses={userCourse ?? []}/>
+      </div>
+    );
   } catch (error) {
     console.error('Error fetching user courses:', error);
 
@@ -22,7 +26,7 @@ const LeanerPage = async () => {
       errorMessage = `Error: ${error.message}`;
     }
 
-    return <div>{errorMessage}</div>;
+    return <div className="p-4 sm:p-6">{errorMessage}</div>;
   }
 };
 
