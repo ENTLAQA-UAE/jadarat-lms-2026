@@ -94,7 +94,7 @@ export default function ProfilePage() {
     const name = `userImage.${image.name.split(".").pop()}`;
     try {
       setIsLoading(true)
-      const uploadedImageUrl = await uploadImage(`user_${user.id}_${Date.now()}`, image, user.organization_id, toast);
+      const uploadedImageUrl = await uploadImage(`user_${user.id}_${Date.now()}`, image, user.organization_id);
       if (uploadedImageUrl && uploadedImageUrl.signedUrl) {
         await updateUserAvatar(user.id, uploadedImageUrl.signedUrl);
 

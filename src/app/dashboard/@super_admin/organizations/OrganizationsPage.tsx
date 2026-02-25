@@ -149,8 +149,7 @@ export default function OrganizationsPage({
           const uploadedImage = await uploadImage(
             "logo",
             logo,
-            organizationId,
-            ""
+            organizationId
           );
 
           if (uploadedImage) {
@@ -240,8 +239,7 @@ export default function OrganizationsPage({
           const uploadedImage = await uploadImage(
             "logo",
             logo,
-            currentOrganization.id,
-            ""
+            currentOrganization.id
           );
 
           if (uploadedImage) {
