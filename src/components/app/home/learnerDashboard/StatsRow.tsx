@@ -44,19 +44,19 @@ export default function StatsRow({ completedCount, inProgressCount }: StatsRowPr
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       {stats.map((stat, index) => (
         <Card
           key={stat.label}
-          className="group relative overflow-hidden border border-border/50 shadow-sm transition-shadow duration-300 hover:shadow-md"
-          style={{ animationDelay: `${index * 80}ms` }}
+          className="group overflow-hidden transition-all duration-200 hover:shadow-soft"
+          style={{ animationDelay: `${index * 60}ms` }}
         >
           <CardContent className="flex items-center gap-3 p-4">
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${stat.bgColor} transition-transform duration-300 group-hover:scale-110`}>
-              <stat.icon className={`h-[18px] w-[18px] ${stat.color}`} />
+            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${stat.bgColor} transition-transform duration-200 group-hover:scale-105`}>
+              <stat.icon className={`h-4 w-4 ${stat.color}`} strokeWidth={2} />
             </div>
             <div className="min-w-0">
-              <p className="text-lg font-bold leading-tight tracking-tight">{stat.value}</p>
+              <p className="text-lg font-semibold leading-tight tracking-tight tabular-nums">{stat.value}</p>
               <p className="text-[11px] text-muted-foreground truncate">{stat.label}</p>
             </div>
           </CardContent>

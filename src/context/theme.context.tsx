@@ -99,7 +99,7 @@ function TenantBranding() {
     const root = document.documentElement;
 
     // Apply primary color overrides
-    if (primaryColor && primaryColor !== "#33658a") {
+    if (primaryColor && primaryColor !== "#33658a" && primaryColor !== "#4B83DB") {
       const scale = generatePrimaryScale(primaryColor);
       if (scale) {
         Object.entries(scale).forEach(([prop, val]) => {

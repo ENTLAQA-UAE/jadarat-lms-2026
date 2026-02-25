@@ -45,7 +45,7 @@ export default function LearnerDashboard({
     .filter((orgCourse) => !selectedCategory || orgCourse.category_id === selectedCategory);
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto">
       {/* Mobile Search */}
       <div className="md:hidden">
         <div className="relative">
@@ -53,7 +53,7 @@ export default function LearnerDashboard({
           <Input
             type="search"
             placeholder={isRTL ? "ابحث عن الدورات..." : "Search courses..."}
-            className="w-full rounded-xl bg-card shadow-sm ps-10 h-11 border-border/50"
+            className="w-full rounded-lg bg-card ps-10 h-9"
             onChange={(e) => setSearch(e.target.value)}
             value={search}
             onKeyDown={(e) => {
@@ -153,12 +153,12 @@ export default function LearnerDashboard({
 /* ── Helper Components ── */
 
 const CourseGrid = ({ children }: { children: React.ReactNode }) => (
-  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
+  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">{children}</div>
 );
 
 const EmptyState = ({ message, subMessage }: { message: string; subMessage: string }) => (
-  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/30 py-12 px-6 text-center">
+  <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/40 bg-muted/20 py-10 px-6 text-center">
     <p className="text-sm font-medium text-muted-foreground">{message}</p>
-    <p className="mt-1 text-xs text-muted-foreground/70">{subMessage}</p>
+    <p className="mt-1 text-xs text-muted-foreground/60">{subMessage}</p>
   </div>
 );

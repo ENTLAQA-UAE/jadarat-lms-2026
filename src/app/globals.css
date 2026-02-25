@@ -3,181 +3,182 @@
 @tailwind utilities;
 
 /* ============================================================================
-   Jadarat LMS — Brand Theme
-   Primary: #33658a (Blue) | Accent: #f26419 (Orange) | Navy: #2f4858
-   Sky: #86bbd8 (Light Blue) | Golden: #f6ae2d (Amber)
+   Jadarat LMS — Ultra-Modern B2B SaaS Design System
 
+   Inspired by: Linear, Vercel, Notion, Stripe Dashboard
+   Philosophy: Clean neutrals, refined spacing, layered elevation,
+              precise micro-interactions, glass surfaces.
+
+   Primary: Refined Blue | Accent: Warm Orange | Surfaces: Cool Grays
    Tenant orgs can override --primary-* and --accent via ThemeProvider.
    ============================================================================ */
 
 @layer base {
   :root {
-    /* ── Surfaces ── */
-    --background: 220 20% 97%;
-    --foreground: 204 30% 12%;
+    /* ── Surfaces — warm whites with subtle blue undertone ── */
+    --background: 220 14% 96%;
+    --foreground: 224 71% 4%;
 
     --card: 0 0% 100%;
-    --card-foreground: 204 30% 12%;
+    --card-foreground: 224 71% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 204 30% 12%;
+    --popover-foreground: 224 71% 4%;
 
-    /* ── Primary (#33658a Blue) — overridable by tenant ── */
-    --primary: 206 46% 37%;
+    /* ── Primary — refined, confident blue ── */
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
-    --primary-50:  206 51% 97%;
-    --primary-100: 206 46% 93%;
-    --primary-200: 206 43% 84%;
-    --primary-300: 206 41% 72%;
-    --primary-400: 206 46% 50%;
-    --primary-500: 206 46% 37%;
-    --primary-600: 206 48% 31%;
-    --primary-700: 206 46% 25%;
-    --primary-800: 206 43% 20%;
-    --primary-900: 206 38% 14%;
+    --primary-50:  214 100% 97%;
+    --primary-100: 214 95% 93%;
+    --primary-200: 213 97% 87%;
+    --primary-300: 212 96% 78%;
+    --primary-400: 213 94% 68%;
+    --primary-500: 217 91% 60%;
+    --primary-600: 221 83% 53%;
+    --primary-700: 224 76% 48%;
+    --primary-800: 226 71% 40%;
+    --primary-900: 224 64% 33%;
+
+    /* ── Secondary — cool neutral for backgrounds ── */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 9% 46%;
+
+    /* ── Muted — sophisticated grays ── */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    /* ── Accent — warm, energetic orange ── */
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
+
+    /* ── Semantic ── */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 98%;
+
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 9%;
+
+    /* ── Borders & Inputs — ultra subtle ── */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 217 91% 60%;
+
+    /* ── Radius — softer, modern ── */
+    --radius: 0.75rem;
+
+    /* ── Sidebar — deep charcoal, not navy ── */
+    --sidebar-background: 225 25% 12%;
+    --sidebar-foreground: 220 20% 95%;
+    --sidebar-border: 225 20% 18%;
+    --sidebar-accent: 217 91% 60%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-muted: 225 20% 16%;
+    --sidebar-muted-foreground: 220 15% 60%;
+    --sidebar-width: 264px;
+    --sidebar-width-collapsed: 72px;
+
+    /* ── Chart palette — harmonized ── */
+    --chart-1: 217 91% 60%;
+    --chart-2: 24 95% 53%;
+    --chart-3: 142 71% 45%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 262 83% 58%;
+
+    /* ── Brand Extended ── */
+    --sky: 199 89% 48%;
+    --sky-foreground: 0 0% 100%;
+
+    --golden: 38 92% 57%;
+    --golden-foreground: 0 0% 100%;
+
+    --navy: 225 25% 17%;
+    --navy-foreground: 0 0% 100%;
+  }
+
+  .dark {
+    /* ── Surfaces — deep, rich blacks ── */
+    --background: 224 71% 4%;
+    --foreground: 210 20% 98%;
+
+    --card: 225 25% 7%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 225 25% 7%;
+    --popover-foreground: 210 20% 98%;
+
+    /* ── Primary (lifted for dark backgrounds) ── */
+    --primary: 213 94% 68%;
+    --primary-foreground: 224 71% 4%;
+    --primary-50:  225 25% 8%;
+    --primary-100: 225 25% 12%;
+    --primary-200: 224 30% 18%;
+    --primary-300: 220 35% 28%;
+    --primary-400: 217 50% 42%;
+    --primary-500: 217 70% 55%;
+    --primary-600: 213 85% 62%;
+    --primary-700: 213 94% 68%;
+    --primary-800: 212 96% 78%;
+    --primary-900: 213 97% 87%;
 
     /* ── Secondary ── */
-    --secondary: 206 15% 93%;
-    --secondary-foreground: 204 25% 25%;
+    --secondary: 225 20% 11%;
+    --secondary-foreground: 210 20% 80%;
 
     /* ── Muted ── */
-    --muted: 206 15% 93%;
-    --muted-foreground: 206 10% 50%;
+    --muted: 225 20% 11%;
+    --muted-foreground: 220 10% 50%;
 
-    /* ── Accent (#f26419 Orange) — overridable by tenant ── */
-    --accent: 21 89% 52%;
+    /* ── Accent ── */
+    --accent: 24 90% 56%;
     --accent-foreground: 0 0% 100%;
 
     /* ── Semantic ── */
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 152 60% 40%;
+    --success: 142 60% 50%;
     --success-foreground: 0 0% 98%;
 
-    --info: 210 85% 55%;
+    --info: 199 80% 52%;
     --info-foreground: 0 0% 98%;
 
-    --warning: 38 90% 52%;
+    --warning: 38 85% 50%;
     --warning-foreground: 0 0% 9%;
 
     /* ── Borders & Inputs ── */
-    --border: 206 12% 90%;
-    --input: 206 12% 90%;
-    --ring: 206 46% 37%;
-
-    /* ── Radius ── */
-    --radius: 0.75rem;
-
-    /* ── Sidebar (Dark Navy — always dark for super-app feel) ── */
-    --sidebar-background: 204 34% 18%;
-    --sidebar-foreground: 210 20% 95%;
-    --sidebar-border: 204 25% 24%;
-    --sidebar-accent: 21 89% 52%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-muted: 204 30% 22%;
-    --sidebar-muted-foreground: 201 30% 72%;
-    --sidebar-width: 272px;
-    --sidebar-width-collapsed: 72px;
-
-    /* ── Chart palette ── */
-    --chart-1: 206 46% 37%;
-    --chart-2: 21 89% 52%;
-    --chart-3: 152 60% 40%;
-    --chart-4: 38 90% 52%;
-    --chart-5: 204 30% 26%;
-
-    /* ── Brand Extended: Sky Blue (#86bbd8) ── */
-    --sky: 201 51% 69%;
-    --sky-foreground: 204 34% 18%;
-
-    /* ── Brand Extended: Golden Amber (#f6ae2d) ── */
-    --golden: 38 92% 57%;
-    --golden-foreground: 0 0% 100%;
-
-    /* ── Brand Extended: Dark Navy (#2f4858) ── */
-    --navy: 204 34% 26%;
-    --navy-foreground: 0 0% 100%;
-  }
-
-  .dark {
-    /* ── Surfaces ── */
-    --background: 204 20% 8%;
-    --foreground: 206 15% 92%;
-
-    --card: 204 18% 11%;
-    --card-foreground: 206 15% 92%;
-
-    --popover: 204 18% 11%;
-    --popover-foreground: 206 15% 92%;
-
-    /* ── Primary (brighter for dark backgrounds) ── */
-    --primary: 206 50% 55%;
-    --primary-foreground: 0 0% 100%;
-    --primary-50:  206 25% 12%;
-    --primary-100: 206 28% 16%;
-    --primary-200: 206 32% 24%;
-    --primary-300: 206 38% 34%;
-    --primary-400: 206 44% 45%;
-    --primary-500: 206 48% 52%;
-    --primary-600: 206 50% 55%;
-    --primary-700: 206 46% 65%;
-    --primary-800: 206 42% 78%;
-    --primary-900: 206 38% 90%;
-
-    /* ── Secondary ── */
-    --secondary: 204 15% 16%;
-    --secondary-foreground: 206 15% 85%;
-
-    /* ── Muted ── */
-    --muted: 204 15% 16%;
-    --muted-foreground: 206 10% 55%;
-
-    /* ── Accent (Orange — slightly brighter in dark mode) ── */
-    --accent: 21 82% 55%;
-    --accent-foreground: 0 0% 100%;
-
-    /* ── Semantic ── */
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 98%;
-
-    --success: 152 50% 45%;
-    --success-foreground: 0 0% 98%;
-
-    --info: 210 75% 55%;
-    --info-foreground: 0 0% 98%;
-
-    --warning: 38 80% 48%;
-    --warning-foreground: 0 0% 9%;
-
-    /* ── Borders & Inputs ── */
-    --border: 204 15% 18%;
-    --input: 204 15% 18%;
-    --ring: 206 50% 55%;
+    --border: 225 15% 15%;
+    --input: 225 15% 15%;
+    --ring: 213 94% 68%;
 
     /* ── Brand Extended (dark mode) ── */
-    --sky: 201 45% 55%;
+    --sky: 199 80% 52%;
     --sky-foreground: 0 0% 100%;
-    --golden: 38 85% 52%;
+    --golden: 38 85% 55%;
     --golden-foreground: 0 0% 100%;
-    --navy: 204 30% 14%;
+    --navy: 225 25% 8%;
     --navy-foreground: 210 20% 90%;
 
     /* ── Sidebar (deeper in dark mode) ── */
-    --sidebar-background: 204 30% 10%;
+    --sidebar-background: 225 30% 6%;
     --sidebar-foreground: 210 20% 90%;
-    --sidebar-border: 204 20% 16%;
-    --sidebar-accent: 21 82% 55%;
+    --sidebar-border: 225 20% 12%;
+    --sidebar-accent: 213 94% 68%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-muted: 204 25% 14%;
-    --sidebar-muted-foreground: 206 15% 55%;
+    --sidebar-muted: 225 25% 10%;
+    --sidebar-muted-foreground: 220 10% 50%;
 
     /* ── Chart palette ── */
-    --chart-1: 206 50% 55%;
-    --chart-2: 21 82% 55%;
-    --chart-3: 152 50% 45%;
-    --chart-4: 38 80% 48%;
-    --chart-5: 210 75% 55%;
+    --chart-1: 213 94% 68%;
+    --chart-2: 24 90% 56%;
+    --chart-3: 142 60% 50%;
+    --chart-4: 38 85% 50%;
+    --chart-5: 262 75% 58%;
   }
 }
 
@@ -188,6 +189,9 @@
   body {
     @apply bg-background text-foreground touch-pan-y antialiased;
     font-family: var(--font-poppins), var(--font-ibm-arabic), system-ui, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* Arabic text uses IBM Plex Sans Arabic as primary */
@@ -219,54 +223,80 @@
   }
 }
 
-/* ── Modern UI Utilities ── */
+/* ============================================================================
+   ULTRA-MODERN UTILITIES
+   ============================================================================ */
 
-/* Glassmorphism card variant */
+/* ── Glass Surfaces ── */
 .glass {
-  @apply backdrop-blur-md bg-card/80 border border-border/50;
+  @apply backdrop-blur-xl bg-white/70 border border-white/20;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 12px 24px rgba(0, 0, 0, 0.03);
+}
+.dark .glass {
+  @apply bg-white/[0.04] border-white/[0.06];
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 12px 24px rgba(0, 0, 0, 0.15);
 }
 .glass-dark {
-  @apply backdrop-blur-md bg-card/60 border border-border/30;
+  @apply backdrop-blur-xl bg-black/30 border border-white/[0.08];
 }
 
-/* Gradient text utility */
+/* ── Gradient Text ── */
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-700;
 }
 .text-gradient-primary {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-primary-400;
 }
+.text-gradient-accent {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-golden;
+}
 
-/* Shimmer skeleton effect */
+/* ── Shimmer Skeleton ── */
 .skeleton-shimmer {
   @apply relative overflow-hidden;
   background: linear-gradient(
     90deg,
     hsl(var(--muted)) 25%,
-    hsl(var(--muted-foreground) / 0.08) 50%,
+    hsl(var(--muted-foreground) / 0.05) 50%,
     hsl(var(--muted)) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 2s linear infinite;
 }
 
-/* Stagger animation delays for list items */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
+/* ── Stagger Delays ── */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
 
-/* Modern card hover lift */
+/* ── Card Hover — layered elevation ── */
 .card-hover {
   @apply transition-all duration-300 ease-out;
 }
 .card-hover:hover {
-  @apply shadow-lg -translate-y-1;
+  @apply -translate-y-0.5;
+  box-shadow:
+    0 0 0 1px hsl(var(--border)),
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 20px 25px -5px rgba(0, 0, 0, 0.06);
+}
+.dark .card-hover:hover {
+  box-shadow:
+    0 0 0 1px hsl(var(--border)),
+    0 4px 6px -1px rgba(0, 0, 0, 0.2),
+    0 20px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
-/* Gradient progress bar stripes */
+/* ── Modern Progress Stripes ── */
 .progress-striped {
   background-image: linear-gradient(
     45deg,
@@ -281,63 +311,90 @@
   background-size: 1rem 1rem;
 }
 
-/* Subtle dot pattern background */
+/* ── Dot Pattern Background ── */
 .bg-dots {
-  background-image: radial-gradient(circle, hsl(var(--border)) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-image: radial-gradient(circle, hsl(var(--border) / 0.5) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-/* ── Jadarat Brand Gradients ── */
+/* ── Grid Pattern Background ── */
+.bg-grid {
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
+    linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
 
-/* Primary gradient: dark teal → blue (headers, hero sections) */
+/* ============================================================================
+   BRAND GRADIENTS
+   ============================================================================ */
+
+/* Primary gradient (headers, hero sections) */
 .gradient-primary {
-  background: linear-gradient(135deg, hsl(var(--primary-700)), hsl(var(--primary)));
+  background: linear-gradient(135deg, hsl(var(--primary-800)), hsl(var(--primary-600)));
 }
 
-/* Accent gradient: orange warm spectrum (CTAs, banners) */
+/* Accent gradient (CTAs, banners) */
 .gradient-accent {
   background: linear-gradient(135deg, hsl(var(--accent)), hsl(28 90% 58%));
 }
 
-/* Full brand gradient: dark teal → blue → orange (hero, landing) */
+/* Full brand gradient (hero, landing) */
 .gradient-brand {
-  background: linear-gradient(135deg, hsl(var(--primary-700)), hsl(var(--primary)) 50%, hsl(var(--accent)));
+  background: linear-gradient(135deg, hsl(var(--primary-800)), hsl(var(--primary-500)) 50%, hsl(var(--accent)));
 }
 
-/* Subtle brand tint for card/section backgrounds */
+/* Subtle tint for section backgrounds */
 .gradient-brand-subtle {
-  background: linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--accent) / 0.06));
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.04), hsl(var(--accent) / 0.04));
 }
 
-/* Sidebar gradient: dark navy depth (always dark) */
+/* Sidebar gradient */
 .gradient-sidebar {
-  background: linear-gradient(180deg, hsl(204 34% 22%), hsl(204 34% 15%));
+  background: linear-gradient(180deg, hsl(var(--sidebar-background)), hsl(225 28% 9%));
 }
 .dark .gradient-sidebar {
-  background: linear-gradient(180deg, hsl(204 30% 12%), hsl(204 30% 8%));
+  background: linear-gradient(180deg, hsl(var(--sidebar-background)), hsl(225 30% 4%));
 }
 
-/* CTA gradient: orange → golden (buttons, banners, hero actions) */
+/* CTA gradient (buttons, hero actions) */
 .gradient-cta {
   background: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--golden)));
 }
 
-/* Progress gradient: primary → sky blue (progress bars, loading) */
+/* Progress gradient */
 .gradient-progress {
   background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--sky)));
 }
 
-/* Glow effect for primary elements */
+/* ── Glow Effects ── */
 .glow-primary {
-  box-shadow: 0 0 20px hsl(var(--primary) / 0.3), 0 0 60px hsl(var(--primary) / 0.1);
+  box-shadow: 0 0 24px hsl(var(--primary) / 0.25), 0 0 48px hsl(var(--primary) / 0.08);
 }
-
-/* Glow effect for accent elements */
 .glow-accent {
-  box-shadow: 0 0 20px hsl(var(--accent) / 0.3), 0 0 60px hsl(var(--accent) / 0.1);
+  box-shadow: 0 0 24px hsl(var(--accent) / 0.25), 0 0 48px hsl(var(--accent) / 0.08);
 }
 
-/* Confetti animation for gamification celebrations */
+/* ── Layered Shadows (Linear-style elevation) ── */
+.shadow-elevation-1 {
+  box-shadow:
+    0 0 0 1px hsl(var(--border) / 0.5),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.shadow-elevation-2 {
+  box-shadow:
+    0 0 0 1px hsl(var(--border) / 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.04);
+}
+.shadow-elevation-3 {
+  box-shadow:
+    0 0 0 1px hsl(var(--border) / 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.04),
+    0 16px 32px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Confetti (gamification) ── */
 @keyframes confetti-fall {
   0% {
     transform: translateY(0) rotate(0deg);
@@ -348,11 +405,11 @@
     opacity: 0;
   }
 }
-
 .animate-confetti-fall {
   animation: confetti-fall 2.5s ease-in forwards;
 }
 
+/* ── Reduced Motion ── */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -362,4 +419,40 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ── Focus Ring — consistent, accessible ── */
+.focus-ring {
+  @apply outline-none ring-2 ring-primary/40 ring-offset-2 ring-offset-background;
+}
+
+/* ── Smooth scroll ── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Selection color ── */
+::selection {
+  background: hsl(var(--primary) / 0.15);
+  color: hsl(var(--primary-800));
+}
+.dark ::selection {
+  background: hsl(var(--primary) / 0.25);
+  color: hsl(var(--primary-200));
+}
+
+/* ── Scrollbar — minimal, modern ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.35);
 }
