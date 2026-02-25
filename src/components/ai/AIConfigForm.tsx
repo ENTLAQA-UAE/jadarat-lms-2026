@@ -447,7 +447,7 @@ export function AIConfigForm({ lang = "en" }: AIConfigFormProps) {
           </span>
         )}
         {saveStatus === "error" && (
-          <span className="flex items-center gap-1 text-sm text-destructive">
+          <span role="alert" className="flex items-center gap-1 text-sm text-destructive">
             <AlertCircle className="h-4 w-4" />
             {t("Failed to save", "فشل في الحفظ")}
           </span>

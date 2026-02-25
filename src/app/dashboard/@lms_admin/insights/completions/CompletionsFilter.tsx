@@ -44,8 +44,6 @@ function CompletionsFilter({ table }: CompletionsFilterProps) {
     fetchCompletionOptions();
   }, []);
 
-  console.log("completionOptions", completionOptions);
-  
 
   const courseOptions = ['All Courses', ...(completionOptions?.courses ?? [])];
   const departmentOptions = ['All Departments', ...(completionOptions?.departments ?? [])];

@@ -67,9 +67,6 @@ function StudentsFilter({ table, setData }: StudentsFilterProps) {
       return (!startDate || date >= startDate) && (!endDate || date <= endDate);
     });
 
-    // Debugging output
-    console.log('Filtered Rows:', filteredRows);
-
     // Set filtered data to the table
     setData(filteredRows);
   };

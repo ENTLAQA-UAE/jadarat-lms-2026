@@ -61,8 +61,6 @@ export default function Component() {
   const [openAddUser, setOpenAddUser] = useState<boolean>(false);
   const [openFilterMobile, setOpenFilterMobile] = useState<boolean>(false);
 
-  console.log("users " ,users);
-  
 
   useEffect(() => {
     if (width! > 768) {
@@ -71,7 +69,6 @@ export default function Component() {
   }, [width]);
 
   const getUsers = useCallback(async () => {
-    console.log('Fetching users...');
     setOpen(false);
     const supabase = createClient();
     setIsLoading(true);
@@ -87,7 +84,6 @@ export default function Component() {
           variant: 'destructive',
         });
       } else {
-        console.log('Users fetched successfully:', data);
         setUsers(data);
       }
     } catch (error) {
@@ -292,10 +288,8 @@ export default function Component() {
   );
 
   const handleDialogOpenChange = useCallback((newOpen: boolean) => {
-    console.log('Dialog open state changing to:', newOpen);
     setOpen(newOpen);
     if (!newOpen) {
-      console.log('Closing dialog, resetting selected user');
       setSelectedUser(undefined);
     }
   }, []);
@@ -347,10 +341,6 @@ export default function Component() {
     ),
     [departments, filteredUsers, groups]
   );
-
-  useEffect(() => {
-    console.log('Selected user changed:', selectedUser);
-  }, [selectedUser]);
 
   return (
     <div className="flex lg:flex-row flex-col gap-4 p-4 sm:p-6">

@@ -318,6 +318,7 @@ export default function BadgeConfigPage() {
                       size="icon"
                       onClick={() => removeBadge(badge.id)}
                       className="text-destructive hover:text-destructive"
+                      aria-label="Delete badge"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

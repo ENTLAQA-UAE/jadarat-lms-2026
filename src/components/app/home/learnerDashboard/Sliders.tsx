@@ -37,20 +37,24 @@ function Sliders({ sliders }: { sliders: SliderType[] }) {
           );
         })}
       </CarouselContent>
-      <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10">
+      <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10" aria-label="Previous slide">
         <Button
           variant="ghost"
           size="icon"
           className="bg-card/50 hover:bg-card"
+          aria-hidden="true"
+          tabIndex={-1}
         >
           <ArrowLeft className="w-6 h-6" />
         </Button>
       </CarouselPrevious>
-      <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10">
+      <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10" aria-label="Next slide">
         <Button
           variant="ghost"
           size="icon"
           className="bg-card/50 hover:bg-card"
+          aria-hidden="true"
+          tabIndex={-1}
         >
           <ArrowRight className="w-6 h-6" />
         </Button>

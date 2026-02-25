@@ -22,7 +22,6 @@ export async function createCoassembleCourse(flow: string | null): Promise<strin
       }
     );
 
-    console.log("response =>", response.data);
     return response.data;
 
   } catch (error) {

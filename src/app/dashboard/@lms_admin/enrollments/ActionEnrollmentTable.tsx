@@ -41,8 +41,6 @@ function ActionEnrollmentTable() {
         setLearnersError(null);
         try {
             const { data, errorMessage } = await getStudentsData();
-            console.log("data=>", data);
-            console.log("errorMessage=>", errorMessage);
             if (errorMessage) {
                 setLearnersError(errorMessage);
             } else {
@@ -120,7 +118,6 @@ function ActionEnrollmentTable() {
             });
             setLoading(false);
         } else {
-            console.log('Enrollment successful');
             toast({
                 title: 'Enrollment successful',
                 description: 'Learners enrolled successfully',
@@ -152,7 +149,7 @@ function ActionEnrollmentTable() {
                                 onChange={(e) => setLearnerSearch(e.target.value)}
                             />
                             {learnersLoading && <p>Loading learners...</p>}
-                            {learnersError && <p className="text-sm text-destructive">{learnersError}</p>}
+                            {learnersError && <p role="alert" className="text-sm text-destructive">{learnersError}</p>}
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {selectedLearners.map(learner => (
                                     <Badge key={learner.id} variant="secondary">
@@ -186,7 +183,7 @@ function ActionEnrollmentTable() {
                                 onChange={(e) => setCourseSearch(e.target.value)}
                             />
                             {coursesLoading && <p>Loading courses...</p>}
-                            {coursesError && <p className="text-sm text-destructive">{coursesError}</p>}
+                            {coursesError && <p role="alert" className="text-sm text-destructive">{coursesError}</p>}
                             <div className="flex flex-wrap gap-2 mt-2">
                                 {selectedCourses.map(course => (
                                     <Badge key={course.course_id} variant="secondary">

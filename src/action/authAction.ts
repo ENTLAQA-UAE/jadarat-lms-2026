@@ -17,7 +17,6 @@ export async function fetchUserData() {
     }
 
     if (!data || data.length === 0) {
-      console.log('No user data returned');
       return null;
     }
 
@@ -38,9 +37,6 @@ const loginSchema = z.object({
 export async function loginAuth(_currentState: unknown, formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
-
-  console.log("email =>", email);
-  console.log("password =>", password);
 
   // Validate inputs using Zod
   try {
@@ -77,9 +73,6 @@ export async function loginAuth(_currentState: unknown, formData: FormData) {
       email,
       password,
     });
-
-    console.log("authError =>", authError);
-    console.log("data =>", data);
 
     // Changed condition: return error if there IS an error OR if there is NO user
     if (authError || !data.user) {

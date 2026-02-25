@@ -67,7 +67,7 @@ export async function getAiAndDocumentBuilder(organization_id: number) {
       .single();
 
     if (error) {
-      console.log(error)
+      // silently handled
     }
     return data || {};
   } catch {
@@ -112,7 +112,6 @@ export async function getCertData(studentId:string,courseId:string) {
   
   
   if (error) {
-    console.log(error);
     return null
   }
   return data[0];

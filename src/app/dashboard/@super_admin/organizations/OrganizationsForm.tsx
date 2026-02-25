@@ -208,7 +208,7 @@ export function OrganizationForm({
                 Upload a PNG or JPG file (max 3 MB)
               </FormDescription>
               {logoError && (
-                <p className="text-sm font-medium text-destructive">{logoError}</p>
+                <p role="alert" className="text-sm font-medium text-destructive">{logoError}</p>
               )}
             </FormItem>
           )}

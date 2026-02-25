@@ -125,7 +125,6 @@ export default function OrganizationsPage({
 
     try {
       const { logo, ...organizationData } = newOrg;
-      console.log(newOrg);
       if (logo && !validateLogo(logo)) {
         setIsLoading(false);
         return;
@@ -332,8 +331,6 @@ export default function OrganizationsPage({
   if (isLoading) {
     return <LoadingSpinner color="#0A66C2" />;
   }
-
-  console.log("selectedOrganization", currentOrganization);
 
   return (
     <div className="p-4 sm:p-6 space-y-6">

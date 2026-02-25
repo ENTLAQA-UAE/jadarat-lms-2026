@@ -71,7 +71,7 @@ function ColorPickerField({
                 )}
             </div>
             {!isValid && value.length > 0 && (
-                <p className="text-xs text-destructive">Enter a valid hex color (e.g. #33658a)</p>
+                <p role="alert" className="text-xs text-destructive">Enter a valid hex color (e.g. #33658a)</p>
             )}
         </div>
     )

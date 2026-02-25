@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, Linkedin, Loader2 } from "lucide-react";
 import { memo, useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { DownloadFile } from "@/utils/downloadFile";
 import { createClient } from "@/utils/supabase";
 import { useAppSelector } from "@/hooks/redux.hook";
@@ -27,7 +27,6 @@ const CertificateButton: React.FC<CertificateButtonProps> = ({
   disabled,
   className,
 }) => {
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCertificate = async () => {
@@ -66,10 +65,8 @@ const CertificateButton: React.FC<CertificateButtonProps> = ({
 
       handleResult(result.url);
     } catch (error) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "An unexpected error occurred",
-        variant: "destructive",
       });
     } finally {
       setIsLoading(false);

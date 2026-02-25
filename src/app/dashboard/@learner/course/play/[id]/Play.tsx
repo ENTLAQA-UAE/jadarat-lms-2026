@@ -102,7 +102,6 @@ const useMessageHandler = (courseId: number, overallProgress: number, updateProg
     if (message.origin !== 'https://coassemble.com') return;
 
     const payload = JSON.parse(message.data);
-    console.log("payload =>", payload);
 
     // Extract payload data
     const { type, event, data } = payload;

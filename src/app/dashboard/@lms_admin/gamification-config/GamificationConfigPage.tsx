@@ -607,6 +607,7 @@ export default function GamificationConfigPage() {
                           size="icon"
                           onClick={() => removeChallenge(ch.id)}
                           className="text-destructive hover:text-destructive"
+                          aria-label="Delete challenge"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

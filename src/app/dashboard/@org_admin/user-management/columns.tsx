@@ -196,7 +196,7 @@ export const cols = ({ setSelectedUser, setShowDeleteUserModal, setShowDisableUs
                 <Tooltip>
                   <TooltipTrigger>
                     <DropdownMenuTrigger asChild disabled>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" aria-label="User actions">
                         <Ellipsis className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -209,7 +209,7 @@ export const cols = ({ setSelectedUser, setShowDeleteUserModal, setShowDisableUs
 
               :
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label="User actions">
                   <Ellipsis className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>

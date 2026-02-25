@@ -22,7 +22,6 @@ const EnrolButton: React.FC<EnrolButtonProps> = ({ courseInfo }) => {
 
   const enrolPromise = new Promise(async (resolve, reject) => {
    const { error } = await EnrolToCourse(courseInfo?.course_id, courseInfo?.course_slug_param);
-   console.log(error)
    if (error) {
     reject(error);
    } else {

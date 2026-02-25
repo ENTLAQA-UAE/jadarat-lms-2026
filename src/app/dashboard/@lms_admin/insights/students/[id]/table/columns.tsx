@@ -76,7 +76,6 @@ export const columns: ColumnDef<CourseProfile>[] = [
     cell: ({ row }) => {
 
       const { progress, id, name, learnerName, learnerId } = row.original;
-      console.log(row.original)
       if (progress == 100) {
         return (
           <CertificateButton

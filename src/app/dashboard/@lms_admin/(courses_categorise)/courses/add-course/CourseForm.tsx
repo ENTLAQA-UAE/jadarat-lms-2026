@@ -313,7 +313,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
             <p className="text-sm text-muted-foreground mt-1">
               A valid slug should only contain lowercase letters, numbers, and hyphens (e.g., <code>course-title</code>).
             </p>
-            {errors.slug && <p className="text-sm text-destructive mt-1">{errors.slug.message}</p>}
+            {errors.slug && <p role="alert" className="text-sm text-destructive mt-1">{errors.slug.message}</p>}
           </div>
 
           <div>
@@ -335,7 +335,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                 />
               )}
             />
-            {errors.timeline && <p className="text-sm text-destructive mt-1">{errors.timeline.message}</p>}
+            {errors.timeline && <p role="alert" className="text-sm text-destructive mt-1">{errors.timeline.message}</p>}
           </div>
 
           {isScormFlow && (
@@ -371,7 +371,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
                   )}
                 />
                 {errors.scormVersion && (
-                  <p className="text-sm text-destructive mt-1">{errors.scormVersion.message}</p>
+                  <p role="alert" className="text-sm text-destructive mt-1">{errors.scormVersion.message}</p>
                 )}
               </div>
               {selectedScormVersion ? (

@@ -216,7 +216,6 @@ const removeFolderFromSupabase = async (folderPath: string) => {
       return { success: true };
     }
 
-    console.log("Folder removed successfully:", data);
     return { success: true };
   } catch (error: any) {
     console.error("Error removing folder:", error.message);

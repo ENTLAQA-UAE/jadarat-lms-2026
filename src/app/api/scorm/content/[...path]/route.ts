@@ -36,7 +36,6 @@ export const GET = async (
   req: NextRequest,
   { params }: { params: { path: string[] } }
 ) => {
-  console.log('🔍 Request params:', params);
   const courseSlug = params.path[0];
   const searchPath = params.path.slice(1).join("/");
   const userData = await fetchUserData();
@@ -56,7 +55,6 @@ export const GET = async (
       );
     }
 
-    console.log('⏳ Fetching file from Supabase...');
     const response = await fetchFileFromSupabase(fileUrl);
 
     const content = await response.arrayBuffer();

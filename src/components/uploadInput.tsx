@@ -4,7 +4,7 @@ import { SetStateAction, useCallback, useState } from "react"
 import Image from "next/image"
 import { Upload, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useToast } from "./ui/use-toast"
+import { toast } from "sonner"
 import { Skeleton } from "./ui/skeleton"
 
 type ComponentTypes = {
@@ -17,17 +17,14 @@ type ComponentTypes = {
 };
 
 export default function UploadImageInput({ label, defaultValue, className, imageClassName, onSelect, maxSize = 5242880 }: ComponentTypes) {
-    const { toast } = useToast();
     const [file, setFile] = useState<string | undefined>(defaultValue)
 
     const handleSelection = useCallback((event: React.ChangeEvent<HTMLInputElement> | undefined) => {
         const file = event?.target?.files?.[0];
         if (file) {
             if (file.size > maxSize) {
-                toast({
-                    title: "Error",
+                toast.error("Error", {
                     description: "File size exceeds maximum limit 5 MB.",
-                    variant: "destructive"
                 })
                 return;
             }
@@ -35,7 +32,7 @@ export default function UploadImageInput({ label, defaultValue, className, image
         }
 
         onSelect(file);
-    }, [maxSize, onSelect, toast])
+    }, [maxSize, onSelect])
 
     const handleRemoveLogo = useCallback(() => {
         setFile(undefined)

@@ -417,6 +417,7 @@ export default function RegisterForm() {
                                 size="icon"
                                 className="absolute ltr:right-0 rtl:left-0 top-0 h-full"
                                 onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? "Hide password" : "Show password"}
                               >
                                 {showPassword ? (
                                   <EyeOff className="h-4 w-4" />
@@ -684,6 +685,7 @@ export default function RegisterForm() {
                                       handleRemoveImage();
                                       field.onChange(null); // Reset the image in the form
                                     }}
+                                    aria-label="Remove image"
                                   >
                                     <X className="h-4 w-4" />
                                   </Button>

@@ -50,7 +50,6 @@ export const addCourse = async (coursePayload: any) => {
   });
 
   if (error) {
-   console.log("error adding course =>", error);
    return { data: null, errorMessage: error.message };
   }
 

@@ -1,5 +1,6 @@
 import { deleteImageFromStorage } from "./deleteImageFromStorage";
 import { createClient } from "./supabase/client";
+import { toast } from "sonner";
 import JSZip from 'jszip';
 import { XMLParser } from 'fast-xml-parser';
 
@@ -12,13 +13,7 @@ interface ExtractedFile {
     publicUrl: string;
 }
 
-interface ToastProps {
-    title: string;
-    description: string;
-    variant: 'default' | 'destructive';
-}
-
-export const uploadImage = async (name: string, file: File, organization_id: string | number, toast: any) => {
+export const uploadImage = async (name: string, file: File, organization_id: string | number, _toast?: any) => {
     const supabase = createClient();
     const { data, error } = await supabase.storage.from(`LMS Resources/${organization_id}`).upload(name, file, {
         cacheControl: '3600',
@@ -30,10 +25,8 @@ export const uploadImage = async (name: string, file: File, organization_id: str
         if (err == null)
             return url;
         else
-            toast({
-                title: `Getting Uploaded file URL failed`,
+            toast.error(`Getting Uploaded file URL failed`, {
                 description: err.message,
-                variant: "destructive"
             })
     } else {
         if (error.message === "The resource already exists") {
@@ -46,17 +39,13 @@ export const uploadImage = async (name: string, file: File, organization_id: str
                 if (err == null)
                     return url;
                 else
-                    toast({
-                        title: `Getting Uploaded file URL failed`,
+                    toast.error(`Getting Uploaded file URL failed`, {
                         description: err.message,
-                        variant: "destructive"
                     })
             }
         } else
-            toast({
-                title: `Upload ${name} failed`,
+            toast.error(`Upload ${name} failed`, {
                 description: error.message,
-                variant: "destructive"
             })
     }
 }
@@ -65,7 +54,7 @@ function sanitizeFilename(filename: string): string {
     return filename.replace(/[^\x00-\x7F]/g, "").replace(/\s+/g, "_")
 }
 
-export const uploadCertificatesImages = async (name: string, file: File, toast: any, path: string) => {
+export const uploadCertificatesImages = async (name: string, file: File, _toast: any, path: string) => {
     const supabase = createClient()
     const sanitizedName = sanitizeFilename(name)
 
@@ -79,16 +68,12 @@ export const uploadCertificatesImages = async (name: string, file: File, toast: 
         if (err == null)
             return url
         else
-            toast({
-                title: `Getting Uploaded file URL failed`,
+            toast.error(`Getting Uploaded file URL failed`, {
                 description: err.message,
-                variant: "destructive"
             })
     } else {
-        toast({
-            title: `Upload ${sanitizedName} failed`,
+        toast.error(`Upload ${sanitizedName} failed`, {
             description: error.message,
-            variant: "destructive"
         })
     }
 }
@@ -173,7 +158,7 @@ export const uploadScormFile = async (
     name: string,
     file: File,
     organization_id: string | number,
-    toast: (props: ToastProps) => void
+    _toast?: any
 ): Promise<ScormFileResult | null> => {
     const sanitizedName = sanitizeFilename(name)
     const basePath = `${organization_id}/scorm/${sanitizedName}`
@@ -240,20 +225,18 @@ export const uploadScormFile = async (
         }
 
     } catch (error) {
-        toast({
-            title: 'SCORM file processing failed',
+        toast.error('SCORM file processing failed', {
             description: error instanceof Error ? error.message : 'Unknown error occurred',
-            variant: 'destructive'
         })
         return null
     }
 }
 
 export const switchScormFile = async (
-    name: string, 
-    file: File, 
-    organization_id: string | number, 
-    toast: (props: ToastProps) => void
+    name: string,
+    file: File,
+    organization_id: string | number,
+    _toast?: any
 ): Promise<ScormFileResult | null> => {
     const supabase = createClient()
     const sanitizedName = sanitizeFilename(name)
@@ -282,10 +265,8 @@ export const switchScormFile = async (
         return result
 
     } catch (error) {
-        toast({
-            title: 'Failed to switch SCORM file',
+        toast.error('Failed to switch SCORM file', {
             description: error instanceof Error ? error.message : 'Unknown error occurred',
-            variant: 'destructive'
         })
         return null
     }
