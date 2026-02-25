@@ -24,11 +24,28 @@ export const FONT_DISPLAY_NAMES: Record<FontFamily, string> = {
 // ── Dynamic Variables ──
 
 export const DYNAMIC_VARIABLES = [
-  { key: '{{student_name}}', labelEn: 'Student Name', labelAr: 'اسم الطالب' },
-  { key: '{{course_name}}', labelEn: 'Course Name', labelAr: 'اسم الدورة' },
-  { key: '{{date}}', labelEn: 'Completion Date', labelAr: 'تاريخ الإنجاز' },
-  { key: '{{org_name}}', labelEn: 'Organization', labelAr: 'المنظمة' },
-  { key: '{{signature_title}}', labelEn: 'Signature Title', labelAr: 'عنوان التوقيع' },
+  { key: '{{student_name}}', labelEn: 'Student Name', labelAr: 'اسم الطالب', category: 'student' },
+  { key: '{{course_name}}', labelEn: 'Course Name', labelAr: 'اسم الدورة', category: 'course' },
+  { key: '{{date}}', labelEn: 'Completion Date', labelAr: 'تاريخ الإنجاز', category: 'certificate' },
+  { key: '{{date_hijri}}', labelEn: 'Hijri Date', labelAr: 'التاريخ الهجري', category: 'certificate' },
+  { key: '{{org_name}}', labelEn: 'Organization', labelAr: 'المنظمة', category: 'organization' },
+  { key: '{{signature_title}}', labelEn: 'Signature Title', labelAr: 'عنوان التوقيع', category: 'organization' },
+  { key: '{{certificate_id}}', labelEn: 'Certificate ID', labelAr: 'رقم الشهادة', category: 'certificate' },
+  { key: '{{verification_url}}', labelEn: 'Verification URL', labelAr: 'رابط التحقق', category: 'certificate' },
+  { key: '{{course_grade}}', labelEn: 'Grade', labelAr: 'الدرجة', category: 'course' },
+  { key: '{{course_score}}', labelEn: 'Score', labelAr: 'النتيجة', category: 'course' },
+  { key: '{{credit_hours}}', labelEn: 'Credit Hours', labelAr: 'الساعات المعتمدة', category: 'course' },
+  { key: '{{instructor_name}}', labelEn: 'Instructor', labelAr: 'المدرب', category: 'course' },
+  { key: '{{course_level}}', labelEn: 'Course Level', labelAr: 'مستوى الدورة', category: 'course' },
+  { key: '{{course_category}}', labelEn: 'Category', labelAr: 'التصنيف', category: 'course' },
+  { key: '{{expiration_date}}', labelEn: 'Expiration Date', labelAr: 'تاريخ الانتهاء', category: 'certificate' },
+] as const
+
+export const VARIABLE_CATEGORIES = [
+  { key: 'student', labelEn: 'Student', labelAr: 'الطالب' },
+  { key: 'course', labelEn: 'Course', labelAr: 'الدورة' },
+  { key: 'certificate', labelEn: 'Certificate', labelAr: 'الشهادة' },
+  { key: 'organization', labelEn: 'Organization', labelAr: 'المنظمة' },
 ] as const
 
 // ── Default Templates ──
@@ -86,6 +103,13 @@ export function createClassicTemplate(lang: CertificateLang): CertificateTemplat
         content: '{{date}}',
         fontFamily: font, fontSize: 14, fontWeight: 'normal',
         color: '#6b7280', textAlign: 'center',
+      },
+      {
+        id: uid(), type: 'text', x: 171, y: 350, width: 500, height: 20,
+        rotation: 0, zIndex: 10,
+        content: '{{certificate_id}}',
+        fontFamily: font, fontSize: 10, fontWeight: 'normal',
+        color: '#9ca3af', textAlign: 'center',
       },
       {
         id: uid(), type: 'image', x: 50, y: 30, width: 100, height: 60,
@@ -150,6 +174,13 @@ export function createModernTemplate(lang: CertificateLang): CertificateTemplate
         color: '#94a3b8', textAlign: align,
       },
       {
+        id: uid(), type: 'text', x: 40, y: 310, width: 300, height: 20,
+        rotation: 0, zIndex: 10,
+        content: '{{certificate_id}}',
+        fontFamily: font, fontSize: 10, fontWeight: 'normal',
+        color: '#cbd5e1', textAlign: align,
+      },
+      {
         id: uid(), type: 'text', x: 40, y: 480, width: 300, height: 25,
         rotation: 0, zIndex: 10,
         content: '{{signature_title}}',
@@ -200,7 +231,7 @@ export function createMinimalTemplate(lang: CertificateLang): CertificateTemplat
       {
         id: uid(), type: 'text', x: 171, y: 470, width: 500, height: 25,
         rotation: 0, zIndex: 10,
-        content: isAr ? '{{org_name}}' : '{{org_name}}',
+        content: '{{org_name}}',
         fontFamily: font, fontSize: 12, fontWeight: 'normal',
         color: '#9ca3af', textAlign: 'center',
       },

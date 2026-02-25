@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Save, X, Languages } from 'lucide-react'
+import { Save, X, Languages, Undo2, Redo2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import Canvas from './Canvas'
 import ElementToolbar from './ElementToolbar'
@@ -18,6 +19,9 @@ interface CertificateBuilderProps {
   onOpenChange: (open: boolean) => void
   initialTemplate?: CertificateTemplateJSON
   organizationId: number | string
+  templateId?: number | null
+  templateName?: string
+  onSaved?: (templateId: number) => void
 }
 
 export default function CertificateBuilder({
@@ -25,6 +29,9 @@ export default function CertificateBuilder({
   onOpenChange,
   initialTemplate,
   organizationId,
+  templateId,
+  templateName: initialName,
+  onSaved,
 }: CertificateBuilderProps) {
   const {
     state,
@@ -40,35 +47,56 @@ export default function CertificateBuilder({
     setCanvasBg,
     setCanvasBgImage,
     markClean,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useTemplateState(initialTemplate)
 
   const [isSaving, setIsSaving] = useState(false)
+  const [name, setName] = useState(initialName || '')
 
   const handleSave = useCallback(async () => {
     setIsSaving(true)
     try {
       const supabase = createClient()
-      const { error } = await supabase
-        .from('organization_settings')
-        .update({ certificate_template_json: state.template })
-        .eq('organization_id', organizationId)
+
+      const templateName = name.trim() || (state.template.lang === 'ar' ? 'قالب بدون اسم' : 'Untitled Template')
+
+      const { data: resultId, error } = await supabase.rpc('upsert_certificate_template', {
+        template_id: templateId ?? null,
+        template_name: templateName,
+        template_name_ar: state.template.lang === 'ar' ? templateName : null,
+        template_json: state.template,
+        set_default: !templateId, // Set as default if creating new
+      })
 
       if (error) {
-        toast.error(error.message)
-      } else {
-        toast.success(
-          state.template.lang === 'ar'
-            ? 'تم حفظ قالب الشهادة بنجاح'
-            : 'Certificate template saved successfully'
-        )
-        markClean()
+        // Fallback: save to organization_settings for backward compatibility
+        const { error: fallbackError } = await supabase
+          .from('organization_settings')
+          .update({ certificate_template_json: state.template })
+          .eq('organization_id', organizationId)
+
+        if (fallbackError) {
+          toast.error(fallbackError.message)
+          return
+        }
       }
+
+      toast.success(
+        state.template.lang === 'ar'
+          ? 'تم حفظ قالب الشهادة بنجاح'
+          : 'Certificate template saved successfully'
+      )
+      markClean()
+      if (onSaved && resultId) onSaved(resultId)
     } catch (err) {
       toast.error('Failed to save template')
     } finally {
       setIsSaving(false)
     }
-  }, [state.template, organizationId, markClean])
+  }, [state.template, organizationId, markClean, name, templateId, onSaved])
 
   const handleClose = useCallback(() => {
     if (state.isDirty) {
@@ -97,6 +125,12 @@ export default function CertificateBuilder({
             <h2 className="text-sm font-semibold">
               {isAr ? 'بناء قالب الشهادة' : 'Certificate Builder'}
             </h2>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={isAr ? 'اسم القالب...' : 'Template name...'}
+              className="h-7 w-48 text-xs"
+            />
             {state.isDirty && (
               <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                 {isAr ? 'غير محفوظ' : 'Unsaved'}
@@ -104,6 +138,28 @@ export default function CertificateBuilder({
             )}
           </div>
           <div className="flex items-center gap-2">
+            {/* Undo/Redo */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={undo}
+              disabled={!canUndo}
+              aria-label="Undo"
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={redo}
+              disabled={!canRedo}
+              aria-label="Redo"
+            >
+              <Redo2 className="h-3.5 w-3.5" />
+            </Button>
+
             <Button
               variant="outline"
               size="sm"
