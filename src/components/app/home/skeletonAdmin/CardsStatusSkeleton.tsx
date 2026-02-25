@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 function CardStatusSkeleton() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 md:gap-3 lg:grid-cols-4">
       {Array.from({ length: 4 }).map((_, i) => (
         <Card key={i} className="overflow-hidden">
           <div className="h-1 bg-muted" />

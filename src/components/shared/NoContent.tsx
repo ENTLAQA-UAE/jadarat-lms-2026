@@ -8,8 +8,8 @@ export default function NoContent() {
  return (
   <div className="min-h-screen bg-background flex items-center justify-center p-4">
    <Card className="w-full max-w-md p-6 text-center">
-    <h2 className="text-2xl font-bold mb-4">No Content Found</h2>
-    <p className="text-muted-foreground mb-6">
+    <h2 className="text-lg font-semibold mb-3">No Content Found</h2>
+    <p className="text-sm text-muted-foreground mb-5">
      We couldn&apos;t find any content. Please try again later.
     </p>
     <Button onClick={() => router.back()}>

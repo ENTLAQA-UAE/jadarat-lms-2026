@@ -49,15 +49,15 @@ const PerformanceCard: FC<{
                     {metrics.map((metric) => (
                         <div
                             key={metric.title}
-                            className="group/metric rounded-xl border border-border/50 bg-muted/30 p-4 flex items-center gap-4 hover:bg-muted/50 hover:border-border transition-all duration-200"
+                            className="group/metric rounded-lg border border-border/50 bg-muted/20 p-3.5 flex items-center gap-3 hover:bg-muted/40 transition-all duration-150"
                         >
-                            <div className={`${metric.iconBg} rounded-xl p-2.5 shadow-sm`}>
+                            <div className={`${metric.iconBg} rounded-lg p-2 shadow-xs`}>
                                 {metric.icon}
                             </div>
                             <div className="w-full min-w-0">
                                 <h3 className="text-sm font-medium text-muted-foreground">{metric.title}</h3>
                                 <div className="flex items-center gap-3 mt-1">
-                                    <p className="text-2xl font-bold tracking-tight">{metric.value}</p>
+                                    <p className="text-xl font-semibold tracking-tight">{metric.value}</p>
                                     {metric.hasProgress && (
                                         <Progress
                                             value={completionRate}

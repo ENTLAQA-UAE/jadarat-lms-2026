@@ -15,7 +15,7 @@ const RegistrationSkelton = () => {
         <Skeleton className="w-[100px] h-[24px]"></Skeleton>
         <Skeleton className="w-[200px] h-[20px]"></Skeleton>
       </CardHeader>
-      <CardContent className="grid gap-8 mb-28">
+      <CardContent className="grid gap-6 mb-28">
         <div className="grid gap-2">
           <div className="flex items-center justify-between">
             <Skeleton className="w-[120px] h-[14px]"></Skeleton>

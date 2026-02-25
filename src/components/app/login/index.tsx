@@ -202,7 +202,7 @@ const LoginPage = () => {
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel>Password</FormLabel>
-                <Link href="/reset-password" className="inline-block text-sm underline">
+                <Link href="/reset-password" className="inline-block text-xs text-muted-foreground hover:text-foreground transition-colors">
                   Forgot your password?
                 </Link>
               </div>
@@ -252,23 +252,23 @@ const LoginPage = () => {
   return (
     <>
       {state.isMounted && (
-        <div className="flex items-center justify-center py-12">
+        <div className="flex items-center justify-center py-12 min-h-[calc(100dvh-64px)]">
           <LanguageSwitcher className="absolute top-10 left-10 rtl:right-10 rtl:left-0" />
-          <div className="mx-auto grid w-[350px] gap-6">
-            <div className="grid gap-2 text-center">
+          <div className="mx-auto grid w-[360px] gap-6">
+            <div className="grid gap-3 text-center">
               {loading ? (
-                <Skeleton className="w-1/2 h-40 mb-20 mx-auto" />
+                <Skeleton className="w-1/3 h-32 mb-12 mx-auto rounded-xl" />
               ) : (
                 <Image
                   src={logo}
                   alt="Image"
                   width="500"
                   height="500"
-                  className="w-1/2 object-cover self-end mb-20 mx-auto"
+                  className="w-2/5 object-cover self-end mb-10 mx-auto"
                 />
               )}
-              <h1 className="text-3xl font-bold text-center">Welcome back</h1>
-              <p className="text-muted-foreground px-0">
+              <h1 className="text-2xl font-semibold tracking-tight text-center">Welcome back</h1>
+              <p className="text-sm text-muted-foreground">
                 Enter your email below to login to your account
               </p>
             </div>

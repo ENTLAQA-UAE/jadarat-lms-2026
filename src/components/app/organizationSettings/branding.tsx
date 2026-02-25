@@ -226,7 +226,7 @@ export default function Branding() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 2xl:gap-20">
                     <div className="flex flex-col gap-4">
                         <div className="text-left space-y-2">
-                            <h1 className="text-3xl font-bold tracking-tight text-foreground ltr:text-left rtl:text-right" dir="auto">Branding Section</h1>
+                            <h1 className="text-xl font-semibold tracking-tight text-foreground ltr:text-left rtl:text-right" dir="auto">Branding Section</h1>
                             <p className="text-muted-foreground ltr:text-left rtl:text-right">
                                 Upload your logo, organization name, and login page background to create a cohesive brand identity.
                             </p>

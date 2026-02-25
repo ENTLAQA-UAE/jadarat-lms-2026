@@ -172,7 +172,7 @@ export default function EditCourseDetails({ categories, courseData, courseId, ba
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-6">Edit Course: {courseDetails.title}</h1>
+      <h1 className="text-2xl font-semibold mb-6">Edit Course: {courseDetails.title}</h1>
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Area: Course Details Form */}
         <div className="w-full lg:w-2/3">

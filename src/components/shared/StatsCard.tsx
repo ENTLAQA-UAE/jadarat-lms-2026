@@ -68,14 +68,14 @@ export default function StatsCard({
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden card-hover border-0 shadow-sm",
+        "group relative overflow-hidden card-hover",
         className
       )}
     >
-      {/* Top accent gradient line */}
+      {/* Top accent line */}
       <div
         className={cn(
-          "absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r to-transparent",
+          "absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r to-transparent",
           colors.accentBorder
         )}
       />
@@ -84,7 +84,7 @@ export default function StatsCard({
         <div className="flex items-start justify-between">
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold tracking-tight sm:text-3xl">
+            <p className="text-2xl font-semibold tracking-tight">
               {typeof value === "number" ? value.toLocaleString() : value}
             </p>
           </div>
@@ -128,7 +128,7 @@ export default function StatsCard({
 
 function StatsCardSkeleton() {
   return (
-    <Card className="overflow-hidden border-0 shadow-sm">
+    <Card className="overflow-hidden">
       <div className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-3">

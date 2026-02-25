@@ -148,8 +148,8 @@ function StackedBarChart({
         indexBy="name"
         margin={{ top: 0, right: 0, bottom: 40, left: 40 }}
         padding={0.35}
-        borderRadius={4}
-        colors={['#33658a', 'rgba(134, 187, 216, 0.35)']}
+        borderRadius={6}
+        colors={['hsl(217, 91%, 60%)', 'hsl(217, 91%, 60%, 0.2)']}
         axisBottom={{
           tickSize: 0,
           tickPadding: 16,

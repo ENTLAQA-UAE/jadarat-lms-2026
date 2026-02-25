@@ -108,7 +108,7 @@ export default function Subscription() {
 
     return (
         <>
-            {isClient && <div className="flex flex-col gap-8 mx-auto">
+            {isClient && <div className="flex flex-col gap-6 mx-auto">
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>

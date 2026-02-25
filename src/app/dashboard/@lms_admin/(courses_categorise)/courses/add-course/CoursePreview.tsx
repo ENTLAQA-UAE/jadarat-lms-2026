@@ -38,7 +38,7 @@ export function CoursePreview({ title, category, level, completionTime, imagePre
                 />
             </div>
             <CardContent className="p-4">
-                <h3 className="font-bold text-lg mb-2">{title || "Course Title"}</h3>
+                <h3 className="font-semibold text-lg mb-2">{title || "Course Title"}</h3>
                 <p className="text-sm text-muted-foreground mb-2">{category || "Category"}</p>
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                     <div className="flex items-center">

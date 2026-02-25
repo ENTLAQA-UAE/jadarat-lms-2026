@@ -14,7 +14,7 @@ export function MobileDrawer({ courses }: MobileDrawerProps) {
   <Drawer>
    <DrawerTrigger asChild>
     <Button
-     className="fixed right-4 z-[99] bottom-4 rounded-full w-14 h-14 shadow-lg bg-primary hover:bg-primary"
+     className="fixed right-4 z-[99] bottom-4 rounded-full w-14 h-14 shadow-elevated bg-primary hover:bg-primary"
      size="icon"
     >
      <Info className="h-6 w-6" />
@@ -22,7 +22,7 @@ export function MobileDrawer({ courses }: MobileDrawerProps) {
     </Button>
    </DrawerTrigger>
    <DrawerContent>
-    <aside className="w-full flex-col gap-8 bg-muted p-6 md:flex">
+    <aside className="w-full flex-col gap-6 bg-muted p-6 md:flex">
      <RecentCourses courses={courses} />
      <Insights courses={courses} />
     </aside>

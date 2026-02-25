@@ -30,7 +30,7 @@ export default async function Login() {
                                 />
                             </div>
                             <div className="space-y-2 text-center">
-                                <h1 className="text-3xl font-bold">Welcome back</h1>
+                                <h1 className="text-xl font-semibold tracking-tight">Welcome back</h1>
                                 <p className="text-muted-foreground">
                                     Enter your email below to login to your account
                                 </p>

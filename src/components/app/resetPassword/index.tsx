@@ -84,7 +84,7 @@ const ResetPasswordPage = () => {
                                 key={Math.random()}
                             />
                         )}
-                        <h1 className="text-3xl font-bold text-center">Reset Password</h1>
+                        <h1 className="text-xl font-semibold tracking-tight text-center">Reset Password</h1>
                         <p className="text-balance text-muted-foreground text-center">
                             Enter your email below to reset your password
                         </p>

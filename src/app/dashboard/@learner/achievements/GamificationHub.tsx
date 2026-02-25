@@ -159,7 +159,7 @@ export default function GamificationHub() {
 
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+        <h1 className="text-xl font-semibold tracking-tight flex items-center gap-2">
           <Trophy className="h-6 w-6 text-primary" />
           Achievements
         </h1>
@@ -235,7 +235,7 @@ export default function GamificationHub() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold text-primary">{mockPoints.toLocaleString()}</p>
+            <p className="text-2xl font-semibold tracking-tight text-primary">{mockPoints.toLocaleString()}</p>
             <div className="mt-3 space-y-1.5">
               {mockRecentPoints.slice(0, 3).map((entry, i) => (
                 <div key={i} className="flex items-center justify-between text-xs">

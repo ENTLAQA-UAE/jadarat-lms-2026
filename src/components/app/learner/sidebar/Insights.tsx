@@ -72,19 +72,19 @@ export function Insights({ courses }: InsightsProps) {
 
     <div className="rounded-lg bg-background p-4 shadow-sm">
      <div className="mb-2 text-sm font-medium">Completed Courses</div>
-     <div className="text-3xl font-bold">
+     <div className="text-xl font-semibold tracking-tight">
       {courses.filter((e) => e.percentage === 100).length}
      </div>
     </div>
     <div className="rounded-lg bg-background p-4 shadow-sm">
      <div className="mb-2 text-sm font-medium">Courses to Continue</div>
-     <div className="text-3xl font-bold">
+     <div className="text-xl font-semibold tracking-tight">
       {courses.filter((e) => e.percentage && e.percentage < 100 && e.percentage > 0).length}
      </div>
     </div>
     <div className="rounded-lg bg-background p-4 shadow-sm">
      <div className="mb-2 text-sm font-medium">Courses to Do</div>
-     <div className="text-3xl font-bold">
+     <div className="text-xl font-semibold tracking-tight">
       {courses.filter((e) => e.percentage === 0).length}
      </div>
     </div>

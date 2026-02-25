@@ -56,7 +56,7 @@ interface StatsCardsProps {
 
 function StatsCards({ data }: StatsCardsProps) {
   return (
-    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6'>
+    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3'>
       <CardStatus
         title="Users"
         icon={<Users className="h-4 w-4" />}
@@ -93,8 +93,8 @@ function PerformanceLoadingSkeleton() {
       </CardHeader>
       <CardContent className="space-y-3">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="rounded-xl border border-border/50 bg-muted/30 p-4 flex items-center gap-4">
-            <Skeleton shimmer className="h-10 w-10 rounded-xl" />
+          <div key={i} className="rounded-lg border border-border/50 bg-muted/20 p-3.5 flex items-center gap-3">
+            <Skeleton shimmer className="h-9 w-9 rounded-lg" />
             <div className="flex-1 space-y-2">
               <Skeleton shimmer className="h-4 w-24" />
               <Skeleton shimmer className="h-7 w-16" />
@@ -109,7 +109,7 @@ function PerformanceLoadingSkeleton() {
 export default async function HomePage() {
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 overflow-hidden">
+      <main className="flex flex-1 flex-col gap-6 p-4 sm:p-6 lg:p-8 overflow-hidden max-w-7xl mx-auto w-full">
         <PageHeader title="Dashboard" description="Overview of your organization's learning activity" />
 
         <section aria-label="Statistics overview">
@@ -121,7 +121,7 @@ export default async function HomePage() {
 
         <section aria-label="Charts and performance">
           <SectionHeader title="Analytics" className="mb-4" />
-          <div className="grid gap-6 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-4 lg:grid-cols-3 xl:grid-cols-4">
             <Suspense>
               <GraphSection />
             </Suspense>

@@ -84,7 +84,7 @@ const Navbar = () => {
     }
 
     return (
-        <header className="flex h-16 items-center sticky top-0 md:static gap-4 border-b bg-background px-4 md:px-6 max-w-full z-50 justify-between">
+        <header className="flex h-14 items-center sticky top-0 md:static gap-4 border-b bg-background px-4 md:px-6 max-w-full z-50 justify-between">
             <nav className="hidden lg:flex md:flex-row md:items-center gap-6 text-lg font-medium md:text-sm">
                 <Link href="/dashboard" className="">
                     {loading ? (

@@ -62,7 +62,7 @@ export default function EmailConfirmed() {
             />
           </motion.svg>
         </div>
-        <h1 className="text-3xl font-bold text-foreground">Email Confirmed!</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">Email Confirmed!</h1>
         <p className="text-xl text-muted-foreground">
           Your email has been successfully confirmed.
         </p>

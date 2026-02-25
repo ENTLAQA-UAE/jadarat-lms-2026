@@ -95,7 +95,7 @@ function CardStatus() {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
+    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
       {CARD_CONFIGS.map((config, i) => {
         const Icon = config.icon;
         const { value, change } = values[i];
@@ -120,11 +120,8 @@ function CardStatus() {
             key={config.key}
             className="group relative overflow-hidden card-hover"
           >
-            {/* Top gradient accent bar */}
-            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${config.borderAccent}`} />
-
-            {/* Hover gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Top accent bar */}
+            <div className={`absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r ${config.borderAccent}`} />
 
             <CardHeader className="relative flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -135,7 +132,7 @@ function CardStatus() {
               </div>
             </CardHeader>
             <CardContent className="relative">
-              <div className="text-3xl font-bold tracking-tight">
+              <div className="text-2xl font-semibold tracking-tight tabular-nums">
                 {(value ?? 0).toLocaleString(numbers)}
               </div>
               <p className="mt-1.5 text-xs text-muted-foreground">

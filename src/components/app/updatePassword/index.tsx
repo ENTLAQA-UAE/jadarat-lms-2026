@@ -120,7 +120,7 @@ const UpdatePasswordPage = () => {
                                 key={Math.random()}
                             />
                         )}
-                        <h1 className="text-3xl font-bold text-center">Update Password</h1>
+                        <h1 className="text-xl font-semibold tracking-tight text-center">Update Password</h1>
                         <p className="text-balance text-muted-foreground text-center">
                             Enter your password below to update it
                         </p>

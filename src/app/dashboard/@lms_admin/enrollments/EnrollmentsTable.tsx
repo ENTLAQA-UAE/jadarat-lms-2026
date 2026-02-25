@@ -44,7 +44,7 @@ export default function EnrollmentsTable({
     return (
         <div className='flex flex-col p-6'>
             <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold">Enrollments</h1>
+                <h1 className="text-xl font-semibold tracking-tight">Enrollments</h1>
             </div>
             <DataTableComponent
                 data={data}
