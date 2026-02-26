@@ -1,7 +1,7 @@
 # Jadarat LMS - Authoring Tool Deep Research Report
 
 > **Date**: February 26, 2026
-> **Purpose**: Deep research on Rise 360, Coassemble, and AI-powered course generation to inform the design of Jadarat LMS's native authoring tool.
+> **Purpose**: Deep research on Rise 360, Coassemble, AI-powered course generation, and Bunny.net CDN/Storage to inform the design of Jadarat LMS's native authoring tool.
 
 ---
 
@@ -13,9 +13,10 @@
 4. [AI-Powered Course Generation (Industry)](#4-ai-powered-course-generation-industry)
 5. [Document-to-Course Conversion](#5-document-to-course-conversion)
 6. [SCORM Packaging & Standards](#6-scorm-packaging--standards)
-7. [Current Codebase State](#7-current-codebase-state)
-8. [Recommended Architecture for Jadarat Authoring Tool](#8-recommended-architecture-for-jadarat-authoring-tool)
-9. [Competitive Differentiators](#9-competitive-differentiators)
+7. [Bunny.net -- Video Streaming CDN & SCORM Storage](#7-bunnynet----video-streaming-cdn--scorm-storage)
+8. [Current Codebase State](#8-current-codebase-state)
+9. [Recommended Architecture for Jadarat Authoring Tool](#9-recommended-architecture-for-jadarat-authoring-tool)
+10. [Competitive Differentiators](#10-competitive-differentiators)
 
 ---
 
@@ -41,6 +42,8 @@ The Jadarat LMS authoring tool will support four distinct course creation workfl
 3. **AI Course Generation** across the industry follows a consistent pattern: Input → AI Outline → Human Review → AI Full Content → Edit → Publish. Multi-model approaches (different LLMs for different tasks) are emerging as best practice.
 
 4. **Arabic-first authoring** is a massive untapped opportunity -- no major tool is built Arabic-first with proper RTL, dialect awareness, and cultural adaptation.
+
+5. **Bunny.net** will serve as our infrastructure backbone -- Bunny Stream for video hosting/delivery (HLS adaptive bitrate, DRM, captions, analytics) and Bunny Edge Storage + Pull Zone for serving SCORM packages globally with 25ms average latency and PoPs in Dubai, Riyadh, Bahrain, and Cairo.
 
 ---
 
@@ -714,9 +717,389 @@ package.zip
 
 ---
 
-## 7. Current Codebase State
+## 7. Bunny.net -- Video Streaming CDN & SCORM Storage
 
-### 7.1 Existing Course Creation Workflow
+### 7.1 Why Bunny.net
+
+Bunny.net will serve as the infrastructure backbone for two critical functions:
+- **Bunny Stream** -- Video hosting, transcoding, adaptive bitrate streaming, and DRM for course video content
+- **Bunny Edge Storage + Pull Zone** -- CDN-backed global storage for serving extracted SCORM packages with low latency
+
+**MENA Region Coverage:** Bunny has 6 confirmed PoPs in the Middle East (Dubai, Fujairah, Riyadh, Bahrain, Cairo, Tel Aviv) plus African PoPs, ensuring 10-30ms latency for Gulf region users.
+
+### 7.2 Bunny Stream (Video Delivery)
+
+#### How It Works
+1. **Upload** -- Video file via API, dashboard, or TUS resumable upload
+2. **Transcode** -- Auto-encoded into multiple resolutions (240p-4K) and codecs (H.264, VP9, HEVC). Transcoding is **FREE**
+3. **Store** -- Replicated across up to 8 regions worldwide
+4. **Deliver** -- HLS adaptive bitrate streaming via 119+ PoPs, 150 Tbps+ capacity, 25ms global average latency
+
+#### Supported Upload Formats
+- MP4, MOV, and standard containers
+- Progressive (not interlaced), max 60fps
+- Multi-audio track support
+- Recommend highest quality input for best encodes
+
+#### Adaptive Bitrate Streaming (HLS)
+- Videos split into small segments
+- Player auto-switches resolution based on connection quality
+- Configurable resolutions: 360p, 480p, 720p, 1080p, 1440p, 4K
+- MP4 fallback (up to 720p) for legacy devices
+- HLS playlist URL: `https://vz-{hash}.b-cdn.net/{videoId}/playlist.m3u8`
+
+#### Pricing
+
+| Component | Cost |
+|-----------|------|
+| Storage | $0.01/GB per replication region |
+| CDN Traffic (EU/NA) | $0.01/GB |
+| CDN Traffic (Middle East/Africa) | $0.06/GB |
+| Volume Network | $0.005/GB (first 500TB) |
+| Transcoding | **FREE** |
+| Enterprise DRM | From $99/month + $0.005/license |
+
+#### Video API
+
+**Base URL:** `https://video.bunnycdn.com`
+**Authentication:** `AccessKey` header with Stream Library API key
+
+| Operation | Method | Endpoint |
+|-----------|--------|----------|
+| Create Video | POST | `/library/{libraryId}/videos` |
+| Upload Binary | PUT | `/library/{libraryId}/videos/{videoId}` |
+| Fetch from URL | POST | `/library/{libraryId}/videos/fetch` |
+| Get Video | GET | `/library/{libraryId}/videos/{videoId}` |
+| List Videos | GET | `/library/{libraryId}/videos` |
+| Delete Video | DELETE | `/library/{libraryId}/videos/{videoId}` |
+| Get Heatmap | GET | `/library/{libraryId}/videos/{videoId}/heatmap` |
+| Get Statistics | GET | `/library/{libraryId}/statistics` |
+| Add Caption | POST | `/library/{libraryId}/videos/{videoId}/captions/{srclang}` |
+| Export SCORM | GET | `/library/{libraryId}/videos/{videoId}/repackage` |
+
+**Two-Step Upload:**
+```typescript
+// Step 1: Create video object
+const video = await fetch(`https://video.bunnycdn.com/library/${libraryId}/videos`, {
+  method: 'POST',
+  headers: { 'AccessKey': STREAM_API_KEY, 'Content-Type': 'application/json' },
+  body: JSON.stringify({ title: 'My Course Video' }),
+}).then(r => r.json());
+
+// Step 2: Upload binary
+await fetch(`https://video.bunnycdn.com/library/${libraryId}/videos/${video.guid}`, {
+  method: 'PUT',
+  headers: { 'AccessKey': STREAM_API_KEY, 'Content-Type': 'application/octet-stream' },
+  body: videoFileBuffer,
+});
+```
+
+**TUS Resumable Upload (for large files / client-side):**
+```typescript
+import * as tus from 'tus-js-client';
+
+const expirationTime = Math.floor(Date.now() / 1000) + 86400;
+const signature = crypto.createHash('sha256')
+  .update(`${libraryId}${apiKey}${expirationTime}${videoId}`)
+  .digest('hex');
+
+const upload = new tus.Upload(file, {
+  endpoint: 'https://video.bunnycdn.com/tusupload',
+  headers: {
+    AuthorizationSignature: signature,
+    AuthorizationExpire: expirationTime,
+    VideoId: videoId,
+    LibraryId: libraryId,
+  },
+  metadata: { filetype: file.type, title: 'Course Video' },
+  onProgress: (uploaded, total) => console.log(`${((uploaded / total) * 100).toFixed(2)}%`),
+  onSuccess: () => console.log('Upload complete'),
+});
+upload.start();
+```
+
+#### Embed Options
+
+**1. iframe Embed (recommended for LMS):**
+```html
+<iframe
+  src="https://iframe.mediadelivery.net/embed/{libraryId}/{videoId}"
+  loading="lazy"
+  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+  allowfullscreen
+/>
+```
+
+**2. Player.js for Programmatic Control (tracking watch time for LMS):**
+```javascript
+const player = new playerjs.Player(document.querySelector('iframe'));
+player.on('ready', () => {
+  player.play();
+  player.on('timeupdate', (data) => updateLmsProgress(data.seconds));
+  player.on('ended', () => markCourseComplete());
+});
+```
+
+**3. React Component:**
+```jsx
+import { Player } from 'playstack';
+
+<Player
+  src={`https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}`}
+  onTimeUpdate={(time) => trackProgress(time.current)}
+  onEnded={() => markComplete()}
+/>
+```
+
+#### DRM / Content Protection
+
+| Level | Cost | Features |
+|-------|------|----------|
+| **MediaCage Basic** | FREE | Dynamic clear-key encryption, unique key per session, download prevention |
+| **MediaCage Enterprise** | From $99/mo | FairPlay + Widevine, hardware-based key exchange, screen grab protection |
+
+#### Player Features
+
+| Feature | Details |
+|---------|---------|
+| Chapters | Configurable timestamps + labels (navigate long course videos) |
+| Moments | Highlight key points on timeline |
+| Captions | Multi-language, AI transcription in 50+ languages, customizable fonts/colors |
+| Playback Speed | 0.5x to 4x |
+| Resumable | Remembers where learner left off |
+| Heatmap | Shows popular segments in transport bar |
+| Thumbnails | Auto-generated preview thumbnails |
+| Branding | Custom logo, colors |
+
+#### Webhooks
+
+| Status Code | Event |
+|-------------|-------|
+| 4 | `RESOLUTION_FINISHED` -- video is now playable |
+| 5 | `FAILED` -- encoding failed |
+| 9 | `CAPTIONS_GENERATED` -- AI captions ready |
+
+Webhooks use HMAC SHA-256 signature verification.
+
+### 7.3 Bunny Edge Storage (SCORM Package Hosting)
+
+#### How It Works
+- CDN-backed, globally **replicated** object storage (not just cached)
+- Files replicated across up to 9 data center regions
+- 99.99% global SLA with automatic region failover
+- GeoDNS routing to nearest storage replica
+- **Must** connect a Pull Zone to serve files publicly
+
+#### Architecture
+
+```
+User Request → Bunny CDN Pull Zone (119+ PoPs, custom hostname)
+                    │
+                    ▼
+              Bunny Edge Storage (replicated across regions)
+              /scorm-packages/{packageId}/
+                ├── imsmanifest.xml
+                ├── content/index.html
+                ├── content/scripts/api.js
+                └── content/assets/...
+```
+
+#### Pricing
+
+| Component | Cost |
+|-----------|------|
+| Storage | $0.01/GB/month per region |
+| Additional regions | $0.005/GB/month |
+| API Requests | **FREE** |
+| CDN Bandwidth (EU/NA) | $0.01/GB |
+| CDN Bandwidth (ME/Africa) | $0.06/GB |
+
+#### Storage API
+
+**Base URL:** `https://{region}.storage.bunnycdn.com`
+**Authentication:** `AccessKey` header with Storage Zone Password
+
+| Operation | Method | Endpoint |
+|-----------|--------|----------|
+| Upload File | PUT | `/{storageZoneName}/{path}/{fileName}` |
+| Download File | GET | `/{storageZoneName}/{path}/{fileName}` |
+| Delete File | DELETE | `/{storageZoneName}/{path}/{fileName}` |
+| List Directory | GET | `/{storageZoneName}/{path}/` |
+
+**Directory auto-creation:** If the directory tree does not exist, it is created automatically on upload -- critical for preserving SCORM package directory structures.
+
+**Upload SCORM Files:**
+```typescript
+export async function uploadScormFile(
+  packageId: string,
+  filePath: string,
+  fileBuffer: Buffer
+) {
+  const url = `https://storage.bunnycdn.com/${STORAGE_ZONE}/scorm/${packageId}/${filePath}`;
+  await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'AccessKey': BUNNY_STORAGE_KEY,
+      'Content-Type': 'application/octet-stream',
+    },
+    body: fileBuffer,
+  });
+}
+```
+
+#### MIME Types
+Bunny automatically determines Content-Type by file extension. All SCORM-critical types are handled:
+`.html` → `text/html`, `.js` → `application/javascript`, `.css` → `text/css`, `.xml` → `application/xml`, `.json` → `application/json`, `.xsd` → `application/xml`
+
+#### Security: Signed URLs & Token Authentication
+
+**Path-based token authentication** -- sign an entire SCORM package directory with one token:
+```typescript
+export function generateSignedScormUrl(packageId: string, expirationSeconds = 3600) {
+  const securityKey = process.env.BUNNY_PULL_ZONE_KEY!;
+  const expires = Math.floor(Date.now() / 1000) + expirationSeconds;
+  const hashableBase = `${securityKey}/scorm/${packageId}/${expires}`;
+  const token = crypto.createHash('sha256')
+    .update(hashableBase)
+    .digest('base64')
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+  return `https://scorm.jadarat.com/scorm/${packageId}/?token=${token}&expires=${expires}&token_path=/scorm/${packageId}/`;
+}
+```
+
+Additional security: IP validation, country whitelisting, referrer restrictions, hotlink protection.
+
+#### CORS Configuration (Critical for SCORM iframe Playback)
+
+```typescript
+// Enable CORS on Pull Zone for SCORM content
+await fetch(`https://api.bunny.net/pullzone/${pullZoneId}`, {
+  method: 'POST',
+  headers: { 'AccessKey': BUNNY_API_KEY, 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    EnableAccessControlOriginHeader: true,
+    AccessControlOriginHeaderExtensions: ['html', 'js', 'css', 'xml', 'json', 'xsd', 'woff', 'woff2', 'svg'],
+  }),
+});
+```
+
+### 7.4 SCORM Cross-Origin Communication Solution
+
+SCORM content served from a CDN (different domain) cannot access the LMS's JavaScript API via `window.parent` due to Same-Origin Policy. Solutions:
+
+**Solution A -- Custom Hostname (Recommended):**
+Configure Bunny Pull Zone with a subdomain of the LMS domain:
+- LMS: `app.jadarat.com`
+- SCORM CDN: `scorm.jadarat.com` (Bunny Pull Zone custom hostname)
+
+**Solution B -- Cross-Frame postMessage (Modern, using scorm-again):**
+```typescript
+// In LMS parent frame:
+import { CrossFrameLMS } from 'scorm-again';
+const lms = new CrossFrameLMS();
+
+// In SCORM content iframe (served from CDN):
+import { CrossFrameAPI } from 'scorm-again';
+const api = new CrossFrameAPI();
+// Uses window.postMessage under the hood -- works cross-origin
+```
+
+**Solution C -- Proxy Launcher:**
+Serve a thin launcher HTML from LMS domain that creates the SCORM API, then loads CDN content in a nested iframe with postMessage bridging.
+
+### 7.5 Bunny vs Supabase Storage for SCORM
+
+| Factor | Bunny.net Storage | Supabase Storage (Current) |
+|--------|-------------------|---------------------------|
+| Architecture | True multi-region replication + CDN | Single origin + CDN cache |
+| SCORM Serving | Excellent -- directory support, auto MIME, CDN | Works but single-origin, higher latency |
+| MENA Latency | 10-30ms (Dubai/Riyadh/Bahrain PoPs) | Higher (single region origin) |
+| Access Control | Token auth, signed URLs, hotlink protection | Postgres RLS, Supabase auth |
+| Directory Support | Native auto-creation | Flat/path-based |
+| CORS | Configurable per Pull Zone | Supabase settings |
+| Cost at Scale | $0.01/GB storage + CDN bandwidth | Tied to Supabase plan limits |
+| **Verdict** | **Use for production SCORM + video** | **Keep for images, docs, small assets** |
+
+### 7.6 SDK & Integration
+
+**Official TypeScript SDK:**
+```bash
+npm install bunny-sdk
+```
+
+```typescript
+import { createBunnyApiClient } from 'bunny-sdk';
+
+const client = createBunnyApiClient({
+  accessKey: process.env.BUNNY_ACCESS_KEY!,
+});
+```
+
+**API Keys (3 types):**
+| Key Type | Used For |
+|----------|---------|
+| Account API Key | Managing pull zones, storage zones, DNS, billing |
+| Storage Zone Password | Storage API (upload/download/delete files) |
+| Stream Library API Key | Stream API (manage videos) |
+
+**Upload Methods:**
+| Method | Best For |
+|--------|---------|
+| HTTP PUT (Storage) | Server-side file uploads |
+| HTTP PUT (Stream) | Server-side video uploads |
+| TUS Protocol (Stream) | Client-side large video uploads |
+| Pre-signed Upload (Stream) | Direct browser-to-Bunny uploads |
+
+### 7.7 LMS Integration Architecture
+
+```
+┌────────────────────────────────────────────────────────────┐
+│                   Next.js LMS App                          │
+│                                                            │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │ Video Block  │  │ SCORM Player │  │  Admin: Upload   │  │
+│  │ (iframe/     │  │ (iframe +    │  │  Videos & SCORM  │  │
+│  │  Player.js)  │  │  scorm-again │  │  (TUS + REST)    │  │
+│  │  Track time  │  │  CrossFrame) │  │                  │  │
+│  └──────┬──────┘  └──────┬───────┘  └────────┬─────────┘  │
+└─────────┼────────────────┼────────────────────┼────────────┘
+          │                │                    │
+          ▼                ▼                    ▼
+   ┌──────────────┐ ┌───────────────────┐ ┌────────────────┐
+   │ Bunny Stream │ │ Bunny Storage     │ │ Bunny APIs     │
+   │              │ │ + Pull Zone       │ │                │
+   │ Video CDN    │ │ scorm.jadarat.com │ │ REST + SDK     │
+   │ iframe embed │ │ Signed URLs       │ │ bunny-sdk      │
+   │ HLS/DRM      │ │ CORS enabled      │ │                │
+   │ Captions     │ │ Token auth        │ │                │
+   │ Chapters     │ │                   │ │                │
+   └──────────────┘ └───────────────────┘ └────────────────┘
+```
+
+### 7.8 E-Learning Best Practices with Bunny.net
+
+**Video Delivery:**
+1. Use iframe embed with Player.js for LMS progress tracking
+2. Enable chapters for long educational videos (learners navigate to specific topics)
+3. Enable AI captions (50+ languages) for accessibility
+4. Track watch time via `timeupdate` events for completion criteria
+5. Enable resumable playback (learners continue from where they left off)
+6. Use MediaCage Basic DRM (free) to prevent casual downloading
+7. Use webhooks to detect processing completion before making videos available
+
+**SCORM Storage:**
+1. Upload extracted SCORM packages preserving directory structure
+2. Use custom hostname (`scorm.jadarat.com`) on Pull Zone
+3. Sign entire package directories with path-based tokens
+4. Enable CORS for all SCORM file types
+5. Use `scorm-again` CrossFrame API for cross-origin LMS communication
+6. Enable Force SSL for secure contexts
+
+---
+
+## 8. Current Codebase State
+
+### 8.1 Existing Course Creation Workflow
 
 The codebase already has a functional course creation system supporting three flows:
 
@@ -727,7 +1110,7 @@ LMS Admin → /dashboard/courses/add-course
   └── ?flow=document  → Document builder (Coassemble iframe)
 ```
 
-### 7.2 Coassemble Integration (Current)
+### 8.2 Coassemble Integration (Current)
 
 **Server Action:** `src/action/coassemble/coassemble.ts`
 - Calls `GET /api/v1/headless/course/edit` (deprecated endpoint)
@@ -745,7 +1128,7 @@ LMS Admin → /dashboard/courses/add-course
 2. Client-side API key exposure: `process.env.NEXT_PUBLIC_COASSEMBLE` in `getCourses.ts`
 3. Missing direct `POST /course/generate` API usage (AI generation done through iframe only)
 
-### 7.3 SCORM System (Current)
+### 8.3 SCORM System (Current)
 
 **Upload:** `src/utils/uploadFile.ts`
 - `uploadScormFile()` extracts ZIP, parses manifest, uploads to Supabase storage
@@ -765,7 +1148,7 @@ LMS Admin → /dashboard/courses/add-course
 - postMessage communication
 - Completion tracking and certificate generation
 
-### 7.4 Database Schema (Courses)
+### 8.4 Database Schema (Courses)
 
 ```sql
 CREATE TABLE public.courses (
@@ -790,7 +1173,7 @@ CREATE TABLE public.courses (
 );
 ```
 
-### 7.5 Feature Flags
+### 8.5 Feature Flags
 
 ```sql
 -- organization_settings table
@@ -799,7 +1182,7 @@ ai_builder         BOOLEAN DEFAULT false
 document_builder   BOOLEAN DEFAULT false
 ```
 
-### 7.6 Form Validation (Zod)
+### 8.6 Form Validation (Zod)
 
 ```typescript
 // Current course form validation:
@@ -817,9 +1200,9 @@ document_builder   BOOLEAN DEFAULT false
 
 ---
 
-## 8. Recommended Architecture for Jadarat Authoring Tool
+## 9. Recommended Architecture for Jadarat Authoring Tool
 
-### 8.1 System Architecture
+### 9.1 System Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -854,18 +1237,22 @@ document_builder   BOOLEAN DEFAULT false
 │  └──────────────┘ └───────────┘ └─────────────────┘        │
 └───────────────────────────┬──────────────────────────────────┘
                             │
-            ┌───────────────┼───────────────┐
-            ▼               ▼               ▼
-    ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-    │ NATIVE LMS   │ │ SCORM EXPORT │ │  ANALYTICS   │
-    │ DELIVERY     │ │ - SCORM 1.2  │ │  - Progress  │
-    │ - Responsive │ │ - SCORM 2004 │ │  - Scores    │
-    │ - Offline    │ │ - xAPI       │ │  - Time      │
-    │ - Mobile     │ │ - cmi5       │ │  - AI Insights│
-    └──────────────┘ └──────────────┘ └──────────────┘
+        ┌───────────────┼───────────────┼───────────────┐
+        ▼               ▼               ▼               ▼
+ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+ │ NATIVE LMS   │ │ SCORM EXPORT │ │ BUNNY.NET    │ │  ANALYTICS   │
+ │ DELIVERY     │ │ - SCORM 1.2  │ │ CDN/STORAGE  │ │  - Progress  │
+ │ - Responsive │ │ - SCORM 2004 │ │              │ │  - Scores    │
+ │ - Offline    │ │ - xAPI       │ │ Stream:      │ │  - Time      │
+ │ - Mobile     │ │ - cmi5       │ │  Video HLS   │ │  - AI Insights│
+ │              │ │              │ │  DRM/Captions│ │              │
+ │              │ │              │ │ Storage:     │ │              │
+ │              │ │              │ │  SCORM files │ │              │
+ │              │ │              │ │  Pull Zone   │ │              │
+ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
 ```
 
-### 8.2 Recommended Block Types (25+)
+### 9.2 Recommended Block Types (25+)
 
 Based on Rise 360 and Coassemble analysis, prioritized for Jadarat:
 
@@ -912,7 +1299,7 @@ Based on Rise 360 and Coassemble analysis, prioritized for Jadarat:
 | `code` | Content | P2 |
 | `button` | Navigation | P2 |
 
-### 8.3 Recommended JSON Schema
+### 9.3 Recommended JSON Schema
 
 ```typescript
 // Course data model for Supabase JSONB storage
@@ -997,7 +1384,7 @@ type BlockType =
   | 'cover' | 'divider' | 'spacer' | 'continue' | 'button';
 ```
 
-### 8.4 AI Pipeline Architecture
+### 9.4 AI Pipeline Architecture
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -1040,7 +1427,7 @@ type BlockType =
 └─────────────────────────────────────────────────┘
 ```
 
-### 8.5 Database Changes Required
+### 9.5 Database Changes Required
 
 ```sql
 -- New table for authored course content
@@ -1092,9 +1479,9 @@ ALTER TABLE courses ADD COLUMN IF NOT EXISTS
 
 ---
 
-## 9. Competitive Differentiators
+## 10. Competitive Differentiators
 
-### 9.1 Key Opportunities for Jadarat LMS
+### 10.1 Key Opportunities for Jadarat LMS
 
 | Differentiator | Why It Matters | Competition Gap |
 |---------------|----------------|-----------------|
@@ -1105,14 +1492,14 @@ ALTER TABLE courses ADD COLUMN IF NOT EXISTS
 | **MENA Compliance** | Saudization tracking, PDPL, Arabic NLP | Zero competition in this space |
 | **Combined AI + Manual** | AI generates draft, human refines in same editor | Many tools have separate AI and manual flows |
 
-### 9.2 Market Opportunity
+### 10.2 Market Opportunity
 
 - **Global AI in education market:** $32-41 billion by 2030 (31-43% CAGR)
 - **eLearning content software:** $815M in 2026 → $1.46B by 2035
 - **Arabic eLearning market:** Underserved, no Arabic-first AI authoring tool exists
 - **MENA B2B training:** Explosive growth driven by Vision 2030, NEOM, Saudization
 
-### 9.3 Why Build Native vs. Continue with Coassemble
+### 10.3 Why Build Native vs. Continue with Coassemble
 
 | Factor | Native Authoring | Coassemble (Current) |
 |--------|-----------------|---------------------|
@@ -1159,3 +1546,28 @@ ALTER TABLE courses ADD COLUMN IF NOT EXISTS
 - [scorm-again (npm)](https://www.npmjs.com/package/scorm-again)
 - [pipwerks SCORM API Wrapper](https://github.com/pipwerks/scorm-api-wrapper)
 - [simple-scorm-packager (npm)](https://www.npmjs.com/package/simple-scorm-packager)
+
+### Bunny.net
+- [Bunny Stream Product Page](https://bunny.net/stream/)
+- [Bunny Stream CDN Player](https://bunny.net/stream/cdn-player/)
+- [Bunny Stream Pricing](https://bunny.net/pricing/stream/)
+- [Bunny CDN Pricing](https://bunny.net/pricing/cdn/)
+- [Bunny Storage Pricing](https://bunny.net/pricing/storage/)
+- [Stream API Reference](https://docs.bunny.net/reference/stream-api-overview)
+- [Stream Quickstart Guide](https://docs.bunny.net/docs/stream-quickstart-guide)
+- [Stream Embedding Docs](https://docs.bunny.net/docs/stream-embedding-videos)
+- [Stream Webhooks](https://docs.bunny.net/stream/webhooks)
+- [Stream Player.js Support](https://bunny.net/blog/introducing-player-js-support-for-bunny-stream-advanced-player-control-and-monitoring-api/)
+- [MediaCage DRM Docs](https://docs.bunny.net/docs/stream-drm)
+- [TUS Resumable Uploads](https://docs.bunny.net/reference/tus-resumable-uploads)
+- [Storage API Reference](https://docs.bunny.net/reference/storage-api)
+- [Edge Storage Limits](https://docs.bunny.net/reference/edge-storage-api-limits)
+- [Token Authentication V2](https://bunny.net/blog/were-bringing-token-authentication-to-the-next-level/)
+- [Token Authentication Docs](https://docs.bunny.net/docs/cdn-token-authentication)
+- [CORS Headers](https://bunny.net/academy/http/what-are-cross-origin-resource-sharing-cors-headers/)
+- [Bunny.net Global Network](https://bunny.net/network/)
+- [Dubai PoP Announcement](https://bunny.net/blog/the-bunnies-expand-to-dubai/)
+- [Africa & Middle East CDN](https://bunny.net/cdn/content-delivery-africa-and-middle-east/)
+- [TypeScript SDK (npm)](https://www.npmjs.com/package/bunny-sdk)
+- [TypeScript SDK (GitHub)](https://github.com/jlarmstrongiv/bunny-sdk-typescript/)
+- [scorm-again CrossFrame API](https://github.com/jcputney/scorm-again)
