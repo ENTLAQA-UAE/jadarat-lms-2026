@@ -118,6 +118,12 @@ const lmsAdminNav: NavGroup[] = [
     ],
   },
   {
+    label: "Management",
+    items: [
+      { name: "Certificate Settings", href: "/dashboard/certificate-settings", icon: Medal },
+    ],
+  },
+  {
     label: "AI",
     items: [{ name: "AI Config", href: "/dashboard/ai-config", icon: Bot }],
   },
