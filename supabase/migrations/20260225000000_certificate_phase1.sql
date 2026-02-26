@@ -53,6 +53,7 @@ ALTER TABLE public.organization_settings
   ADD COLUMN IF NOT EXISTS linkedin_company_id TEXT;
 
 -- ==========  6. Updated RPC: insert_user_certificate (now returns uuid)  ==========
+DROP FUNCTION IF EXISTS public.insert_user_certificate(text, int);
 CREATE OR REPLACE FUNCTION public.insert_user_certificate(
   certificate_url text,
   course int,
@@ -230,6 +231,7 @@ END;
 $$;
 
 -- ==========  12. Updated RPC: get_certificate_if_exists (now includes uuid)  ==========
+DROP FUNCTION IF EXISTS public.get_certificate_if_exists(int);
 CREATE OR REPLACE FUNCTION public.get_certificate_if_exists(course_id int)
 RETURNS TABLE (
   certificate text,
@@ -248,6 +250,7 @@ AS $$
 $$;
 
 -- ==========  13. Updated RPC: get_user_certificates (now includes uuid + status)  ==========
+DROP FUNCTION IF EXISTS public.get_user_certificates();
 CREATE OR REPLACE FUNCTION public.get_user_certificates()
 RETURNS TABLE (
   id          int,
