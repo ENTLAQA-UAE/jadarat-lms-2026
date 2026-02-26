@@ -28,6 +28,7 @@ const CertificateButton: React.FC<CertificateButtonProps> = ({
   className,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { settings } = useAppSelector((state) => state.organization);
 
   const handleCertificate = async () => {
     setIsLoading(true);
@@ -37,17 +38,17 @@ const CertificateButton: React.FC<CertificateButtonProps> = ({
       // Check if certificate already exists
       const { data: userCertData } = await supabase
         .from("user_certificates")
-        .select("certificate")
+        .select("certificate, uuid")
         .eq("course_id", selectedCourse.id)
         .eq("user_id", selectedCourse.learnerId)
         .single();
 
       if (userCertData?.certificate) {
-        handleResult(userCertData.certificate);
+        handleResult(userCertData.certificate, userCertData.uuid);
         return;
       }
 
-      // Generate via internal API (replaces Placid)
+      // Generate via internal API
       const response = await fetch("/api/certificate/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -63,7 +64,7 @@ const CertificateButton: React.FC<CertificateButtonProps> = ({
         throw new Error(result.error || "Certificate generation failed");
       }
 
-      handleResult(result.url);
+      handleResult(result.url, result.uuid);
     } catch (error) {
       toast.error("Error", {
         description: "An unexpected error occurred",
@@ -73,18 +74,26 @@ const CertificateButton: React.FC<CertificateButtonProps> = ({
     }
   };
 
-  const handleResult = (url: string) => {
+  const handleResult = (url: string, uuid?: string) => {
     if (variant === "download") {
       DownloadFile(url);
     } else {
-      window.open(
-        `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${
-          encodeURIComponent(selectedCourse?.courseName || "")
-        }&organizationId=103915279&issueYear=${new Date().getFullYear()}&issueMonth=${
-          new Date().getMonth() + 1
-        }&certUrl=${encodeURIComponent(url)}&certId=${selectedCourse?.id}`,
-        "_blank"
-      );
+      // Build verification URL for LinkedIn
+      const verifyUrl = uuid ? `${window.location.origin}/verify/${uuid}` : url;
+      // Use org-specific LinkedIn company ID if available
+      const linkedinCompanyId = (settings as any)?.linkedin_company_id || '';
+      const linkedinUrl = new URL('https://www.linkedin.com/profile/add');
+      linkedinUrl.searchParams.set('startTask', 'CERTIFICATION_NAME');
+      linkedinUrl.searchParams.set('name', selectedCourse?.courseName || '');
+      if (linkedinCompanyId) {
+        linkedinUrl.searchParams.set('organizationId', linkedinCompanyId);
+      }
+      linkedinUrl.searchParams.set('issueYear', String(new Date().getFullYear()));
+      linkedinUrl.searchParams.set('issueMonth', String(new Date().getMonth() + 1));
+      linkedinUrl.searchParams.set('certUrl', verifyUrl);
+      linkedinUrl.searchParams.set('certId', uuid || String(selectedCourse?.id));
+
+      window.open(linkedinUrl.toString(), '_blank');
     }
   };
 

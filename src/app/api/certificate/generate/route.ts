@@ -31,7 +31,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingCert && existingCert.length > 0 && existingCert[0].certificate) {
-      return NextResponse.json({ url: existingCert[0].certificate })
+      return NextResponse.json({
+        url: existingCert[0].certificate,
+        uuid: existingCert[0].uuid,
+      })
     }
 
     // 3. Get user details
@@ -45,10 +48,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // 4. Get course details
+    // 4. Get course details with category and template
     const { data: courseData } = await supabase
       .from('courses')
-      .select('title, organization_id')
+      .select('title, organization_id, level, certificate_template_id, category_id')
       .eq('id', courseId)
       .single()
 
@@ -56,45 +59,106 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     }
 
-    // 5. Get organization settings with certificate template
+    // 5. Get category name
+    let categoryName = ''
+    if (courseData.category_id) {
+      const { data: catData } = await supabase
+        .from('categories')
+        .select('name')
+        .eq('id', courseData.category_id)
+        .single()
+      if (catData) categoryName = catData.name
+    }
+
+    // 6. Get organization settings
     const { data: orgSettings } = await supabase
       .from('organization_settings')
-      .select('certificate_template_json, name, certificate_auth_title')
+      .select('certificate_template_json, name, certificate_auth_title, linkedin_company_id')
       .eq('organization_id', courseData.organization_id)
       .single()
 
-    if (!orgSettings?.certificate_template_json) {
+    // 7. Resolve template: course-level → org default template → org settings legacy
+    let template: CertificateTemplateJSON | null = null
+
+    if (courseData.certificate_template_id) {
+      const { data: courseTemplate } = await supabase
+        .from('certificate_templates')
+        .select('template_json')
+        .eq('id', courseData.certificate_template_id)
+        .single()
+      if (courseTemplate?.template_json) {
+        template = courseTemplate.template_json as CertificateTemplateJSON
+      }
+    }
+
+    if (!template) {
+      // Try org default template
+      const { data: defaultTemplate } = await supabase
+        .from('certificate_templates')
+        .select('template_json')
+        .eq('organization_id', courseData.organization_id)
+        .eq('is_default', true)
+        .single()
+      if (defaultTemplate?.template_json) {
+        template = defaultTemplate.template_json as CertificateTemplateJSON
+      }
+    }
+
+    if (!template && orgSettings?.certificate_template_json) {
+      template = orgSettings.certificate_template_json as CertificateTemplateJSON
+    }
+
+    if (!template) {
       return NextResponse.json(
         { error: 'No certificate template configured for this organization' },
         { status: 400 }
       )
     }
 
-    const template = orgSettings.certificate_template_json as CertificateTemplateJSON
+    // 8. Generate UUID for this certificate
+    const certUuid = crypto.randomUUID()
 
-    // 6. Build variables
+    // 9. Build verification URL
     const host = request.headers.get('host') || ''
     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https'
-    const qrValue = `${protocol}://${host}/certificates-qr?s=${encodeURIComponent(targetUserId)}&c=${encodeURIComponent(courseId)}`
+    const verificationUrl = `${protocol}://${host}/verify/${certUuid}`
 
+    // 10. Get course completion data
+    const { data: courseProgress } = await supabase
+      .from('user_courses')
+      .select('progress, completed_at')
+      .eq('user_id', targetUserId)
+      .eq('course_id', courseId)
+      .single()
+
+    // 11. Build variables
     const variables: CertificateVariables = {
       studentName: userData.name || userData.email || 'Student',
       courseName: courseData.title || 'Course',
-      date: new Date().toISOString(),
-      orgName: orgSettings.name || '',
-      signatureTitle: orgSettings.certificate_auth_title || '',
+      date: courseProgress?.completed_at || new Date().toISOString(),
+      orgName: orgSettings?.name || '',
+      signatureTitle: orgSettings?.certificate_auth_title || '',
+      certificateId: certUuid,
+      verificationUrl,
+      courseGrade: courseProgress?.progress ? `${courseProgress.progress}%` : '',
+      courseScore: courseProgress?.progress || '',
+      courseLevel: courseData.level || '',
+      courseCategory: categoryName,
+      instructorName: '',
+      creditHours: '',
+      dateHijri: formatHijriDate(courseProgress?.completed_at || new Date().toISOString()),
     }
 
-    // 7. Render PDF
+    // 12. Render PDF
     const pdfBuffer = await renderToBuffer(
       React.createElement(CertificateDocument, {
         template,
         variables,
-        qrValue,
+        qrValue: verificationUrl,
       }) as any
     )
 
-    // 8. Upload to Supabase Storage
+    // 13. Upload to Supabase Storage
     const sanitizedName = `${userData.name?.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '-') || 'student'}-${courseData.title?.replace(/[^a-zA-Z0-9\u0600-\u06FF]/g, '-') || 'course'}`
     const storagePath = `certificates/${courseData.organization_id}/${sanitizedName}-${Date.now()}.pdf`
 
@@ -109,7 +173,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Upload failed: ${uploadError.message}` }, { status: 500 })
     }
 
-    // 9. Create signed URL (20-year expiry)
+    // 14. Create signed URL (20-year expiry)
     const { data: urlData } = await supabase.storage
       .from('LMS Resources')
       .createSignedUrl(storagePath, 630720000)
@@ -118,18 +182,52 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create signed URL' }, { status: 500 })
     }
 
-    // 10. Save to user_certificates
-    await supabase.rpc('insert_user_certificate', {
-      certificate_url: urlData.signedUrl,
-      course: courseId,
-    })
+    // 15. Save to user_certificates with UUID
+    // Using direct insert since the RPC insert_user_certificate uses auth.uid()
+    // and we may be generating for a different student
+    const { error: insertError } = await supabase
+      .from('user_certificates')
+      .upsert({
+        user_id: targetUserId,
+        course_id: courseId,
+        certificate: urlData.signedUrl,
+        uuid: certUuid,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,course_id' })
 
-    return NextResponse.json({ url: urlData.signedUrl })
+    if (insertError) {
+      // Fallback to RPC for self-issuance
+      await supabase.rpc('insert_user_certificate', {
+        certificate_url: urlData.signedUrl,
+        course: courseId,
+      })
+    }
+
+    return NextResponse.json({ url: urlData.signedUrl, uuid: certUuid })
   } catch (error: any) {
     console.error('Certificate generation error:', error)
     return NextResponse.json(
       { error: error.message || 'Internal server error' },
       { status: 500 }
     )
+  }
+}
+
+/**
+ * Convert a Gregorian date to approximate Hijri date string.
+ * Uses the Intl.DateTimeFormat with 'ar-SA' locale and 'islamic-umalqura' calendar.
+ */
+function formatHijriDate(isoDate: string): string {
+  try {
+    const date = new Date(isoDate)
+    const formatter = new Intl.DateTimeFormat('ar-SA', {
+      calendar: 'islamic-umalqura',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    return formatter.format(date)
+  } catch {
+    return ''
   }
 }

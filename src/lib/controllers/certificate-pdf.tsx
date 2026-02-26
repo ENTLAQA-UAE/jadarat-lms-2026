@@ -8,10 +8,9 @@ import {
   Image,
   Font,
   Svg,
-  Path,
   Rect,
-  StyleSheet,
 } from '@react-pdf/renderer'
+import QRCodeLib from 'qrcode'
 import type { CertificateTemplateJSON, CertificateElement, TextElement, ImageElement, QRCodeElement, CertificateLang } from '@/components/certificate-builder/types'
 
 // ── Font Registration ──
@@ -34,44 +33,21 @@ Font.register({
   ],
 })
 
-// ── QR Code Generator ──
-// Generates a simple QR code as SVG paths
-// Uses a basic encoding that works for URLs
+// ── QR Code Generator (using qrcode library with proper error correction) ──
 
 function generateQRMatrix(data: string): boolean[][] {
-  // Simple QR-like pattern for visual representation
-  // In production, this generates the actual QR matrix
-  const size = 21
-  const matrix: boolean[][] = Array.from({ length: size }, () =>
-    Array.from({ length: size }, () => false)
-  )
+  const qr = QRCodeLib.create(data, { errorCorrectionLevel: 'M' })
+  const size = qr.modules.size
+  const modules = qr.modules.data
 
-  // Finder patterns (top-left, top-right, bottom-left)
-  const addFinder = (sx: number, sy: number) => {
-    for (let y = 0; y < 7; y++) {
-      for (let x = 0; x < 7; x++) {
-        const isOuter = y === 0 || y === 6 || x === 0 || x === 6
-        const isInner = y >= 2 && y <= 4 && x >= 2 && x <= 4
-        matrix[sy + y][sx + x] = isOuter || isInner
-      }
+  const matrix: boolean[][] = []
+  for (let y = 0; y < size; y++) {
+    const row: boolean[] = []
+    for (let x = 0; x < size; x++) {
+      row.push(modules[y * size + x] === 1)
     }
+    matrix.push(row)
   }
-  addFinder(0, 0)
-  addFinder(size - 7, 0)
-  addFinder(0, size - 7)
-
-  // Data area — encode from the input string
-  let bitIndex = 0
-  const bytes = new TextEncoder().encode(data)
-  for (let y = 8; y < size - 8; y++) {
-    for (let x = 8; x < size - 8; x++) {
-      const byteIdx = Math.floor(bitIndex / 8) % bytes.length
-      const bit = (bytes[byteIdx] >> (7 - (bitIndex % 8))) & 1
-      matrix[y][x] = bit === 1
-      bitIndex++
-    }
-  }
-
   return matrix
 }
 
@@ -108,6 +84,16 @@ export interface CertificateVariables {
   date: string
   orgName: string
   signatureTitle: string
+  certificateId?: string
+  verificationUrl?: string
+  courseGrade?: string
+  courseScore?: string
+  creditHours?: string
+  instructorName?: string
+  dateHijri?: string
+  courseLevel?: string
+  courseCategory?: string
+  expirationDate?: string
 }
 
 function replaceVariables(content: string, vars: CertificateVariables, lang: CertificateLang): string {
@@ -115,12 +101,24 @@ function replaceVariables(content: string, vars: CertificateVariables, lang: Cer
     ? new Date(vars.date).toLocaleDateString('ar-EG', { year: 'numeric', month: '2-digit', day: '2-digit' })
     : new Date(vars.date).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })
 
-  return content
-    .replace('{{student_name}}', vars.studentName)
-    .replace('{{course_name}}', vars.courseName)
-    .replace('{{date}}', dateFormatted)
-    .replace('{{org_name}}', vars.orgName)
-    .replace('{{signature_title}}', vars.signatureTitle)
+  let result = content
+    .replace(/\{\{student_name\}\}/g, vars.studentName)
+    .replace(/\{\{course_name\}\}/g, vars.courseName)
+    .replace(/\{\{date\}\}/g, dateFormatted)
+    .replace(/\{\{org_name\}\}/g, vars.orgName)
+    .replace(/\{\{signature_title\}\}/g, vars.signatureTitle)
+    .replace(/\{\{certificate_id\}\}/g, vars.certificateId || '')
+    .replace(/\{\{verification_url\}\}/g, vars.verificationUrl || '')
+    .replace(/\{\{course_grade\}\}/g, vars.courseGrade || '')
+    .replace(/\{\{course_score\}\}/g, vars.courseScore || '')
+    .replace(/\{\{credit_hours\}\}/g, vars.creditHours || '')
+    .replace(/\{\{instructor_name\}\}/g, vars.instructorName || '')
+    .replace(/\{\{date_hijri\}\}/g, vars.dateHijri || '')
+    .replace(/\{\{course_level\}\}/g, vars.courseLevel || '')
+    .replace(/\{\{course_category\}\}/g, vars.courseCategory || '')
+    .replace(/\{\{expiration_date\}\}/g, vars.expirationDate || '')
+
+  return result
 }
 
 // ── PDF Document Component ──

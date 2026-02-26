@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { CertificateElement, CertificateLang, TextElement, ImageElement, QRCodeElement } from './types'
-import { DYNAMIC_VARIABLES, FONTS_BY_LANG, DEFAULT_TEMPLATES } from './constants'
+import { DYNAMIC_VARIABLES, VARIABLE_CATEGORIES, FONTS_BY_LANG, DEFAULT_TEMPLATES } from './constants'
 import type { CertificateTemplateJSON } from './types'
 import { createClient } from '@/utils/supabase'
 import { useAppSelector } from '@/hooks/redux.hook'
@@ -164,24 +164,37 @@ export default function ElementToolbar({
 
           <Separator />
 
-          {/* Dynamic Variables */}
+          {/* Dynamic Variables - Grouped by Category */}
           <div>
             <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1">
               <Variable className="h-3 w-3" />
               {isAr ? 'المتغيرات' : 'Variables'}
             </Label>
-            <div className="flex flex-col gap-1 mt-2">
-              {DYNAMIC_VARIABLES.map((v) => (
-                <Button
-                  key={v.key}
-                  variant="ghost"
-                  size="sm"
-                  className="justify-start text-xs h-8 font-mono"
-                  onClick={() => addVariable(v.key)}
-                >
-                  {isAr ? v.labelAr : v.labelEn}
-                </Button>
-              ))}
+            <div className="mt-2 space-y-3">
+              {VARIABLE_CATEGORIES.map((cat) => {
+                const vars = DYNAMIC_VARIABLES.filter((v) => v.category === cat.key)
+                if (vars.length === 0) return null
+                return (
+                  <div key={cat.key}>
+                    <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                      {isAr ? cat.labelAr : cat.labelEn}
+                    </p>
+                    <div className="flex flex-col gap-0.5">
+                      {vars.map((v) => (
+                        <Button
+                          key={v.key}
+                          variant="ghost"
+                          size="sm"
+                          className="justify-start text-xs h-7 font-mono px-2"
+                          onClick={() => addVariable(v.key)}
+                        >
+                          {isAr ? v.labelAr : v.labelEn}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
 

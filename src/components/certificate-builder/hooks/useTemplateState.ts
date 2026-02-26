@@ -1,4 +1,4 @@
-import { useReducer, useCallback } from 'react'
+import { useReducer, useCallback, useRef, useEffect } from 'react'
 import type {
   BuilderState,
   BuilderAction,
@@ -7,6 +7,8 @@ import type {
   CertificateLang,
 } from '../types'
 import { createClassicTemplate } from '../constants'
+
+const MAX_HISTORY = 50
 
 function builderReducer(state: BuilderState, action: BuilderAction): BuilderState {
   switch (action.type) {
@@ -151,6 +153,67 @@ export function useTemplateState(initial?: CertificateTemplateJSON) {
     isDirty: false,
   })
 
+  // Undo/redo history
+  const historyRef = useRef<CertificateTemplateJSON[]>([defaultTemplate])
+  const historyIndexRef = useRef(0)
+  const isUndoRedoRef = useRef(false)
+
+  // Track template changes for undo history
+  useEffect(() => {
+    if (isUndoRedoRef.current) {
+      isUndoRedoRef.current = false
+      return
+    }
+    const current = historyRef.current[historyIndexRef.current]
+    if (JSON.stringify(current) === JSON.stringify(state.template)) return
+
+    // Truncate any future states after current index
+    historyRef.current = historyRef.current.slice(0, historyIndexRef.current + 1)
+    historyRef.current.push(state.template)
+    if (historyRef.current.length > MAX_HISTORY) {
+      historyRef.current.shift()
+    } else {
+      historyIndexRef.current++
+    }
+  }, [state.template])
+
+  const canUndo = historyIndexRef.current > 0
+  const canRedo = historyIndexRef.current < historyRef.current.length - 1
+
+  const undo = useCallback(() => {
+    if (historyIndexRef.current <= 0) return
+    isUndoRedoRef.current = true
+    historyIndexRef.current--
+    dispatch({ type: 'SET_TEMPLATE', payload: historyRef.current[historyIndexRef.current] })
+  }, [])
+
+  const redo = useCallback(() => {
+    if (historyIndexRef.current >= historyRef.current.length - 1) return
+    isUndoRedoRef.current = true
+    historyIndexRef.current++
+    dispatch({ type: 'SET_TEMPLATE', payload: historyRef.current[historyIndexRef.current] })
+  }, [])
+
+  // Keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault()
+        if (e.shiftKey) {
+          redo()
+        } else {
+          undo()
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault()
+        redo()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [undo, redo])
+
   const selectedElement = state.selectedElementId
     ? state.template.elements.find((el) => el.id === state.selectedElementId) ?? null
     : null
@@ -189,7 +252,11 @@ export function useTemplateState(initial?: CertificateTemplateJSON) {
   )
 
   const setTemplate = useCallback(
-    (t: CertificateTemplateJSON) => dispatch({ type: 'SET_TEMPLATE', payload: t }),
+    (t: CertificateTemplateJSON) => {
+      historyRef.current = [t]
+      historyIndexRef.current = 0
+      dispatch({ type: 'SET_TEMPLATE', payload: t })
+    },
     []
   )
 
@@ -224,5 +291,9 @@ export function useTemplateState(initial?: CertificateTemplateJSON) {
     setCanvasBg,
     setCanvasBgImage,
     markClean,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   }
 }

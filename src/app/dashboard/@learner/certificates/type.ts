@@ -5,6 +5,9 @@ export interface CertificatesCardPageType {
    course_id: number
    certificate: string
    updated_at: any
+   uuid?: string
+   status?: 'active' | 'expired' | 'revoked'
+   expires_at?: string | null
    title: string
    description: string
    level: string
