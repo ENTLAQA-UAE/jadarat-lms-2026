@@ -5,7 +5,6 @@ export interface CoursesType {
     thumbnail: string;
     percentage?: number;
     category?: number;
-    coassemble_id?: string;
     enrolled_at?: Date;
     timeline?: string;
     level?: string;
@@ -15,6 +14,8 @@ export interface CoursesType {
     course_id: number;
     title: string;
     isscorm?: boolean;
+    authoring_type?: 'native' | 'scorm';
+    content_id?: string;
 }
 
 export type Category = {
@@ -38,7 +39,6 @@ export interface FullCourseTypes {
     thumbnail: string;
     timeline: string;
     category_id: number;
-    coassemble_id?: string;
     slug?: string;
     name?: string;
     percentage?: number;
@@ -47,6 +47,8 @@ export interface FullCourseTypes {
     category_name: string;
     category_ar_name: string;
     course_id: number;
+    authoring_type?: 'native' | 'scorm';
+    content_id?: string;
 }
 
 export interface Language {

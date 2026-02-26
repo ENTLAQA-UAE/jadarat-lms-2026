@@ -1,62 +1,62 @@
-'use client'
-import { createClient } from '@/utils/supabase/client';
-import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useCallback, useEffect } from 'react'
+'use client';
 
-function BuildCoursePage() {
-   const router = useRouter();
-   const searchParams = useSearchParams();
-   const url = searchParams.get('url')
-   const courseId = searchParams.get('courseId')
-   const handleWS = useCallback(
-      async (message: any) => {
-         const supabase = createClient()
-         if (message.origin !== 'https://coassemble.com') return;
-         const payload = JSON.parse(message.data);
-         if (payload?.data?.id && courseId) {
-            let { data, error } = await supabase
-               .rpc('add_coassemble_id', {
-                  _coassemble_id: payload.data.id.toString(),
-                  _course_id: +courseId
-               })
-            if (error) console.error(error)
-         }
-      }, [courseId]
-   );
+import { useSearchParams, useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-   useEffect(() => {
-      if (typeof window !== 'undefined')
-         window.addEventListener('message', handleWS);
+/**
+ * Build Course Page -- Native Block Editor (Stub)
+ *
+ * This page replaces the old Coassemble iframe builder.
+ * The full EditorCanvas will be implemented in Phase 1.
+ * For now, it shows a placeholder with the course ID.
+ */
+export default function BuildCoursePage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const courseId = searchParams.get('courseId');
 
-      return () => {
-         window.removeEventListener('message', handleWS);
-      };
-   }, [handleWS]);
-
-   //if make listen to the message == "back" then redirect to the course page
-   const onMessage = useCallback((event: MessageEvent) => {
-      try {
-         const message = JSON.parse(event.data);
-         if (message.type === 'back') {
-            router.push('/dashboard/courses'); // Redirect back to the /training page
-         }
-      } catch (error) {
-         console.error('Message handling error:', error);
-      }
-   }, [router]);
-
-   useEffect(() => {
-      window.addEventListener('message', onMessage);
-      return () => {
-         window.removeEventListener('message', onMessage);
-      };
-   }, [onMessage]);
-
-   return (
-      <div className='w-full h-dvh'>
-         <iframe src={`https://coassemble.com/embed/${url}`} className='w-full h-dvh' />
+  if (!courseId) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground">No course ID provided.</p>
       </div>
-   )
-}
+    );
+  }
 
-export default BuildCoursePage
+  return (
+    <div className="flex flex-col h-screen">
+      {/* Header */}
+      <div className="flex items-center gap-4 border-b px-6 py-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.push('/dashboard/courses')}
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="text-lg font-semibold">Course Editor</h1>
+        <span className="text-sm text-muted-foreground">Course #{courseId}</span>
+      </div>
+
+      {/* Placeholder for EditorCanvas (Phase 1) */}
+      <div className="flex-1 flex items-center justify-center bg-muted/30">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold">Native Block Editor</h2>
+          <p className="text-muted-foreground">
+            The drag-and-drop block editor is being built. This will replace the
+            old Coassemble iframe with a native editing experience.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Phase 1 deliverable -- Coming soon.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

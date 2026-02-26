@@ -18,6 +18,8 @@
     "@ai-sdk/anthropic": "^3.0.46",
     "@ai-sdk/openai": "^3.0.30",
     "@ai-sdk/react": "^3.0.99",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
     "@hookform/resolvers": "^3.4.2",
     "@nivo/bar": "^0.87.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -47,6 +49,7 @@
     "@supabase/supabase-js": "^2.45.3",
     "@tanstack/react-table": "^8.17.3",
     "@types/qrcode": "^1.5.6",
+    "@types/uuid": "^10.0.0",
     "ai": "^6.0.97",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
@@ -87,10 +90,13 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-debug-screens": "^2.2.1",
+    "tus-js-client": "^4.3.1",
+    "uuid": "^13.0.0",
     "vaul": "^0.9.1",
     "xapiwrapper": "^1.11.0",
     "xlsx": "^0.18.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
