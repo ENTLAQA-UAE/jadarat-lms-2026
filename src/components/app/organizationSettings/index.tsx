@@ -9,7 +9,6 @@ const Registeration = dynamic(() => import("./registeration"), { ssr: false });
 const Courses = dynamic(() => import("./courses"), { ssr: false });
 const Subscription = dynamic(() => import("./subscription"), { ssr: false });
 const Branding = dynamic(() => import("./branding"), { ssr: false });
-const Certificates = dynamic(() => import("./certificates"), { ssr: false });
 const UsedSkelton = dynamic(() => import("./skeletons/used-skelton"), { ssr: false });
 const SubscriptionSkelton = dynamic(() => import("./skeletons/SubscriptionSkelton"), { ssr: false });
 
@@ -42,9 +41,6 @@ export default function Settings() {
         </div>
         <div x-chunk="dashboard-01-chunk-2" className="w-full md:h-full h-fit lg:col-span-1 col-span-2">
           <Branding />
-        </div>
-        <div x-chunk="dashboard-01-chunk-2" className="w-full xl:h-full h-fit lg:col-span-1 col-span-2">
-          <Certificates />
         </div>
       </div>
     </div>

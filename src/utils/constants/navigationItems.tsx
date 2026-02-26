@@ -82,6 +82,10 @@ const lmsAdminRoutes = [
     name: "AI Config",
     href: "/dashboard/ai-config",
   },
+  {
+    name: "Certificate Settings",
+    href: "/dashboard/certificate-settings",
+  },
 ];
 
 const learningManagerRoutes = [
