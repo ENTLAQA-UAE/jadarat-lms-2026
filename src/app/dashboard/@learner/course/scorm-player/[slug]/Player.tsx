@@ -17,7 +17,8 @@ export default function Player({
   isGenerating = false,
   isSharing = false,
   baseUrl,
-  launch_path
+  launch_path,
+  scormContentUrl
 }: PlayerProps) {
   const router = useRouter();
   const [progressValue, setProgressValue] = useState<number>(courseData?.progress ? +courseData?.progress : 0)
@@ -174,7 +175,7 @@ export default function Player({
 
         <div className="flex-1 bg-card rounded-lg overflow-hidden border h-full">
           <iframe
-            src={`${baseUrl}/api/scorm/content/${slug}/${courseData?.launch_path ?? launch_path}`}
+            src={scormContentUrl || `${baseUrl}/api/scorm/content/${slug}/${courseData?.launch_path ?? launch_path}`}
             className="w-full h-full bg-background"
             title="SCORM Content"
             sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals allow-downloads"
