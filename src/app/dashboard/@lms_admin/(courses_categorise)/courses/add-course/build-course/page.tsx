@@ -1,20 +1,133 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState, useCallback } from 'react';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import { useEditorStore } from '@/stores/editor.store';
+import { saveContent, publishContent, loadCourseWithContent } from '@/action/authoring/content';
+import { EditorHeader } from '@/components/authoring/EditorHeader';
+import { ModuleSidebar } from '@/components/authoring/ModuleSidebar';
+import { EditorCanvas } from '@/components/authoring/EditorCanvas';
 
-/**
- * Build Course Page -- Native Block Editor (Stub)
- *
- * This page replaces the old Coassemble iframe builder.
- * The full EditorCanvas will be implemented in Phase 1.
- * For now, it shows a placeholder with the course ID.
- */
 export default function BuildCoursePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const courseId = searchParams.get('courseId');
+  const [courseTitle, setCourseTitle] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const store = useEditorStore();
+
+  // Load course data on mount
+  useEffect(() => {
+    if (!courseId) return;
+
+    const load = async () => {
+      setLoading(true);
+      const { data, error: loadError } = await loadCourseWithContent(parseInt(courseId));
+
+      if (loadError || !data) {
+        setError(loadError || 'Course not found');
+        setLoading(false);
+        return;
+      }
+
+      const course = Array.isArray(data) ? data[0] : data;
+      setCourseTitle(course.title || '');
+
+      // Initialize editor store with course content
+      const content = course.content || {
+        modules: [],
+        settings: {
+          theme: {
+            primary_color: '#1a73e8',
+            secondary_color: '#f59e0b',
+            background_color: '#ffffff',
+            text_color: '#1f2937',
+            font_family: 'cairo',
+            border_radius: 'medium' as const,
+            cover_style: 'gradient' as const,
+          },
+          navigation: 'sequential' as const,
+          show_progress_bar: true,
+          show_lesson_list: true,
+          completion_criteria: 'all_blocks' as const,
+          language: 'ar' as const,
+          direction: 'rtl' as const,
+        },
+      };
+
+      store.loadContent(
+        parseInt(courseId),
+        content,
+        course.content_id || null,
+        course.content_version || 1
+      );
+
+      setLoading(false);
+    };
+
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId]);
+
+  // Clean up editor on unmount
+  useEffect(() => {
+    return () => {
+      store.resetEditor();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSave = useCallback(async () => {
+    if (!courseId) return;
+    store.setSaving(true);
+
+    const { contentId, error: saveError } = await saveContent(
+      parseInt(courseId),
+      store.content
+    );
+
+    store.setSaving(false);
+
+    if (saveError) {
+      toast.error('Save failed', { description: saveError });
+      return;
+    }
+
+    store.setDirty(false);
+    toast.success('Saved', { description: 'Course content saved successfully.' });
+  }, [courseId, store]);
+
+  const handlePublish = useCallback(async () => {
+    if (!courseId || !store.contentId) {
+      // Save first if no contentId
+      await handleSave();
+      if (!store.contentId) {
+        toast.error('Error', { description: 'Please save the course first.' });
+        return;
+      }
+    }
+
+    store.setPublishing(true);
+
+    const { error: publishError } = await publishContent(
+      parseInt(courseId!),
+      store.contentId!
+    );
+
+    store.setPublishing(false);
+
+    if (publishError) {
+      toast.error('Publish failed', { description: publishError });
+      return;
+    }
+
+    store.setDirty(false);
+    toast.success('Published', { description: 'Course is now live for learners.' });
+  }, [courseId, store, handleSave]);
 
   if (!courseId) {
     return (
@@ -24,38 +137,44 @@ export default function BuildCoursePage() {
     );
   }
 
-  return (
-    <div className="flex flex-col h-screen">
-      {/* Header */}
-      <div className="flex items-center gap-4 border-b px-6 py-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.push('/dashboard/courses')}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-lg font-semibold">Course Editor</h1>
-        <span className="text-sm text-muted-foreground">Course #{courseId}</span>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
+    );
+  }
 
-      {/* Placeholder for EditorCanvas (Phase 1) */}
-      <div className="flex-1 flex items-center justify-center bg-muted/30">
-        <div className="text-center space-y-4 max-w-md">
-          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold">Native Block Editor</h2>
-          <p className="text-muted-foreground">
-            The drag-and-drop block editor is being built. This will replace the
-            old Coassemble iframe with a native editing experience.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Phase 1 deliverable -- Coming soon.
-          </p>
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center space-y-4">
+          <p className="text-destructive">{error}</p>
+          <button
+            onClick={() => router.push('/dashboard/courses')}
+            className="text-primary underline"
+          >
+            Back to courses
+          </button>
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-screen overflow-hidden">
+      <EditorHeader
+        courseTitle={courseTitle}
+        onSave={handleSave}
+        onPublish={handlePublish}
+      />
+
+      <div className="flex flex-1 overflow-hidden">
+        {store.sidebarOpen && <ModuleSidebar />}
+
+        <main className="flex-1 overflow-y-auto bg-muted/30 p-6">
+          <EditorCanvas />
+        </main>
       </div>
     </div>
   );
