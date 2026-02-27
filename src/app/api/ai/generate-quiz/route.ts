@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { getAIProvider, logUsage, GatewayError } from '@/lib/ai/gateway';
+import { getPlatformAIModel, logUsage, GatewayError } from '@/lib/ai/gateway';
 import { generateText } from 'ai';
 import { QUIZ_SYSTEM_PROMPT, QUIZ_USER_PROMPT } from '@/lib/ai/prompts';
 import { z } from 'zod';
@@ -37,9 +37,10 @@ export async function POST(req: NextRequest) {
 
     const params = parsed.data;
 
-    let gateway;
+    // Use platform-level AI key (not tenant's per-org config)
+    let platform;
     try {
-      gateway = await getAIProvider(supabase, user.id, 'generate_quiz');
+      platform = getPlatformAIModel();
     } catch (err) {
       if (err instanceof GatewayError) {
         return NextResponse.json({ error: err.message }, { status: err.status });
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
     const startTime = Date.now();
 
     const result = await generateText({
-      model: gateway.model,
+      model: platform.model,
       system: QUIZ_SYSTEM_PROMPT,
       prompt: QUIZ_USER_PROMPT({
         moduleTitle: params.module_title,
@@ -86,7 +87,7 @@ export async function POST(req: NextRequest) {
       organization_id: (await supabase.rpc('get_user_org_id')).data,
       user_id: user.id,
       operation: 'generate_quiz',
-      model: gateway.config.model,
+      model: platform.modelId,
       input_tokens: inputTokens,
       output_tokens: outputTokens,
       cost_usd: (inputTokens * 3 + outputTokens * 15) / 1_000_000,

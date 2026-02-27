@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { getAIProvider, logUsage, GatewayError } from '@/lib/ai/gateway';
+import { getPlatformAIModel, logUsage, GatewayError } from '@/lib/ai/gateway';
 import { streamText } from 'ai';
 import { LESSON_SYSTEM_PROMPT, LESSON_USER_PROMPT } from '@/lib/ai/prompts';
 import { z } from 'zod';
@@ -41,9 +41,10 @@ export async function POST(req: NextRequest) {
 
     const params = parsed.data;
 
-    let gateway;
+    // Use platform-level AI key (not tenant's per-org config)
+    let platform;
     try {
-      gateway = await getAIProvider(supabase, user.id, 'generate_lesson');
+      platform = getPlatformAIModel();
     } catch (err) {
       if (err instanceof GatewayError) {
         return new Response(JSON.stringify({ error: err.message }), {
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
     }
 
     const result = streamText({
-      model: gateway.model,
+      model: platform.model,
       system: LESSON_SYSTEM_PROMPT,
       prompt: LESSON_USER_PROMPT({
         lessonTitle: params.lesson_title,
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
           organization_id: (await supabase.rpc('get_user_org_id')).data,
           user_id: user.id,
           operation: 'generate_lesson',
-          model: gateway.config.model,
+          model: platform.modelId,
           input_tokens: usage?.inputTokens || 0,
           output_tokens: usage?.outputTokens || 0,
           cost_usd: estimateCost(

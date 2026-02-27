@@ -201,6 +201,28 @@ export async function getAIProvider(
 }
 
 /**
+ * Platform-level AI model for authoring features (course generation, refinement).
+ * Uses the platform's own ANTHROPIC_API_KEY — NOT the tenant's per-org config.
+ * This keeps authoring costs on the platform and works even if the org has no AI config.
+ */
+export function getPlatformAIModel() {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new GatewayError(
+      'Platform AI key not configured (ANTHROPIC_API_KEY)',
+      500
+    );
+  }
+
+  const anthropic = createAnthropic({ apiKey });
+  const modelId = process.env.PLATFORM_AI_MODEL || 'claude-sonnet-4-5-20250929';
+  return {
+    model: anthropic(modelId),
+    modelId,
+  };
+}
+
+/**
  * Custom error class with HTTP status code.
  */
 export class GatewayError extends Error {

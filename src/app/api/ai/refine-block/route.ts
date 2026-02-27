@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { getAIProvider, logUsage, GatewayError } from '@/lib/ai/gateway';
+import { getPlatformAIModel, logUsage, GatewayError } from '@/lib/ai/gateway';
 import { streamText } from 'ai';
 import { REFINE_PROMPTS } from '@/lib/ai/prompts';
 import { z } from 'zod';
@@ -36,9 +36,10 @@ export async function POST(req: NextRequest) {
     const { content, action, language, target_language, tone, audience } =
       parsed.data;
 
-    let gateway;
+    // Use platform-level AI key (not tenant's per-org config)
+    let platform;
     try {
-      gateway = await getAIProvider(supabase, user.id, 'refine_block');
+      platform = getPlatformAIModel();
     } catch (err) {
       if (err instanceof GatewayError)
         return new Response(JSON.stringify({ error: err.message }), {
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
     }
 
     const result = streamText({
-      model: gateway.model,
+      model: platform.model,
       prompt,
       temperature: 0.7,
       maxOutputTokens: 2000,

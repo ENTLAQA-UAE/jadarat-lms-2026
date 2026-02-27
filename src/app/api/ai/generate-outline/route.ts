@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { getAIProvider, logUsage, GatewayError } from '@/lib/ai/gateway';
+import { getPlatformAIModel, logUsage, GatewayError } from '@/lib/ai/gateway';
 import { generateText } from 'ai';
 import { OUTLINE_SYSTEM_PROMPT, OUTLINE_USER_PROMPT } from '@/lib/ai/prompts';
 import { z } from 'zod';
@@ -42,9 +42,10 @@ export async function POST(req: NextRequest) {
 
     const params = parsed.data;
 
-    let gateway;
+    // Use platform-level AI key (not tenant's per-org config)
+    let platform;
     try {
-      gateway = await getAIProvider(supabase, user.id, 'generate_outline');
+      platform = getPlatformAIModel();
     } catch (err) {
       if (err instanceof GatewayError) {
         return NextResponse.json({ error: err.message }, { status: err.status });
@@ -55,7 +56,7 @@ export async function POST(req: NextRequest) {
     const startTime = Date.now();
 
     const result = await generateText({
-      model: gateway.model,
+      model: platform.model,
       system: OUTLINE_SYSTEM_PROMPT,
       prompt: OUTLINE_USER_PROMPT({
         topic: params.topic,
@@ -87,7 +88,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Log AI usage
+    // Log AI usage (platform-level)
     const inputTokens = result.usage?.inputTokens || 0;
     const outputTokens = result.usage?.outputTokens || 0;
 
@@ -95,10 +96,10 @@ export async function POST(req: NextRequest) {
       organization_id: (await supabase.rpc('get_user_org_id')).data,
       user_id: user.id,
       operation: 'generate_outline',
-      model: gateway.config.model,
+      model: platform.modelId,
       input_tokens: inputTokens,
       output_tokens: outputTokens,
-      cost_usd: estimateCost(inputTokens, outputTokens, gateway.config.model),
+      cost_usd: estimateCost(inputTokens, outputTokens, platform.modelId),
       input_summary: `Topic: ${params.topic}`,
       output_summary: `${outline.modules?.length || 0} modules generated`,
       duration_ms: durationMs,
