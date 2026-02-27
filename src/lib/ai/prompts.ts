@@ -23,13 +23,14 @@ Your task is to create a detailed course outline following these instructional d
    - Each lesson has a single focused learning objective
    - Vary block types for engagement (never 3+ text blocks in a row)
 
-4. BLOCK TYPE SELECTION for each lesson (AI-generated blocks only):
-   - Start with a "cover" or "text" block for introduction
+4. BLOCK TYPE SELECTION for each lesson:
+   - Start with a "cover" block with a compelling visual description for AI image generation
+   - Use "image" blocks to add visual context (include a descriptive prompt for AI image generation)
    - Use "accordion", "tabs" for exploration and organizing information
    - Use "multiple_choice", "true_false" for assessment
    - End with a "text" summary or "multiple_choice" knowledge check
-   - Do NOT suggest "image" or "video" blocks -- those are added manually by the author
-   - Only suggest from: text, accordion, tabs, multiple_choice, true_false, divider, cover
+   - Do NOT suggest "video" blocks -- those are added manually by the author
+   - Only suggest from: text, image, accordion, tabs, multiple_choice, true_false, divider, cover
 
 5. LANGUAGE RULES:
    - If language is "ar": Use Modern Standard Arabic (MSA). All text must be grammatically correct Arabic.
@@ -79,7 +80,7 @@ Return a JSON object with this exact structure:
           "title": "string",
           "description": "string",
           "order": 0,
-          "suggested_blocks": ["text", "accordion", "tabs", "multiple_choice"],
+          "suggested_blocks": ["cover", "text", "image", "accordion", "tabs", "multiple_choice"],
           "estimated_duration_minutes": number
         }
       ]
@@ -106,9 +107,12 @@ RULES:
 10. Generate unique IDs for all id fields (use format: "block-{random-8-chars}")
 
 IMPORTANT - BLOCK TYPE RESTRICTIONS:
-- ONLY generate these block types: text, accordion, tabs, multiple_choice, true_false, divider, cover
-- NEVER generate "image" or "video" blocks - the author adds media manually after generation
-- NEVER generate URLs or image sources - you cannot create real media assets
+- ONLY generate these block types: text, image, accordion, tabs, multiple_choice, true_false, divider, cover
+- NEVER generate "video" blocks - the author adds video manually
+- For "image" blocks, set src to "GENERATE:" followed by a vivid, detailed English image description (e.g., "GENERATE:A modern office workspace with professionals collaborating on laptops")
+- For "cover" blocks, set background_image to "GENERATE:" followed by a vivid description of the cover background
+- The GENERATE: prefix triggers automatic AI image generation using DALL-E — always write prompts in English regardless of course language
+- Make image prompts descriptive, professional, and relevant to the educational content
 
 TEXT CONTENT FORMAT:
 - For text blocks, use simple HTML: <p>, <strong>, <em>, <ul>, <li>, <h3>
@@ -139,8 +143,9 @@ Audience: ${params.audience}
 Suggested Block Types: ${params.suggestedBlocks.join(', ')}
 ${params.previousLessonsContext ? `\nContext from previous lessons:\n${params.previousLessonsContext}` : ''}
 
-IMPORTANT: Only generate blocks of these types: text, accordion, tabs, multiple_choice, true_false, divider, cover.
-Do NOT generate image, video, or any other block types. The author adds media manually.
+IMPORTANT: Only generate blocks of these types: text, image, accordion, tabs, multiple_choice, true_false, divider, cover.
+Do NOT generate video or any other block types. The author adds video manually.
+For image and cover blocks, use "GENERATE:description" as the image source — this triggers AI image generation.
 
 Return a JSON array of blocks. Each block must have this structure:
 {
@@ -173,8 +178,11 @@ For "tabs" blocks, data format:
 For "true_false" blocks, data format:
 { "statement": "...", "correct_answer": true, "explanation": "...", "points": 1 }
 
+For "image" blocks, data format:
+{ "src": "GENERATE:A detailed description of the image in English", "alt": "Accessible description", "caption": "Optional caption", "width": "large", "alignment": "center" }
+
 For "cover" blocks, data format:
-{ "background_image": "", "title": "...", "subtitle": "...", "overlay_color": "#1a73e8CC", "text_alignment": "center", "height": "medium" }
+{ "background_image": "GENERATE:A professional wide background image description in English", "title": "...", "subtitle": "...", "overlay_color": "#1a73e8CC", "text_alignment": "center", "height": "medium" }
 
 For "divider" blocks, data format:
 { "style": "solid", "color": "#e5e7eb", "spacing": "medium" }

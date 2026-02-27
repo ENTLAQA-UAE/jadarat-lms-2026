@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { useEditorStore } from '@/stores/editor.store';
 import type { Block, CourseOutline } from '@/types/authoring';
 import { v4 as uuidv4 } from 'uuid';
+import { resolveGenerateMarker } from '@/components/authoring/ai/AIImageGenerator';
 
 interface GenerationProgressProps {
   courseId: number;
@@ -32,9 +33,11 @@ interface LessonStatus {
   lessonIndex: number;
   moduleTitle: string;
   lessonTitle: string;
-  status: 'pending' | 'generating' | 'done' | 'error';
+  status: 'pending' | 'generating' | 'generating_images' | 'done' | 'error';
   blocks: Block[];
   error?: string;
+  imageCount?: number;
+  imagesResolved?: number;
 }
 
 export function GenerationProgress({
@@ -155,6 +158,62 @@ export function GenerationProgress({
               },
             } as Block,
           ];
+        }
+
+        // Resolve GENERATE: markers in image and cover blocks
+        const imageMarkers = blocks.filter(
+          (b) =>
+            (b.type === 'image' &&
+              (b.data as { src?: string }).src?.startsWith('GENERATE:')) ||
+            (b.type === 'cover' &&
+              (b.data as { background_image?: string }).background_image?.startsWith('GENERATE:'))
+        );
+
+        if (imageMarkers.length > 0) {
+          setLessons((prev) =>
+            prev.map((l, idx) =>
+              idx === i
+                ? { ...l, status: 'generating_images', imageCount: imageMarkers.length, imagesResolved: 0 }
+                : l
+            )
+          );
+
+          let resolved = 0;
+          for (const block of blocks) {
+            if (abortRef.current) break;
+
+            const blockData = block.data as Record<string, unknown>;
+
+            if (
+              block.type === 'image' &&
+              typeof blockData.src === 'string' &&
+              blockData.src.startsWith('GENERATE:')
+            ) {
+              const url = await resolveGenerateMarker(blockData.src, false);
+              if (url) blockData.src = url;
+              resolved++;
+              setLessons((prev) =>
+                prev.map((l, idx) =>
+                  idx === i ? { ...l, imagesResolved: resolved } : l
+                )
+              );
+            }
+
+            if (
+              block.type === 'cover' &&
+              typeof blockData.background_image === 'string' &&
+              blockData.background_image.startsWith('GENERATE:')
+            ) {
+              const url = await resolveGenerateMarker(blockData.background_image, true);
+              if (url) blockData.background_image = url;
+              resolved++;
+              setLessons((prev) =>
+                prev.map((l, idx) =>
+                  idx === i ? { ...l, imagesResolved: resolved } : l
+                )
+              );
+            }
+          }
         }
 
         setLessons((prev) =>
@@ -296,6 +355,9 @@ export function GenerationProgress({
             {lesson.status === 'generating' && (
               <Loader2 className="h-5 w-5 text-primary animate-spin shrink-0" />
             )}
+            {lesson.status === 'generating_images' && (
+              <Loader2 className="h-5 w-5 text-amber-500 animate-spin shrink-0" />
+            )}
             {lesson.status === 'done' && (
               <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center shrink-0">
                 <Check className="h-3 w-3 text-white" />
@@ -314,6 +376,11 @@ export function GenerationProgress({
               </p>
             </div>
 
+            {lesson.status === 'generating_images' && (
+              <Badge variant="outline" className="shrink-0 text-amber-600 border-amber-300">
+                Images {lesson.imagesResolved || 0}/{lesson.imageCount || 0}
+              </Badge>
+            )}
             {lesson.status === 'done' && (
               <Badge variant="secondary" className="shrink-0">
                 {lesson.blocks.length} blocks
