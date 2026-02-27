@@ -159,10 +159,10 @@ CREATE POLICY "course_content_admin_all" ON course_content
   FOR ALL USING (
     EXISTS (
       SELECT 1 FROM courses c
-      JOIN user_details ud ON ud.organization_id = c.organization_id
+      JOIN users u ON u.organization_id = c.organization_id
       WHERE c.id = course_content.course_id
-        AND ud.user_id = auth.uid()
-        AND ud.role IN ('lms_admin', 'org_admin')
+        AND u.id = auth.uid()
+        AND u.role IN ('LMSAdmin', 'organizationAdmin')
     )
   );
 
@@ -184,19 +184,19 @@ CREATE POLICY "block_progress_own" ON learner_block_progress
 CREATE POLICY "templates_read_org" ON block_templates
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM user_details ud
-      WHERE ud.organization_id = block_templates.organization_id
-        AND ud.user_id = auth.uid()
+      SELECT 1 FROM users u
+      WHERE u.organization_id = block_templates.organization_id
+        AND u.id = auth.uid()
     )
   );
 
 CREATE POLICY "templates_admin_write" ON block_templates
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM user_details ud
-      WHERE ud.organization_id = block_templates.organization_id
-        AND ud.user_id = auth.uid()
-        AND ud.role IN ('lms_admin', 'org_admin')
+      SELECT 1 FROM users u
+      WHERE u.organization_id = block_templates.organization_id
+        AND u.id = auth.uid()
+        AND u.role IN ('LMSAdmin', 'organizationAdmin')
     )
   );
 
@@ -204,19 +204,19 @@ CREATE POLICY "templates_admin_write" ON block_templates
 CREATE POLICY "bunny_videos_read_org" ON bunny_videos
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM user_details ud
-      WHERE ud.organization_id = bunny_videos.organization_id
-        AND ud.user_id = auth.uid()
+      SELECT 1 FROM users u
+      WHERE u.organization_id = bunny_videos.organization_id
+        AND u.id = auth.uid()
     )
   );
 
 CREATE POLICY "bunny_videos_admin_write" ON bunny_videos
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM user_details ud
-      WHERE ud.organization_id = bunny_videos.organization_id
-        AND ud.user_id = auth.uid()
-        AND ud.role IN ('lms_admin', 'org_admin')
+      SELECT 1 FROM users u
+      WHERE u.organization_id = bunny_videos.organization_id
+        AND u.id = auth.uid()
+        AND u.role IN ('LMSAdmin', 'organizationAdmin')
     )
   );
 
@@ -224,19 +224,19 @@ CREATE POLICY "bunny_videos_admin_write" ON bunny_videos
 CREATE POLICY "course_media_read_org" ON course_media
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM user_details ud
-      WHERE ud.organization_id = course_media.organization_id
-        AND ud.user_id = auth.uid()
+      SELECT 1 FROM users u
+      WHERE u.organization_id = course_media.organization_id
+        AND u.id = auth.uid()
     )
   );
 
 CREATE POLICY "course_media_admin_write" ON course_media
   FOR ALL USING (
     EXISTS (
-      SELECT 1 FROM user_details ud
-      WHERE ud.organization_id = course_media.organization_id
-        AND ud.user_id = auth.uid()
-        AND ud.role IN ('lms_admin', 'org_admin')
+      SELECT 1 FROM users u
+      WHERE u.organization_id = course_media.organization_id
+        AND u.id = auth.uid()
+        AND u.role IN ('LMSAdmin', 'organizationAdmin')
     )
   );
 
@@ -247,10 +247,10 @@ CREATE POLICY "ai_log_own" ON ai_generation_log
 CREATE POLICY "ai_log_admin" ON ai_generation_log
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM user_details ud
-      WHERE ud.organization_id = ai_generation_log.organization_id
-        AND ud.user_id = auth.uid()
-        AND ud.role IN ('lms_admin', 'org_admin')
+      SELECT 1 FROM users u
+      WHERE u.organization_id = ai_generation_log.organization_id
+        AND u.id = auth.uid()
+        AND u.role IN ('LMSAdmin', 'organizationAdmin')
     )
   );
 
@@ -277,10 +277,10 @@ BEGIN
   -- Verify user has access to this course's org
   SELECT c.organization_id INTO v_org_id
   FROM courses c
-  JOIN user_details ud ON ud.organization_id = c.organization_id
+  JOIN users u ON u.organization_id = c.organization_id
   WHERE c.id = p_course_id
-    AND ud.user_id = p_user_id
-    AND ud.role IN ('lms_admin', 'org_admin');
+    AND u.id = p_user_id
+    AND u.role IN ('LMSAdmin', 'organizationAdmin');
 
   IF v_org_id IS NULL THEN
     RAISE EXCEPTION 'Unauthorized: user does not have admin access to this course';
@@ -333,10 +333,10 @@ BEGIN
   -- Verify admin access
   SELECT c.organization_id INTO v_org_id
   FROM courses c
-  JOIN user_details ud ON ud.organization_id = c.organization_id
+  JOIN users u ON u.organization_id = c.organization_id
   WHERE c.id = p_course_id
-    AND ud.user_id = auth.uid()
-    AND ud.role IN ('lms_admin', 'org_admin');
+    AND u.id = auth.uid()
+    AND u.role IN ('LMSAdmin', 'organizationAdmin');
 
   IF v_org_id IS NULL THEN
     RAISE EXCEPTION 'Unauthorized';
