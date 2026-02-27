@@ -1,24 +1,41 @@
 'use client';
 
-import React from 'react';
-import { type Block, BlockType } from '@/types/authoring';
+import {
+  type Block,
+  BlockType,
+} from '@/types/authoring';
+
 import { TextBlockEditor } from './TextBlock';
 import { ImageBlockEditor } from './ImageBlock';
 import { VideoBlockEditor } from './VideoBlock';
 import { AccordionBlockEditor } from './AccordionBlock';
 import { TabsBlockEditor } from './TabsBlock';
 import { MultipleChoiceBlockEditor } from './MultipleChoiceBlock';
+import { TrueFalseBlockEditor } from './TrueFalseBlock';
+import { DividerBlockEditor } from './DividerBlock';
+import { CoverBlockEditor } from './CoverBlock';
 
-interface BlockEditorProps {
+// Re-export all individual block editors
+export {
+  TextBlockEditor,
+  ImageBlockEditor,
+  VideoBlockEditor,
+  AccordionBlockEditor,
+  TabsBlockEditor,
+  MultipleChoiceBlockEditor,
+  TrueFalseBlockEditor,
+  DividerBlockEditor,
+  CoverBlockEditor,
+};
+
+// Unified BlockEditor that switches on block.type
+export function BlockEditor({
+  block,
+  onChange,
+}: {
   block: Block;
-  onChange: (data: Partial<Block['data']>) => void;
-}
-
-/**
- * Dispatches rendering to the appropriate block editor based on block type.
- * New block types should be registered here as their editors are built.
- */
-export function BlockEditor({ block, onChange }: BlockEditorProps) {
+  onChange: (data: any) => void;
+}) {
   switch (block.type) {
     case BlockType.TEXT:
       return <TextBlockEditor block={block} onChange={onChange} />;
@@ -32,12 +49,16 @@ export function BlockEditor({ block, onChange }: BlockEditorProps) {
       return <TabsBlockEditor block={block} onChange={onChange} />;
     case BlockType.MULTIPLE_CHOICE:
       return <MultipleChoiceBlockEditor block={block} onChange={onChange} />;
+    case BlockType.TRUE_FALSE:
+      return <TrueFalseBlockEditor block={block} onChange={onChange} />;
+    case BlockType.DIVIDER:
+      return <DividerBlockEditor block={block} onChange={onChange} />;
+    case BlockType.COVER:
+      return <CoverBlockEditor block={block} onChange={onChange} />;
     default:
       return (
-        <div className="flex items-center justify-center rounded-md border border-dashed border-muted-foreground/30 bg-muted/30 p-6 text-sm text-muted-foreground">
-          <span>
-            Block type <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">{block.type}</code> editor is not yet implemented.
-          </span>
+        <div className="rounded-lg border border-dashed border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+          Unsupported block type: {(block as Block).type}
         </div>
       );
   }
