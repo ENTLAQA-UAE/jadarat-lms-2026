@@ -69,9 +69,16 @@ export async function getAiAndDocumentBuilder(organization_id: number) {
     if (error) {
       // silently handled
     }
-    return data || {};
+    // Default create_courses to true so existing orgs aren't blocked
+    // when the column is missing or null in organization_settings
+    return {
+      ai_builder: false,
+      document_builder: false,
+      create_courses: true,
+      ...data,
+    };
   } catch {
-    return {};
+    return { ai_builder: false, document_builder: false, create_courses: true };
   }
 }
 
