@@ -23,12 +23,13 @@ Your task is to create a detailed course outline following these instructional d
    - Each lesson has a single focused learning objective
    - Vary block types for engagement (never 3+ text blocks in a row)
 
-4. BLOCK TYPE SELECTION for each lesson:
+4. BLOCK TYPE SELECTION for each lesson (AI-generated blocks only):
    - Start with a "cover" or "text" block for introduction
-   - Use "accordion", "tabs", "flashcard" for exploration
-   - Use "labeled_graphic", "process", "timeline" for visual learning
-   - Use "multiple_choice", "true_false", "matching" for assessment
+   - Use "accordion", "tabs" for exploration and organizing information
+   - Use "multiple_choice", "true_false" for assessment
    - End with a "text" summary or "multiple_choice" knowledge check
+   - Do NOT suggest "image" or "video" blocks -- those are added manually by the author
+   - Only suggest from: text, accordion, tabs, multiple_choice, true_false, divider, cover
 
 5. LANGUAGE RULES:
    - If language is "ar": Use Modern Standard Arabic (MSA). All text must be grammatically correct Arabic.
@@ -78,7 +79,7 @@ Return a JSON object with this exact structure:
           "title": "string",
           "description": "string",
           "order": 0,
-          "suggested_blocks": ["text", "image", "accordion", "multiple_choice"],
+          "suggested_blocks": ["text", "accordion", "tabs", "multiple_choice"],
           "estimated_duration_minutes": number
         }
       ]
@@ -96,13 +97,18 @@ RULES:
 1. Generate an array of Block objects following the provided schema
 2. Start with an engaging introduction (text or cover block)
 3. Use VARIED block types - never 3+ text blocks in a row
-4. Include at least one interactive block per lesson (accordion, tabs, flashcard, etc.)
-5. Include at least one assessment block per lesson (multiple_choice, true_false, etc.)
+4. Include at least one interactive block per lesson (accordion or tabs)
+5. Include at least one assessment block per lesson (multiple_choice or true_false)
 6. End with a summary text block or knowledge check question
 7. Keep paragraphs concise (3-5 sentences maximum)
 8. Use real-world examples relevant to the target audience
 9. For quiz questions: provide 4 options, exactly 1 correct, with explanations
 10. Generate unique IDs for all id fields (use format: "block-{random-8-chars}")
+
+IMPORTANT - BLOCK TYPE RESTRICTIONS:
+- ONLY generate these block types: text, accordion, tabs, multiple_choice, true_false, divider, cover
+- NEVER generate "image" or "video" blocks - the author adds media manually after generation
+- NEVER generate URLs or image sources - you cannot create real media assets
 
 TEXT CONTENT FORMAT:
 - For text blocks, use simple HTML: <p>, <strong>, <em>, <ul>, <li>, <h3>
@@ -133,10 +139,13 @@ Audience: ${params.audience}
 Suggested Block Types: ${params.suggestedBlocks.join(', ')}
 ${params.previousLessonsContext ? `\nContext from previous lessons:\n${params.previousLessonsContext}` : ''}
 
+IMPORTANT: Only generate blocks of these types: text, accordion, tabs, multiple_choice, true_false, divider, cover.
+Do NOT generate image, video, or any other block types. The author adds media manually.
+
 Return a JSON array of blocks. Each block must have this structure:
 {
   "id": "block-{8-random-chars}",
-  "type": "text|image|video|accordion|tabs|flashcard|multiple_choice|true_false|divider|cover|list|quote|process|timeline",
+  "type": "text|accordion|tabs|multiple_choice|true_false|divider|cover",
   "order": 0,
   "visible": true,
   "locked": false,
@@ -159,13 +168,13 @@ For "accordion" blocks, data format:
 { "items": [{"id": "acc-1", "title": "...", "content": "<p>...</p>"}], "allow_multiple_open": false, "start_expanded": false }
 
 For "tabs" blocks, data format:
-{ "tabs": [{"id": "tab-1", "title": "...", "content": "<p>...</p>"}], "default_tab": 0, "style": "horizontal" }
+{ "tabs": [{"id": "tab-1", "label": "...", "content": "<p>...</p>"}], "style": "horizontal" }
 
 For "true_false" blocks, data format:
 { "statement": "...", "correct_answer": true, "explanation": "...", "points": 1 }
 
 For "cover" blocks, data format:
-{ "title": "...", "subtitle": "...", "background_color": "#1a73e8", "text_color": "#ffffff", "alignment": "center", "overlay_opacity": 0.4 }
+{ "background_image": "", "title": "...", "subtitle": "...", "overlay_color": "#1a73e8CC", "text_alignment": "center", "height": "medium" }
 
 For "divider" blocks, data format:
 { "style": "solid", "color": "#e5e7eb", "spacing": "medium" }

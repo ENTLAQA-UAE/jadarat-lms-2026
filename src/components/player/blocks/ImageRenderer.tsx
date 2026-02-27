@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { ImageIcon } from 'lucide-react';
 import type { ImageBlock, CourseTheme } from '@/types/authoring';
 import type { BlockProgress } from '../CoursePlayer';
 
@@ -36,6 +37,20 @@ export function ImageRenderer({
       : block.data.alignment === 'end'
         ? 'ms-auto'
         : '';
+
+  // Show placeholder if no image source
+  if (!block.data.src) {
+    return (
+      <figure className={alignClass} style={{ maxWidth: WIDTH_MAP[block.data.width] }}>
+        <div className="flex items-center justify-center w-full h-48 rounded-lg bg-muted border border-dashed">
+          <div className="text-center text-muted-foreground">
+            <ImageIcon className="h-10 w-10 mx-auto mb-2 opacity-40" />
+            <p className="text-sm">{block.data.alt || 'Image not available'}</p>
+          </div>
+        </div>
+      </figure>
+    );
+  }
 
   const img = (
     <figure className={alignClass} style={{ maxWidth: WIDTH_MAP[block.data.width] }}>
