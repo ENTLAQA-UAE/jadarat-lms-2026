@@ -34,7 +34,7 @@ interface CourseData {
   timeline: number,
   slug: string,
   thumbnail: string,
-  coassemble_id: string,
+  content_id?: string,
   outcomes: { id: string; text: string }[],
   is_scorm: boolean,
   scorm_version: string
@@ -218,7 +218,7 @@ export default function EditCourseDetails({ categories, courseData, courseId, ba
                       className="w-full"
                       asChild
                     >
-                      {features.create_courses ? <Link href={`/dashboard/courses/edit-content?co=${courseDetails.coassemble_id}`}>
+                      {features.create_courses ? <Link href={`/dashboard/courses/add-course/build-course?courseId=${courseDetails.course_id}`}>
                       <Edit className="w-4 h-4 mr-2" />
                       Edit Content
                     </Link> : <p>Edit Content</p>}
@@ -236,7 +236,7 @@ export default function EditCourseDetails({ categories, courseData, courseId, ba
                         Preview Content
                       </>
                     ) : (
-                      features.create_courses ? <Link href={`/dashboard/courses/preview-content?co=${courseDetails.coassemble_id}`}>
+                      features.create_courses ? <Link href={`/dashboard/courses/preview-content?courseId=${courseDetails.course_id}`}>
                         <Eye className="w-4 h-4 mr-2" />
                         Preview Content
                       </Link> : <p>Preview Content</p>

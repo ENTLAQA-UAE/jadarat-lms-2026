@@ -1,45 +1,25 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, User } from 'lucide-react';
-
-// Components
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import MobileCourseDrawer from './MobileSide';
 import CertificateButton from '@/components/shared/CertificateButton';
-
-// Hooks & Utils
 import { useAppSelector } from '@/hooks/redux.hook';
-import { createClient } from '@/utils/supabase/client';
-import { getUserCourses } from '@/utils/getUserCourses';
-import { getSelectedCourse } from '../../[id]/getCourses';
-import { getSignedURL } from './getSignedURL';
-
-// Types
-import { coassembleType } from '../../[id]/types';
-import TestMode from '@/components/shared/TestMode';
-import { revalidate } from '@/action/revalidate';
 import { useRouter } from 'next/navigation';
+import { revalidate } from '@/action/revalidate';
 
-// Custom Hook for Course Data
-const useCourseData = (courseSlug: string, coassembleId?: string) => {
-  const [state, setState] = useState({
-    coassembleCourse: null as coassembleType | null,
-    courseURL: null as string | null,
-    overallProgress: 0,
-    generatingCertificate: false,
-    sharingCertificate: false
-  });
+/**
+ * Course Player Page
+ *
+ * Routes learners to the correct player based on course type:
+ * - SCORM courses -> redirect to /dashboard/course/scorm-player/{slug}
+ * - Native courses -> will render CoursePlayer component (Phase 2)
+ *
+ * This replaces the old Coassemble iframe player.
+ */
 
-  const updateState = (newState: Partial<typeof state>) => {
-    setState(prev => ({ ...prev, ...newState }));
-  };
-
-  return [state, updateState] as const;
-};
-
-// Progress Handler Component
 const ProgressSection = ({
   progress,
   courseId,
@@ -47,7 +27,7 @@ const ProgressSection = ({
   courseName,
   learnerName,
   isGenerating,
-  isSharing
+  isSharing,
 }: {
   progress: number;
   courseId: number;
@@ -76,7 +56,7 @@ const ProgressSection = ({
             id: courseId,
             learnerId,
             courseName,
-            learnerName
+            learnerName,
           }}
           variant="download"
           disabled={isGenerating || isSharing}
@@ -86,7 +66,7 @@ const ProgressSection = ({
             id: courseId,
             learnerId,
             courseName,
-            learnerName
+            learnerName,
           }}
           variant="share"
           disabled={isGenerating || isSharing}
@@ -96,111 +76,38 @@ const ProgressSection = ({
   </div>
 );
 
-// Message Handler for WebSocket
-const useMessageHandler = (courseId: number, overallProgress: number, updateProgress: (progress: number) => void) => {
-  return useCallback(async (message: MessageEvent) => {
-    if (message.origin !== 'https://coassemble.com') return;
-
-    const payload = JSON.parse(message.data);
-
-    // Extract payload data
-    const { type, event, data } = payload;
-    const newProgress = data?.progress;
-
-    // Check if it's a course completion event
-    const isCourseComplete = type === "course" && event === "complete";
-
-    if (typeof newProgress === 'number') {
-      // Only update if:
-      // 1. It's a course completion event (set to 100) OR
-      // 2. New progress is greater than current AND less than 100
-      if (isCourseComplete || (!isCourseComplete && newProgress > overallProgress && newProgress < 100)) {
-        const finalProgress = isCourseComplete ? 100 : newProgress;
-        updateProgress(finalProgress);
-
-        const supabase = createClient();
-        await supabase.rpc('update_course_percentage', {
-          courseid: courseId,
-          percentage: finalProgress,
-          scormdata: null
-        });
-      }
-    }
-  }, [courseId, overallProgress, updateProgress]);
-};
-
-
 export default function CourseViewer({ params }: { params: { id: string } }) {
-
-  const router = useRouter()
-
-  const { courses, user: { id, organization_id, name } } = useAppSelector(state => state.user);
+  const router = useRouter();
+  const { courses, user: { id, name } } = useAppSelector(state => state.user);
   const [progress, setProgress] = useState(0);
-  const [selectedCourse, setSelectedCourse] = useState<{
-    id: number;
-    percentage: number | undefined;
-    coassemble_id: string;
-    name: string;
-  } | null>(null);
+  const [generatingCertificate] = useState(false);
+  const [sharingCertificate] = useState(false);
+
+  const selectedCourse = courses.find(e => e.slug === params.id);
 
   useEffect(() => {
-    if (courses) {
-      const selectedCourse = courses.find(e => e.slug === params.id);
-      if (selectedCourse) {
-        setSelectedCourse({
-          id: selectedCourse.id,
-          percentage: selectedCourse.percentage,
-          coassemble_id: selectedCourse.coassemble_id || "",
-          name: selectedCourse.name
-        });
-        setProgress(selectedCourse.percentage ?? 0);
-      }
+    if (selectedCourse) {
+      setProgress(selectedCourse.percentage ?? 0);
     }
-  }, [courses, params.id])
+  }, [selectedCourse]);
 
-  //  const selectedCourse = useMemo(() =>
-  //   courses.find(e => e.slug === params.id),
-  //   [courses, params.id]
-  //   );
-
-
-
-  const coassembleId = selectedCourse?.coassemble_id;
-
-  const [
-    { coassembleCourse, courseURL, generatingCertificate, sharingCertificate },
-    updateState
-  ] = useCourseData(params.id, coassembleId);
-
-  // Load course data
+  // Route SCORM courses to the SCORM player
   useEffect(() => {
-    if (params.id && !coassembleCourse && coassembleId) {
-      getSelectedCourse(parseFloat(coassembleId))
-        .then(response => updateState({ coassembleCourse: response }));
+    if (selectedCourse?.isscorm) {
+      router.replace(`/dashboard/course/scorm-player/${selectedCourse.slug}`);
     }
-    if (!courses.length) getUserCourses();
-  }, [coassembleCourse, coassembleId, courses.length, params.id, updateState]);
+  }, [selectedCourse, router]);
 
-  // Get signed URL
-  useEffect(() => {
-    if (id && organization_id && coassembleId && !courseURL) {
-      getSignedURL(coassembleId)
-        .then(response => updateState({ courseURL: response }));
-    }
-  }, [coassembleId, courseURL, id, organization_id, updateState]);
+  // If SCORM, show loading while redirecting
+  if (selectedCourse?.isscorm) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground">Redirecting to SCORM player...</p>
+      </div>
+    );
+  }
 
-  // Handle WebSocket messages
-  const handleMessage = useMessageHandler(
-    selectedCourse?.id ?? 0,
-    progress,
-    progress => setProgress(progress)
-  );
-
-  useEffect(() => {
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [handleMessage]);
-
+  // Native course -- placeholder until CoursePlayer is built in Phase 2
   return (
     <div className="flex h-[100vh] w-full p-0">
       <aside className="hidden w-[300px] flex-col gap-6 bg-muted p-6 md:flex">
@@ -209,8 +116,8 @@ export default function CourseViewer({ params }: { params: { id: string } }) {
           size="icon"
           className="rounded-full p-2 hover:bg-muted transition-colors"
           onClick={async () => {
-            await revalidate(`/dashboard/courses/play/${params.id}`)
-            router.back()
+            await revalidate(`/dashboard/courses/play/${params.id}`);
+            router.back();
           }}
         >
           <ArrowLeft className="w-6 h-6" />
@@ -219,10 +126,10 @@ export default function CourseViewer({ params }: { params: { id: string } }) {
 
         <ProgressSection
           progress={progress}
-          courseId={selectedCourse?.id ?? 0}
+          courseId={selectedCourse?.course_id ?? 0}
           learnerId={id!}
-          courseName={selectedCourse?.name ?? ""}
-          learnerName={name ?? ""}
+          courseName={selectedCourse?.name ?? ''}
+          learnerName={name ?? ''}
           isGenerating={generatingCertificate}
           isSharing={sharingCertificate}
         />
@@ -232,51 +139,32 @@ export default function CourseViewer({ params }: { params: { id: string } }) {
         <div className="absolute top-[50%] z-[44] left-[0] md:hidden">
           <MobileCourseDrawer
             back={async () => {
-              await revalidate(`/dashboard/courses/play/${params.id}`)
-              router.back()
+              await revalidate(`/dashboard/courses/play/${params.id}`);
+              router.back();
             }}
             generatingCertificate={generatingCertificate}
             overallProgress={progress}
             percentage={selectedCourse?.percentage}
             sharingCertificate={sharingCertificate}
-            selectedCourse={selectedCourse}
+            selectedCourse={{
+              id: selectedCourse?.course_id ?? 0,
+              name: selectedCourse?.name ?? '',
+            }}
             id={id}
             name={name}
           />
         </div>
 
-        {courseURL ? (
-          <iframe
-            title="Course content"
-            src={courseURL}
-            className="w-full relative h-[calc(100vh)]"
-            frameBorder="0"
-            allowFullScreen
-            loading="lazy"
-          />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Loading course content...</p>
+        {/* Native CoursePlayer will go here in Phase 2 */}
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center space-y-4 max-w-md">
+            <h2 className="text-xl font-semibold">Native Course Player</h2>
+            <p className="text-muted-foreground">
+              The block-based course player will be available in Phase 2.
+              This will render courses created with the native editor.
+            </p>
           </div>
-        )}
-
-        {/* <div className="absolute bg-[#FED141] text-black w-full z-[33] h-[8px] top-[2px] bottom-13">
-     <TooltipProvider>
-      <Tooltip>
-       <TooltipTrigger asChild>
-        <div className="w-[260px] text-xs uppercase mt-1 px-4 py-3 text-center h-9 rounded-lg bg-[#FED141] mx-auto">
-         <span className="block truncate">
-          {selectedCourse?.name || 'Loading...'}
-         </span>
         </div>
-       </TooltipTrigger>
-       <TooltipContent>
-        <p>{selectedCourse?.name || 'Loading...'}</p>
-       </TooltipContent>
-      </Tooltip>
-     </TooltipProvider>
-    </div> */}
-        <TestMode coassembleId={coassembleId ?? null} name={selectedCourse?.name ?? null} />
       </main>
     </div>
   );

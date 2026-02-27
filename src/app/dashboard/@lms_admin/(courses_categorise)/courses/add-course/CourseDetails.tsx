@@ -12,7 +12,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { deleteImageFromStorage } from '@/utils/deleteImageFromStorage'
 import { LearningOutcome } from './CourseOutCome'
 import { uploadScormFile } from '@/utils/uploadFile'
-import { createCoassembleCourse } from '@/action/coassemble/coassemble'
 
 
 export default function CourseDetails({ categories, features }: { categories: CourseDetailsPageProps[], features: { ai_builder: boolean; document_builder: boolean } }) {
@@ -64,13 +63,8 @@ export default function CourseDetails({ categories, features }: { categories: Co
       let uploadedImageKey: string | null = null;
 
       try {
-         const coassembleUrl = !flow || flow !== 'scorm'
-            ? await createCoassembleCourse(flow)
-            : null;
-
          const dataToSend = {
             ...data,
-            coassembleId: null,
             launchPath: "",
          };
 
@@ -145,8 +139,9 @@ export default function CourseDetails({ categories, features }: { categories: Co
                toast.success("Success", {
                   description: "SCORM course uploaded successfully!",
                });
+               router.push('/dashboard/courses');
             } else {
-               router.push(`/dashboard/courses/add-course/build-course?url=${coassembleUrl?.split('/').pop()}&courseId=${courseData}`);
+               router.push(`/dashboard/courses/add-course/build-course?courseId=${courseData}`);
                toast.success("Success", {
                   description: "Course details saved successfully!",
                });

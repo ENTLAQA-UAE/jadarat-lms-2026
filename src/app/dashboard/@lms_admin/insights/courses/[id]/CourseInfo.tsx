@@ -12,7 +12,6 @@ interface CourseInfoProps {
     created_by_name: string
     enrollments: number
     completions: number
-    coassemble_id: string
     outcomes: { id: string; text: string }[]
 }
 
