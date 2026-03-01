@@ -60,22 +60,19 @@ export async function get_organization_statistics() {
 export async function getAiAndDocumentBuilder(organization_id: number) {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
-      .from('organization_settings')
-      .select('ai_builder, document_builder , create_courses')
-      .eq('organization_id', organization_id)
-      .single();
+    const { data, error } = await supabase.rpc('get_org_feature_flags', {
+      p_org_id: organization_id,
+    });
 
-    if (error) {
-      // silently handled
+    if (error || !data || data.length === 0) {
+      return { ai_builder: false, document_builder: false, create_courses: true };
     }
-    // Default create_courses to true so existing orgs aren't blocked
-    // when the column is missing or null in organization_settings
+
+    const row = data[0];
     return {
-      ai_builder: false,
-      document_builder: false,
-      create_courses: true,
-      ...data,
+      ai_builder: row.ai_builder ?? false,
+      document_builder: row.document_builder ?? false,
+      create_courses: row.create_courses ?? true,
     };
   } catch {
     return { ai_builder: false, document_builder: false, create_courses: true };
