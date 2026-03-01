@@ -2,6 +2,12 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    webpack: (config) => {
+        // pdfjs-dist optionally requires 'canvas' (native module) for Node.js rendering.
+        // We only use it for text extraction, so mark it as external to avoid build errors.
+        config.resolve.alias.canvas = false;
+        return config;
+    },
     compiler: {
         removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ["error"] } : false,
     },
