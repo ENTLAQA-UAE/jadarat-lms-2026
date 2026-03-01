@@ -14,7 +14,8 @@ import { AICourseWizard } from '@/components/authoring/ai/AICourseWizard';
 export default function BuildCoursePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const courseId = searchParams.get('courseId');
+  const rawCourseId = searchParams.get('courseId');
+  const courseId = rawCourseId && rawCourseId !== 'null' && !isNaN(Number(rawCourseId)) ? rawCourseId : null;
   const mode = searchParams.get('mode'); // 'ai' for AI wizard
   const [courseTitle, setCourseTitle] = useState('');
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,11 @@ export default function BuildCoursePage() {
       }
 
       const course = Array.isArray(data) ? data[0] : data;
+      if (!course) {
+        setError('Course not found');
+        setLoading(false);
+        return;
+      }
       setCourseTitle(course.title || '');
 
       // Initialize editor store with course content

@@ -132,6 +132,11 @@ export default function CourseDetails({ categories, features }: { categories: Co
             toast.error("Error", {
                description: errorMessage,
             });
+         } else if (!courseData) {
+            setIsLoading(false);
+            toast.error("Error", {
+               description: "Failed to create course. Please try again.",
+            });
          } else {
             setIsLoading(false);
 
