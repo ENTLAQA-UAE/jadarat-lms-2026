@@ -1,6 +1,6 @@
 "use server"
 
-import { createClient } from "@/utils/supabase/server";
+import { createClient, createServerAdminClient } from "@/utils/supabase/server";
 
 export async function getOrganizationDetails(domain: string) {
   try {
@@ -59,20 +59,24 @@ export async function get_organization_statistics() {
 
 export async function getAiAndDocumentBuilder(organization_id: number) {
   try {
-    const supabase = await createClient();
-    const { data, error } = await supabase.rpc('get_org_feature_flags', {
-      p_org_id: organization_id,
-    });
+    // Use the admin client (service_role key) to bypass RLS.
+    // The anon-key client was silently blocked by the RLS policy on
+    // organization_settings, causing the function to always return false.
+    const supabase = createServerAdminClient();
+    const { data, error } = await supabase
+      .from('organization_settings')
+      .select('ai_builder, document_builder, create_courses')
+      .eq('organization_id', organization_id)
+      .single();
 
-    if (error || !data || data.length === 0) {
+    if (error || !data) {
       return { ai_builder: false, document_builder: false, create_courses: true };
     }
 
-    const row = data[0];
     return {
-      ai_builder: row.ai_builder ?? false,
-      document_builder: row.document_builder ?? false,
-      create_courses: row.create_courses ?? true,
+      ai_builder: data.ai_builder ?? false,
+      document_builder: data.document_builder ?? false,
+      create_courses: data.create_courses ?? true,
     };
   } catch {
     return { ai_builder: false, document_builder: false, create_courses: true };
