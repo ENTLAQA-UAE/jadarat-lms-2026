@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies as nextCookies } from 'next/headers';
 
 export async function createClient() {
@@ -45,4 +46,19 @@ export async function createClient() {
       },
     }
   );
+}
+
+/**
+ * Server-side admin client using the service_role key.
+ * Bypasses RLS — use only in server actions / server components.
+ */
+export function createServerAdminClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_SECRET_KEY;
+
+  if (!url || !key) {
+    throw new Error('Supabase URL and Secret Key are not configured');
+  }
+
+  return createSupabaseClient(url, key);
 }
