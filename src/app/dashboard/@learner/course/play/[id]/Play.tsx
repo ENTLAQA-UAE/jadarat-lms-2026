@@ -1,171 +1,139 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, User } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import MobileCourseDrawer from './MobileSide';
-import CertificateButton from '@/components/shared/CertificateButton';
 import { useAppSelector } from '@/hooks/redux.hook';
 import { useRouter } from 'next/navigation';
-import { revalidate } from '@/action/revalidate';
+import { createClient } from '@/utils/supabase/client';
+import { CoursePlayer } from '@/components/player/CoursePlayer';
+import type { CourseContent } from '@/types/authoring';
+import type { BlockProgress } from '@/components/player/CoursePlayer';
+import { Loader2 } from 'lucide-react';
 
 /**
  * Course Player Page
  *
  * Routes learners to the correct player based on course type:
  * - SCORM courses -> redirect to /dashboard/course/scorm-player/{slug}
- * - Native courses -> will render CoursePlayer component (Phase 2)
- *
- * This replaces the old Coassemble iframe player.
+ * - Native courses -> render CoursePlayer with block-based content
  */
 
-const ProgressSection = ({
-  progress,
-  courseId,
-  learnerId,
-  courseName,
-  learnerName,
-  isGenerating,
-  isSharing,
-}: {
-  progress: number;
-  courseId: number;
-  learnerId: string;
-  courseName: string;
-  learnerName: string;
-  isGenerating: boolean;
-  isSharing: boolean;
-}) => (
-  <div>
-    <h3 className="mb-4 text-lg font-semibold flex items-center gap-2">
-      <User className="w-5 h-5" />
-      Overall Progress
-    </h3>
-    <div className="flex items-center gap-2 mb-6 rounded-lg bg-background p-2 shadow-sm">
-      <div className="flex-1 py-2">
-        <div className="text-xs text-muted-foreground">Overall Progress</div>
-        <div className="font-semibold text-sm">{progress}%</div>
-        <Progress value={progress} className="mt-2" />
-      </div>
-    </div>
-    {progress === 100 && (
-      <div className="w-full space-y-4">
-        <CertificateButton
-          selectedCourse={{
-            id: courseId,
-            learnerId,
-            courseName,
-            learnerName,
-          }}
-          variant="download"
-          disabled={isGenerating || isSharing}
-        />
-        <CertificateButton
-          selectedCourse={{
-            id: courseId,
-            learnerId,
-            courseName,
-            learnerName,
-          }}
-          variant="share"
-          disabled={isGenerating || isSharing}
-        />
-      </div>
-    )}
-  </div>
-);
+interface CourseData {
+  id: number;
+  title: string;
+  authoring_type: string;
+  is_scorm: boolean;
+  slug: string;
+  content: CourseContent | null;
+}
 
 export default function CourseViewer({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { courses, user: { id, name } } = useAppSelector(state => state.user);
-  const [progress, setProgress] = useState(0);
-  const [generatingCertificate] = useState(false);
-  const [sharingCertificate] = useState(false);
+  const {
+    courses,
+    user: { id: userId, name },
+  } = useAppSelector((state) => state.user);
+  const [courseData, setCourseData] = useState<CourseData | null>(null);
+  const [initialProgress, setInitialProgress] = useState<BlockProgress[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const selectedCourse = courses.find(e => e.slug === params.id);
+  const selectedCourse = courses.find((e) => e.slug === params.id);
 
-  useEffect(() => {
-    if (selectedCourse) {
-      setProgress(selectedCourse.percentage ?? 0);
-    }
-  }, [selectedCourse]);
-
-  // Route SCORM courses to the SCORM player
+  // Route SCORM courses to the SCORM player immediately
   useEffect(() => {
     if (selectedCourse?.isscorm) {
       router.replace(`/dashboard/course/scorm-player/${selectedCourse.slug}`);
     }
   }, [selectedCourse, router]);
 
+  // Load native course content
+  useEffect(() => {
+    if (selectedCourse?.isscorm) return;
+    if (!selectedCourse?.course_id || !userId) return;
+
+    const load = async () => {
+      const supabase = createClient();
+
+      // Get course with content
+      const { data } = await supabase.rpc('get_course_with_content', {
+        p_course_id: selectedCourse.course_id,
+      });
+      const course = Array.isArray(data) ? data[0] : data;
+
+      if (!course) {
+        setLoading(false);
+        return;
+      }
+
+      setCourseData(course as CourseData);
+
+      // Load block progress for native courses
+      if (course.authoring_type === 'native' && course.content) {
+        const { data: progressData } = await supabase.rpc(
+          'get_learner_course_progress',
+          {
+            p_user_id: userId,
+            p_course_id: course.id,
+          }
+        );
+        setInitialProgress(
+          (progressData || []).map((p: Record<string, unknown>) => ({
+            block_id: p.block_id as string,
+            completed: p.completed as boolean,
+            score: (p.score as number) ?? null,
+            response_data: (p.response_data as Record<string, unknown>) ?? null,
+          }))
+        );
+      }
+
+      setLoading(false);
+    };
+
+    load();
+  }, [selectedCourse, userId]);
+
   // If SCORM, show loading while redirecting
   if (selectedCourse?.isscorm) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-muted-foreground">Redirecting to SCORM player...</p>
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
-  // Native course -- placeholder until CoursePlayer is built in Phase 2
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  // No content available
+  if (!courseData?.content) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center space-y-4 max-w-md">
+          <h2 className="text-xl font-semibold">No Content</h2>
+          <p className="text-muted-foreground">
+            This course has no content yet. Please contact your administrator.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Native course player
   return (
-    <div className="flex h-[100vh] w-full p-0">
-      <aside className="hidden w-[300px] flex-col gap-6 bg-muted p-6 md:flex">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full p-2 hover:bg-muted transition-colors"
-          onClick={async () => {
-            await revalidate(`/dashboard/courses/play/${params.id}`);
-            router.back();
-          }}
-        >
-          <ArrowLeft className="w-6 h-6" />
-          <span className="sr-only">Back</span>
-        </Button>
-
-        <ProgressSection
-          progress={progress}
-          courseId={selectedCourse?.course_id ?? 0}
-          learnerId={id!}
-          courseName={selectedCourse?.name ?? ''}
-          learnerName={name ?? ''}
-          isGenerating={generatingCertificate}
-          isSharing={sharingCertificate}
-        />
-      </aside>
-
-      <main className="flex-1 relative h-[calc(100vh)] flex flex-col">
-        <div className="absolute top-[50%] z-[44] left-[0] md:hidden">
-          <MobileCourseDrawer
-            back={async () => {
-              await revalidate(`/dashboard/courses/play/${params.id}`);
-              router.back();
-            }}
-            generatingCertificate={generatingCertificate}
-            overallProgress={progress}
-            percentage={selectedCourse?.percentage}
-            sharingCertificate={sharingCertificate}
-            selectedCourse={{
-              id: selectedCourse?.course_id ?? 0,
-              name: selectedCourse?.name ?? '',
-            }}
-            id={id}
-            name={name}
-          />
-        </div>
-
-        {/* Native CoursePlayer will go here in Phase 2 */}
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center space-y-4 max-w-md">
-            <h2 className="text-xl font-semibold">Native Course Player</h2>
-            <p className="text-muted-foreground">
-              The block-based course player will be available in Phase 2.
-              This will render courses created with the native editor.
-            </p>
-          </div>
-        </div>
-      </main>
+    <div className="h-screen w-full">
+      <CoursePlayer
+        courseId={courseData.id}
+        content={courseData.content}
+        userId={userId!}
+        userName={name || ''}
+        courseName={courseData.title}
+        initialProgress={initialProgress}
+      />
     </div>
   );
 }

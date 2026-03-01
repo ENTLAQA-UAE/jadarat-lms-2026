@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { InlineAIToolbar } from '@/components/authoring/ai/InlineAIToolbar';
 
 interface TextBlockEditorProps {
   block: TextBlock;
@@ -30,6 +31,12 @@ export function TextBlockEditor({ block, onChange }: TextBlockEditorProps) {
         <CardTitle className="flex items-center gap-2 text-sm">
           <AlignLeft className="h-4 w-4" />
           Text Block
+          <InlineAIToolbar
+            content={data.content}
+            language={data.direction === 'rtl' ? 'ar' : 'en'}
+            onUpdate={(newContent) => onChange({ content: newContent })}
+            className="ml-auto"
+          />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

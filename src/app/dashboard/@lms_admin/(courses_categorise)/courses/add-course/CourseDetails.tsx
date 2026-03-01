@@ -140,6 +140,11 @@ export default function CourseDetails({ categories, features }: { categories: Co
                   description: "SCORM course uploaded successfully!",
                });
                router.push('/dashboard/courses');
+            } else if (flow === 'ai' || flow === 'document') {
+               router.push(`/dashboard/courses/add-course/build-course?courseId=${courseData}&mode=ai`);
+               toast.success("Success", {
+                  description: "Course created! Starting AI generation...",
+               });
             } else {
                router.push(`/dashboard/courses/add-course/build-course?courseId=${courseData}`);
                toast.success("Success", {

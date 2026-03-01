@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { AlignLeft, AlignCenter, AlignRight, ImageIcon, Upload } from 'lucide-react';
+import { AIImageGenerator } from '@/components/authoring/ai/AIImageGenerator';
 
 interface ImageBlockEditorProps {
   block: ImageBlock;
@@ -65,6 +66,12 @@ export function ImageBlockEditor({ block, onChange }: ImageBlockEditorProps) {
         <CardTitle className="flex items-center gap-2 text-sm">
           <ImageIcon className="h-4 w-4" />
           Image Block
+          <AIImageGenerator
+            onGenerated={(url) => onChange({ src: url })}
+            defaultPrompt={data.alt || ''}
+            defaultSize="1024x1024"
+            className="ml-auto"
+          />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -110,7 +117,7 @@ export function ImageBlockEditor({ block, onChange }: ImageBlockEditorProps) {
             type="url"
           />
           <p className="text-xs text-muted-foreground">
-            Upload integration will be available in a future update.
+            Paste a URL, drop an image, or use &quot;Generate with AI&quot; above.
           </p>
         </div>
 

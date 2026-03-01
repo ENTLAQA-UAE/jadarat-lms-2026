@@ -30,4 +30,5 @@ export interface PlayerProps {
   isSharing?: boolean;
   baseUrl: string;
   launch_path?: string;
+  scormContentUrl?: string;
 } 

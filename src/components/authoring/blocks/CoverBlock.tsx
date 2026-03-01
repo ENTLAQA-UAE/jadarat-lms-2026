@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { AlignLeft, AlignCenter, AlignRight, Image } from 'lucide-react';
+import { AIImageGenerator } from '@/components/authoring/ai/AIImageGenerator';
 
 interface CoverBlockEditorProps {
   block: CoverBlock;
@@ -45,6 +46,12 @@ export function CoverBlockEditor({ block, onChange }: CoverBlockEditorProps) {
         <CardTitle className="flex items-center gap-2 text-sm">
           <Image className="h-4 w-4" />
           Cover Block
+          <AIImageGenerator
+            onGenerated={(url) => onChange({ background_image: url })}
+            defaultPrompt={data.title ? `Professional e-learning cover background for: ${data.title}` : ''}
+            defaultSize="1792x1024"
+            className="ml-auto"
+          />
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -109,7 +116,7 @@ export function CoverBlockEditor({ block, onChange }: CoverBlockEditorProps) {
             type="url"
           />
           <p className="text-xs text-muted-foreground">
-            Upload integration will be available in a future update.
+            Paste a URL or use &quot;Generate with AI&quot; above to create a background.
           </p>
         </div>
 

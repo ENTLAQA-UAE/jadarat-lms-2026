@@ -9,14 +9,17 @@ import { saveContent, publishContent, loadCourseWithContent } from '@/action/aut
 import { EditorHeader } from '@/components/authoring/EditorHeader';
 import { ModuleSidebar } from '@/components/authoring/ModuleSidebar';
 import { EditorCanvas } from '@/components/authoring/EditorCanvas';
+import { AICourseWizard } from '@/components/authoring/ai/AICourseWizard';
 
 export default function BuildCoursePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const courseId = searchParams.get('courseId');
+  const mode = searchParams.get('mode'); // 'ai' for AI wizard
   const [courseTitle, setCourseTitle] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAIWizard, setShowAIWizard] = useState(mode === 'ai');
 
   const store = useEditorStore();
 
@@ -157,6 +160,22 @@ export default function BuildCoursePage() {
             Back to courses
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // AI Wizard mode
+  if (showAIWizard && courseId) {
+    return (
+      <div className="min-h-screen bg-muted/30 p-6">
+        <AICourseWizard
+          courseId={parseInt(courseId)}
+          onComplete={() => {
+            setShowAIWizard(false);
+            store.setDirty(true);
+          }}
+          onCancel={() => router.push('/dashboard/courses')}
+        />
       </div>
     );
   }
