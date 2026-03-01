@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -33,8 +33,36 @@ export function EditorCanvas() {
   const duplicateBlock = useEditorStore((s) => s.duplicateBlock);
   const selectBlock = useEditorStore((s) => s.selectBlock);
 
+  const undo = useEditorStore((s) => s.undo);
+  const redo = useEditorStore((s) => s.redo);
+
   const currentModule = getCurrentModule();
   const currentLesson = getCurrentLesson();
+
+  // Undo/Redo keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+      if (!isCtrlOrCmd) return;
+
+      // Skip if user is typing in an input/textarea
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+
+      if (e.key === 'z' && e.shiftKey) {
+        e.preventDefault();
+        redo();
+      } else if (e.key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
