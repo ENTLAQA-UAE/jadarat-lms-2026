@@ -34,6 +34,14 @@ import { EmbedBlockEditor } from './EmbedBlock';
 import { QuoteBlockEditor } from './QuoteBlock';
 import { ListBlockEditor } from './ListBlock';
 
+// Phase 5 block editors -- Advanced
+import { ScenarioBlockEditor } from './ScenarioBlock';
+import { HotspotBlockEditor } from './HotspotBlock';
+import { GalleryBlockEditor } from './GalleryBlock';
+import { ChartBlockEditor } from './ChartBlock';
+import { TableBlockEditor } from './TableBlock';
+import { CodeBlockEditor } from './CodeBlock';
+
 // Re-export all individual block editors
 export {
   TextBlockEditor,
@@ -57,6 +65,12 @@ export {
   EmbedBlockEditor,
   QuoteBlockEditor,
   ListBlockEditor,
+  ScenarioBlockEditor,
+  HotspotBlockEditor,
+  GalleryBlockEditor,
+  ChartBlockEditor,
+  TableBlockEditor,
+  CodeBlockEditor,
 };
 
 // Unified BlockEditor that switches on block.type
@@ -121,6 +135,20 @@ export function BlockEditor({
       return <MatchingBlockEditor block={block} onChange={onChange} />;
     case BlockType.SORTING:
       return <SortingBlockEditor block={block} onChange={onChange} />;
+
+    // Phase 5 -- Advanced
+    case BlockType.SCENARIO:
+      return <ScenarioBlockEditor block={block} onChange={onChange} />;
+    case BlockType.HOTSPOT:
+      return <HotspotBlockEditor block={block} onChange={onChange} />;
+    case BlockType.GALLERY:
+      return <GalleryBlockEditor block={block} onChange={onChange} />;
+    case BlockType.CHART:
+      return <ChartBlockEditor block={block} onChange={onChange} />;
+    case BlockType.TABLE:
+      return <TableBlockEditor block={block} onChange={onChange} />;
+    case BlockType.CODE:
+      return <CodeBlockEditor block={block} onChange={onChange} />;
 
     default:
       return (

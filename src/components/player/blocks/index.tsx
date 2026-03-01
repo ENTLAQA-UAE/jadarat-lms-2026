@@ -33,6 +33,14 @@ import { EmbedRenderer } from './EmbedRenderer';
 import { QuoteRenderer } from './QuoteRenderer';
 import { ListRenderer } from './ListRenderer';
 
+// Phase 5 renderers -- Advanced
+import { ScenarioRenderer } from './ScenarioRenderer';
+import { HotspotRenderer } from './HotspotRenderer';
+import { GalleryRenderer } from './GalleryRenderer';
+import { ChartRenderer } from './ChartRenderer';
+import { TableRenderer } from './TableRenderer';
+import { CodeRenderer } from './CodeRenderer';
+
 interface BlockRendererProps {
   block: Block;
   progress?: BlockProgress;
@@ -265,10 +273,72 @@ export function BlockRenderer({
         />
       );
 
+    // Phase 5 -- Advanced Content
+    case BlockType.GALLERY:
+      return (
+        <GalleryRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          theme={theme}
+        />
+      );
+
+    case BlockType.CHART:
+      return (
+        <ChartRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          theme={theme}
+        />
+      );
+
+    case BlockType.TABLE:
+      return (
+        <TableRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          theme={theme}
+        />
+      );
+
+    case BlockType.CODE:
+      return (
+        <CodeRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          theme={theme}
+        />
+      );
+
+    // Phase 5 -- Advanced Interactive
+    case BlockType.SCENARIO:
+      return (
+        <ScenarioRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          theme={theme}
+        />
+      );
+
+    case BlockType.HOTSPOT:
+      return (
+        <HotspotRenderer
+          block={block}
+          progress={progress}
+          onComplete={(score, data) => onComplete(score, data)}
+          theme={theme}
+        />
+      );
+
     default:
       return (
         <div className="p-4 border rounded-lg bg-muted/50 text-muted-foreground text-sm">
-          Block type &ldquo;{block.type}&rdquo; is not yet supported in the player.
+          Block type &ldquo;{(block as Block).type}&rdquo; is not yet supported in the player.
         </div>
       );
   }
