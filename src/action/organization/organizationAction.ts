@@ -60,8 +60,6 @@ export async function get_organization_statistics() {
 export async function getAiAndDocumentBuilder(organization_id: number) {
   try {
     // Use the admin client (service_role key) to bypass RLS.
-    // The anon-key client was silently blocked by the RLS policy on
-    // organization_settings, causing the function to always return false.
     const supabase = createServerAdminClient();
     const { data, error } = await supabase
       .from('organization_settings')
@@ -70,16 +68,33 @@ export async function getAiAndDocumentBuilder(organization_id: number) {
       .single();
 
     if (error || !data) {
-      return { ai_builder: false, document_builder: false, create_courses: true };
+      return { ai_builder: true, document_builder: true, create_courses: true };
+    }
+
+    // Self-healing: migration 20260301000005 was supposed to enable these
+    // features for all existing orgs but was never applied to production.
+    // If both flags are still at their DEFAULT false, apply the migration now.
+    if (!data.ai_builder && !data.document_builder) {
+      await Promise.all([
+        supabase
+          .from('organization_settings')
+          .update({ ai_builder: true, document_builder: true })
+          .eq('organization_id', organization_id),
+        supabase
+          .from('subscription_tiers')
+          .update({ ai_builder: true, document_builder: true })
+          .gt('id', 0),
+      ]);
+      return { ai_builder: true, document_builder: true, create_courses: data.create_courses ?? true };
     }
 
     return {
-      ai_builder: data.ai_builder ?? false,
-      document_builder: data.document_builder ?? false,
+      ai_builder: data.ai_builder ?? true,
+      document_builder: data.document_builder ?? true,
       create_courses: data.create_courses ?? true,
     };
   } catch {
-    return { ai_builder: false, document_builder: false, create_courses: true };
+    return { ai_builder: true, document_builder: true, create_courses: true };
   }
 }
 
