@@ -1,4 +1,4 @@
-// src/lib/ai/document-processor.ts -- Phase 3: PDF/DOCX text extraction
+// src/lib/ai/document-processor.ts -- Phase 3: PDF/DOCX/PPTX text extraction
 
 import type { DocumentChunk } from '@/types/authoring';
 
@@ -7,7 +7,7 @@ export class DocumentProcessor {
    * Extract text from PDF using pdfjs-dist.
    */
   async extractPdf(buffer: ArrayBuffer): Promise<DocumentChunk[]> {
-    const pdfjsLib = await import('pdfjs-dist');
+    const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.js');
     const chunks: DocumentChunk[] = [];
 
     const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
@@ -115,6 +115,47 @@ export class DocumentProcessor {
   }
 
   /**
+   * Extract text from PPTX using JSZip (PPTX is a ZIP of XML files).
+   */
+  async extractPptx(buffer: ArrayBuffer): Promise<DocumentChunk[]> {
+    const JSZip = (await import('jszip')).default;
+    const zip = await JSZip.loadAsync(buffer);
+    const chunks: DocumentChunk[] = [];
+
+    // Collect slide file names and sort numerically (slide1.xml, slide2.xml, ...)
+    const slideFiles = Object.keys(zip.files)
+      .filter((name) => /^ppt\/slides\/slide\d+\.xml$/.test(name))
+      .sort((a, b) => {
+        const numA = parseInt(a.match(/slide(\d+)/)?.[1] || '0');
+        const numB = parseInt(b.match(/slide(\d+)/)?.[1] || '0');
+        return numA - numB;
+      });
+
+    for (let i = 0; i < slideFiles.length; i++) {
+      const xml = await zip.files[slideFiles[i]].async('string');
+      // Extract text from <a:t> tags (PowerPoint text runs)
+      const textParts: string[] = [];
+      const regex = /<a:t>([\s\S]*?)<\/a:t>/g;
+      let match;
+      while ((match = regex.exec(xml)) !== null) {
+        const text = match[1].trim();
+        if (text) textParts.push(text);
+      }
+
+      const slideText = textParts.join(' ').trim();
+      if (slideText) {
+        chunks.push({
+          text: slideText,
+          page_number: i + 1,
+          type: 'text',
+        });
+      }
+    }
+
+    return chunks;
+  }
+
+  /**
    * Auto-detect file type and extract chunks.
    */
   async extract(
@@ -128,6 +169,9 @@ export class DocumentProcessor {
       case 'docx':
       case 'doc':
         return this.extractDocx(buffer);
+      case 'pptx':
+      case 'ppt':
+        return this.extractPptx(buffer);
       default:
         throw new Error(`Unsupported file type: ${ext}`);
     }
