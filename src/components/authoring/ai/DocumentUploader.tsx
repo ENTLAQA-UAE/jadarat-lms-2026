@@ -33,10 +33,12 @@ export function DocumentUploader({ onExtracted }: DocumentUploaderProps) {
         'application/pdf',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'application/msword',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/vnd.ms-powerpoint',
       ];
 
       if (!allowedTypes.includes(selectedFile.type)) {
-        toast.error('Only PDF and DOCX files are supported');
+        toast.error('Only PDF, DOCX, and PPTX files are supported');
         return;
       }
 
@@ -181,7 +183,7 @@ export function DocumentUploader({ onExtracted }: DocumentUploaderProps) {
       <input
         id="doc-upload-input"
         type="file"
-        accept=".pdf,.docx,.doc"
+        accept=".pdf,.docx,.doc,.pptx,.ppt"
         className="hidden"
         onChange={handleInputChange}
       />
@@ -191,7 +193,7 @@ export function DocumentUploader({ onExtracted }: DocumentUploaderProps) {
           <Upload className="h-8 w-8 text-muted-foreground" />
         </div>
         <p className="text-sm font-medium">
-          Drop a PDF or DOCX file here
+          Drop a PDF, DOCX, or PPTX file here
         </p>
         <p className="text-xs text-muted-foreground">
           The AI will use this document as source material for the course

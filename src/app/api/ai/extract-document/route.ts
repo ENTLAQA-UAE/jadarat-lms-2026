@@ -30,11 +30,13 @@ export async function POST(req: NextRequest) {
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'application/msword',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/vnd.ms-powerpoint',
     ];
 
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Only PDF and DOCX files are supported' },
+        { error: 'Only PDF, DOCX, and PPTX files are supported' },
         { status: 400 }
       );
     }

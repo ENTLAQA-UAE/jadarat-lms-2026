@@ -2,6 +2,11 @@ import { withSentryConfig } from '@sentry/nextjs';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    experimental: {
+        // Keep pdfjs-dist as a Node.js external so its internal worker file
+        // (pdf.worker.js) resolves correctly in Vercel serverless functions.
+        serverComponentsExternalPackages: ['pdfjs-dist'],
+    },
     webpack: (config) => {
         // pdfjs-dist optionally requires 'canvas' (native module) for Node.js rendering.
         // We only use it for text extraction, so mark it as external to avoid build errors.
