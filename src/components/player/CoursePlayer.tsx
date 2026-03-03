@@ -250,6 +250,7 @@ export function CoursePlayer({
               isLastLesson={isLastLesson}
               theme={content.settings.theme}
               direction={content.settings.direction}
+              settings={content.settings}
             />
           </div>
         </main>

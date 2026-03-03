@@ -8,12 +8,32 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { GripVertical, Plus, Trash2, ChevronsUpDown } from 'lucide-react';
+import {
+  GripVertical,
+  Plus,
+  Trash2,
+  ChevronsUpDown,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react';
 
 interface AccordionBlockEditorProps {
   block: AccordionBlock;
   onChange: (data: Partial<AccordionBlock['data']>) => void;
 }
+
+const ICON_OPTIONS = [
+  { value: '', label: 'None' },
+  { value: '📌', label: 'Pin' },
+  { value: '💡', label: 'Idea' },
+  { value: '⚡', label: 'Lightning' },
+  { value: '✅', label: 'Check' },
+  { value: '📝', label: 'Note' },
+  { value: '🔑', label: 'Key' },
+  { value: '⚠️', label: 'Warning' },
+  { value: '📖', label: 'Book' },
+  { value: '🎯', label: 'Target' },
+];
 
 export function AccordionBlockEditor({
   block,
@@ -26,6 +46,7 @@ export function AccordionBlockEditor({
       id: uuidv4(),
       title: '',
       content: '',
+      icon: undefined,
     };
     onChange({ items: [...data.items, newItem] });
   };
@@ -36,14 +57,22 @@ export function AccordionBlockEditor({
 
   const updateItem = (
     itemId: string,
-    field: 'title' | 'content',
-    value: string
+    field: 'title' | 'content' | 'icon',
+    value: string | undefined
   ) => {
     onChange({
       items: data.items.map((item) =>
         item.id === itemId ? { ...item, [field]: value } : item
       ),
     });
+  };
+
+  const moveItem = (index: number, direction: 'up' | 'down') => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= data.items.length) return;
+    const items = [...data.items];
+    [items[index], items[newIndex]] = [items[newIndex], items[index]];
+    onChange({ items });
   };
 
   return (
@@ -63,13 +92,29 @@ export function AccordionBlockEditor({
               className="rounded-lg border border-border bg-muted/20 p-3"
             >
               <div className="mb-3 flex items-center gap-2">
-                {/* Drag handle (visual only) */}
-                <div
-                  className="flex cursor-grab items-center text-muted-foreground"
-                  title="Drag to reorder (coming soon)"
-                >
-                  <GripVertical className="h-4 w-4" />
+                {/* Reorder buttons */}
+                <div className="flex flex-col gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => moveItem(index, 'up')}
+                    disabled={index === 0}
+                    className="flex h-4 w-5 items-center justify-center rounded text-muted-foreground hover:text-foreground disabled:opacity-30"
+                    title="Move up"
+                  >
+                    <ChevronUp className="h-3 w-3" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveItem(index, 'down')}
+                    disabled={index === data.items.length - 1}
+                    className="flex h-4 w-5 items-center justify-center rounded text-muted-foreground hover:text-foreground disabled:opacity-30"
+                    title="Move down"
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                  </button>
                 </div>
+
+                <GripVertical className="h-4 w-4 text-muted-foreground/50" />
 
                 <span className="text-xs font-medium text-muted-foreground">
                   Item {index + 1}
@@ -90,22 +135,46 @@ export function AccordionBlockEditor({
               </div>
 
               <div className="space-y-2">
-                <div className="space-y-1">
-                  <Label
-                    htmlFor={`accordion-title-${item.id}`}
-                    className="text-xs"
-                  >
-                    Title
-                  </Label>
-                  <Input
-                    id={`accordion-title-${item.id}`}
-                    value={item.title}
+                {/* Icon + Title row */}
+                <div className="flex gap-2">
+                  {/* Icon selector */}
+                  <select
+                    value={item.icon || ''}
                     onChange={(e) =>
-                      updateItem(item.id, 'title', e.target.value)
+                      updateItem(
+                        item.id,
+                        'icon',
+                        e.target.value || undefined
+                      )
                     }
-                    placeholder="Accordion item title"
-                  />
+                    className="h-9 w-14 rounded-md border border-input bg-background px-1 text-center text-base"
+                    title="Icon"
+                  >
+                    {ICON_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.value || '—'}
+                      </option>
+                    ))}
+                  </select>
+
+                  <div className="flex-1 space-y-1">
+                    <Label
+                      htmlFor={`accordion-title-${item.id}`}
+                      className="text-xs"
+                    >
+                      Title
+                    </Label>
+                    <Input
+                      id={`accordion-title-${item.id}`}
+                      value={item.title}
+                      onChange={(e) =>
+                        updateItem(item.id, 'title', e.target.value)
+                      }
+                      placeholder="Accordion item title"
+                    />
+                  </div>
                 </div>
+
                 <div className="space-y-1">
                   <Label
                     htmlFor={`accordion-content-${item.id}`}
@@ -119,7 +188,7 @@ export function AccordionBlockEditor({
                     onChange={(e) =>
                       updateItem(item.id, 'content', e.target.value)
                     }
-                    placeholder="Accordion item content"
+                    placeholder="Accordion item content (HTML supported)"
                     className="min-h-[80px]"
                   />
                 </div>

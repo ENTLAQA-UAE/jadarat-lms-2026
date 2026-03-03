@@ -30,6 +30,10 @@ import {
   ArrowLeftRight,
   ArrowUpDown,
   Plus,
+  MessageSquareWarning,
+  MessageSquare,
+  SquareMousePointer,
+  ArrowDown,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -73,6 +77,8 @@ const BLOCK_CATEGORIES: BlockCategory[] = [
       { type: BlockType.TABLE, label: 'Table', icon: Table2, phase1: true },
       { type: BlockType.GALLERY, label: 'Gallery', icon: GalleryHorizontal, phase1: true },
       { type: BlockType.CHART, label: 'Chart', icon: BarChart3, phase1: true },
+      { type: BlockType.CALLOUT, label: 'Callout', icon: MessageSquareWarning, phase1: true },
+      { type: BlockType.STATEMENT, label: 'Statement', icon: MessageSquare, phase1: true },
     ],
   },
   {
@@ -97,6 +103,13 @@ const BLOCK_CATEGORIES: BlockCategory[] = [
       { type: BlockType.FILL_IN_BLANK, label: 'Fill in Blank', icon: TextCursorInput, phase1: true },
       { type: BlockType.MATCHING, label: 'Matching', icon: ArrowLeftRight, phase1: true },
       { type: BlockType.SORTING, label: 'Sorting', icon: ArrowUpDown, phase1: true },
+    ],
+  },
+  {
+    name: 'Navigation',
+    blocks: [
+      { type: BlockType.BUTTON, label: 'Button', icon: SquareMousePointer, phase1: true },
+      { type: BlockType.CONTINUE, label: 'Continue', icon: ArrowDown, phase1: true },
     ],
   },
 ];

@@ -27,7 +27,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useEditorStore } from '@/stores/editor.store';
-import type { CourseTheme } from '@/types/authoring';
+import type { CourseTheme, CourseSettings } from '@/types/authoring';
 import { THEME_PRESETS } from '@/lib/theme-presets';
 import { cn } from '@/lib/utils';
 
@@ -144,7 +144,9 @@ function ColorPickerRow({ label, value, onChange }: ColorPickerRowProps) {
 
 export function ThemeEditor() {
   const theme = useEditorStore((s) => s.content.settings.theme);
+  const settings = useEditorStore((s) => s.content.settings);
   const updateTheme = useEditorStore((s) => s.updateTheme);
+  const updateSettings = useEditorStore((s) => s.updateSettings);
 
   const [previewViewport, setPreviewViewport] = useState<PreviewViewport>('desktop');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -718,6 +720,221 @@ export function ThemeEditor() {
                 </div>
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* -------------------------------------------------------- */}
+      {/* Course Navigation Settings                               */}
+      {/* -------------------------------------------------------- */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Course Navigation</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Sidebar Open by Default
+            </Label>
+            <Switch
+              checked={settings.sidebar_default_open ?? true}
+              onCheckedChange={(checked) =>
+                updateSettings({ sidebar_default_open: checked })
+              }
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Enable Search
+            </Label>
+            <Switch
+              checked={settings.allow_search ?? true}
+              onCheckedChange={(checked) =>
+                updateSettings({ allow_search: checked })
+              }
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Allow Mark Complete
+            </Label>
+            <Switch
+              checked={settings.allow_mark_complete ?? false}
+              onCheckedChange={(checked) =>
+                updateSettings({ allow_mark_complete: checked })
+              }
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Show Lesson Count
+            </Label>
+            <Switch
+              checked={settings.show_lesson_count ?? true}
+              onCheckedChange={(checked) =>
+                updateSettings({ show_lesson_count: checked })
+              }
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Block Entrance Animations
+            </Label>
+            <Switch
+              checked={settings.block_entrance_animations ?? true}
+              onCheckedChange={(checked) =>
+                updateSettings({ block_entrance_animations: checked })
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* -------------------------------------------------------- */}
+      {/* Quiz Settings                                            */}
+      {/* -------------------------------------------------------- */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Quiz Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Allow Retries
+            </Label>
+            <Switch
+              checked={settings.quiz_settings?.allow_retries ?? true}
+              onCheckedChange={(checked) =>
+                updateSettings({
+                  quiz_settings: {
+                    ...(settings.quiz_settings ?? {
+                      allow_retries: true,
+                      max_retries: 0,
+                      randomize_questions: false,
+                      shuffle_answers: true,
+                      require_passing_to_continue: false,
+                    }),
+                    allow_retries: checked,
+                  },
+                })
+              }
+            />
+          </div>
+          {settings.quiz_settings?.allow_retries && (
+            <div className="flex items-center gap-3">
+              <Label className="w-32 shrink-0 text-xs text-muted-foreground">
+                Max Retries
+              </Label>
+              <Input
+                type="number"
+                min={0}
+                value={settings.quiz_settings?.max_retries ?? 0}
+                onChange={(e) =>
+                  updateSettings({
+                    quiz_settings: {
+                      ...(settings.quiz_settings ?? {
+                        allow_retries: true,
+                        max_retries: 0,
+                        randomize_questions: false,
+                        shuffle_answers: true,
+                        require_passing_to_continue: false,
+                      }),
+                      max_retries: parseInt(e.target.value) || 0,
+                    },
+                  })
+                }
+                className="h-8 w-20 text-sm"
+                placeholder="0 = unlimited"
+              />
+              <span className="text-xs text-muted-foreground">
+                0 = unlimited
+              </span>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Shuffle Answers
+            </Label>
+            <Switch
+              checked={settings.quiz_settings?.shuffle_answers ?? true}
+              onCheckedChange={(checked) =>
+                updateSettings({
+                  quiz_settings: {
+                    ...(settings.quiz_settings ?? {
+                      allow_retries: true,
+                      max_retries: 0,
+                      randomize_questions: false,
+                      shuffle_answers: true,
+                      require_passing_to_continue: false,
+                    }),
+                    shuffle_answers: checked,
+                  },
+                })
+              }
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Randomize Question Order
+            </Label>
+            <Switch
+              checked={settings.quiz_settings?.randomize_questions ?? false}
+              onCheckedChange={(checked) =>
+                updateSettings({
+                  quiz_settings: {
+                    ...(settings.quiz_settings ?? {
+                      allow_retries: true,
+                      max_retries: 0,
+                      randomize_questions: false,
+                      shuffle_answers: true,
+                      require_passing_to_continue: false,
+                    }),
+                    randomize_questions: checked,
+                  },
+                })
+              }
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-xs text-muted-foreground">
+              Require Passing to Continue
+            </Label>
+            <Switch
+              checked={
+                settings.quiz_settings?.require_passing_to_continue ?? false
+              }
+              onCheckedChange={(checked) =>
+                updateSettings({
+                  quiz_settings: {
+                    ...(settings.quiz_settings ?? {
+                      allow_retries: true,
+                      max_retries: 0,
+                      randomize_questions: false,
+                      shuffle_answers: true,
+                      require_passing_to_continue: false,
+                    }),
+                    require_passing_to_continue: checked,
+                  },
+                })
+              }
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <Label className="w-32 shrink-0 text-xs text-muted-foreground">
+              Passing Score (%)
+            </Label>
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              value={settings.passing_score ?? 70}
+              onChange={(e) =>
+                updateSettings({
+                  passing_score: parseInt(e.target.value) || 70,
+                })
+              }
+              className="h-8 w-20 text-sm"
+            />
           </div>
         </CardContent>
       </Card>

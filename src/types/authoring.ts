@@ -28,6 +28,9 @@ export enum BlockType {
   COVER = 'cover',
   GALLERY = 'gallery',
   CHART = 'chart',
+  CALLOUT = 'callout',
+  STATEMENT = 'statement',
+  BUTTON = 'button',
 
   // Interactive blocks
   ACCORDION = 'accordion',
@@ -38,6 +41,7 @@ export enum BlockType {
   TIMELINE = 'timeline',
   HOTSPOT = 'hotspot',
   SCENARIO = 'scenario',
+  CONTINUE = 'continue',
 
   // Assessment blocks
   MULTIPLE_CHOICE = 'multiple_choice',
@@ -442,6 +446,55 @@ export interface SortingBlock extends BaseBlock {
   };
 }
 
+export interface CalloutBlock extends BaseBlock {
+  type: BlockType.CALLOUT;
+  data: {
+    variant: 'info' | 'warning' | 'success' | 'error';
+    title: string;
+    content: string;                   // HTML content
+    icon?: string;                     // optional custom emoji/icon
+    collapsible: boolean;
+  };
+}
+
+export interface StatementBlock extends BaseBlock {
+  type: BlockType.STATEMENT;
+  data: {
+    text: string;                      // Main statement text
+    media_url?: string;                // Optional background or side image
+    style: 'bold' | 'bordered' | 'background' | 'note';
+    alignment: 'start' | 'center' | 'end';
+    accent_color?: string;             // Optional accent color override
+  };
+}
+
+export interface ButtonBlock extends BaseBlock {
+  type: BlockType.BUTTON;
+  data: {
+    buttons: {
+      id: string;
+      label: string;
+      url?: string;                    // External URL
+      action: 'link' | 'next_lesson' | 'previous_lesson' | 'scroll_top';
+      style: 'primary' | 'secondary' | 'outline' | 'ghost';
+      icon?: string;                   // Optional emoji or icon name
+    }[];
+    alignment: 'start' | 'center' | 'end';
+    layout: 'inline' | 'stacked';     // Side by side or stacked
+  };
+}
+
+export interface ContinueBlock extends BaseBlock {
+  type: BlockType.CONTINUE;
+  data: {
+    label: string;                     // Button text, e.g., "Continue"
+    completion_type: 'none' | 'above' | 'all_above';
+    // none = always enabled
+    // above = must complete the block directly above
+    // all_above = must complete all blocks above this one
+  };
+}
+
 // ============================================================
 // DISCRIMINATED UNION -- the master Block type
 // ============================================================
@@ -473,7 +526,11 @@ export type Block =
   | MultipleResponseBlock
   | FillInBlankBlock
   | MatchingBlock
-  | SortingBlock;
+  | SortingBlock
+  | CalloutBlock
+  | StatementBlock
+  | ButtonBlock
+  | ContinueBlock;
 
 // ============================================================
 // COURSE STRUCTURE
@@ -513,6 +570,19 @@ export interface CourseSettings {
   passing_score?: number;              // Minimum quiz score to pass (0-100)
   language: 'ar' | 'en' | 'bilingual';
   direction: 'rtl' | 'ltr' | 'auto';
+  // Rise 360-inspired settings
+  sidebar_default_open: boolean;        // Begin with sidebar open
+  allow_search: boolean;                // Enable search within sidebar
+  allow_mark_complete: boolean;         // Allow marking lessons complete manually
+  show_lesson_count: boolean;           // "Lesson X of Y" label
+  quiz_settings: {
+    allow_retries: boolean;
+    max_retries: number;                // 0 = unlimited
+    randomize_questions: boolean;
+    shuffle_answers: boolean;
+    require_passing_to_continue: boolean;
+  };
+  block_entrance_animations: boolean;   // Enable entrance animations
 }
 
 export interface CourseTheme {
