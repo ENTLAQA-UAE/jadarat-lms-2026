@@ -17,6 +17,7 @@ export function AccordionRenderer({
   block,
   progress,
   onComplete,
+  theme,
 }: AccordionRendererProps) {
   const [openItems, setOpenItems] = useState<Set<string>>(() => {
     if (block.data.start_expanded) {
@@ -60,7 +61,13 @@ export function AccordionRenderer({
   }, [viewedItems.size, block.data.items.length, progress?.completed, onComplete]);
 
   return (
-    <div className="border rounded-lg divide-y">
+    <div
+      className="border rounded-lg divide-y"
+      style={{
+        borderRadius: 'var(--player-radius)',
+        fontFamily: 'var(--player-font)',
+      }}
+    >
       {block.data.items.map((item) => {
         const isOpen = openItems.has(item.id);
         return (
@@ -68,6 +75,7 @@ export function AccordionRenderer({
             <button
               className="w-full flex items-center justify-between p-4 text-start hover:bg-accent/50 transition-colors"
               onClick={() => toggleItem(item.id)}
+              style={{ color: isOpen ? 'var(--player-primary)' : undefined }}
             >
               <span className="font-medium">{item.title}</span>
               <ChevronDown

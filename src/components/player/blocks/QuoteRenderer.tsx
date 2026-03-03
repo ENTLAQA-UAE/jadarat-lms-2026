@@ -29,16 +29,16 @@ export function QuoteRenderer({
   if (style === 'large') {
     return (
       <blockquote className="text-center py-6">
-        <div className="text-4xl leading-none mb-4" style={{ color: theme.primary_color }}>
+        <div className="text-4xl leading-none mb-4" style={{ color: 'var(--player-primary)' }}>
           &ldquo;
         </div>
         <p
           className="text-2xl font-medium italic"
-          style={{ color: theme.text_color, fontFamily: theme.font_family }}
+          style={{ color: 'var(--player-text)', fontFamily: 'var(--player-font)' }}
         >
           {text}
         </p>
-        <div className="text-4xl leading-none mt-4" style={{ color: theme.primary_color }}>
+        <div className="text-4xl leading-none mt-4" style={{ color: 'var(--player-primary)' }}>
           &rdquo;
         </div>
         {attribution && (
@@ -54,11 +54,11 @@ export function QuoteRenderer({
     return (
       <blockquote
         className="rounded-lg p-6"
-        style={{ backgroundColor: `${theme.primary_color}1A` }}
+        style={{ backgroundColor: 'color-mix(in srgb, var(--player-primary) 10%, transparent)' }}
       >
         <p
           className="text-base"
-          style={{ color: theme.text_color, fontFamily: theme.font_family }}
+          style={{ color: 'var(--player-text)', fontFamily: 'var(--player-font)' }}
         >
           {text}
         </p>
@@ -75,11 +75,11 @@ export function QuoteRenderer({
   return (
     <blockquote
       className="py-4 ps-4"
-      style={{ borderInlineStart: `4px solid ${theme.primary_color}` }}
+      style={{ borderInlineStart: '4px solid var(--player-primary)' }}
     >
       <p
         className="text-base italic"
-        style={{ color: theme.text_color, fontFamily: theme.font_family }}
+        style={{ color: 'var(--player-text)', fontFamily: 'var(--player-font)' }}
       >
         {text}
       </p>

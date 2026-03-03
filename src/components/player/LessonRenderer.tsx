@@ -1,8 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { BlockRenderer } from './blocks';
+import { PlayerNavigation } from './PlayerNavigation';
 import type { Lesson, Block, CourseTheme } from '@/types/authoring';
 import type { BlockProgress } from './CoursePlayer';
 
@@ -41,12 +40,20 @@ export function LessonRenderer({
       <div className="mb-8">
         <h1
           className="text-2xl font-bold"
-          style={{ fontFamily: theme.font_family }}
+          style={{
+            fontFamily: 'var(--player-font)',
+            color: 'var(--player-text)',
+          }}
         >
           {lesson.title}
         </h1>
         {lesson.description && (
-          <p className="text-muted-foreground mt-2">{lesson.description}</p>
+          <p
+            className="mt-2 text-muted-foreground"
+            style={{ fontFamily: 'var(--player-font)' }}
+          >
+            {lesson.description}
+          </p>
         )}
       </div>
 
@@ -71,34 +78,13 @@ export function LessonRenderer({
         })}
 
       {/* Navigation buttons */}
-      <div className="flex items-center justify-between pt-8 border-t mt-12">
-        <Button
-          variant="outline"
-          onClick={onPreviousLesson}
-          disabled={isFirstLesson}
-          className="gap-2"
-        >
-          {direction === 'rtl' ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-          Previous
-        </Button>
-
-        <Button
-          onClick={onNextLesson}
-          disabled={isLastLesson}
-          className="gap-2"
-        >
-          Next
-          {direction === 'rtl' ? (
-            <ChevronLeft className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </Button>
-      </div>
+      <PlayerNavigation
+        onPrevious={onPreviousLesson}
+        onNext={onNextLesson}
+        isFirstLesson={isFirstLesson}
+        isLastLesson={isLastLesson}
+        direction={direction}
+      />
     </div>
   );
 }

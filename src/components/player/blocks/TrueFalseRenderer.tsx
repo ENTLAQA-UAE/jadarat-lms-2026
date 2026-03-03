@@ -18,6 +18,7 @@ export function TrueFalseRenderer({
   block,
   progress,
   onComplete,
+  theme,
 }: TrueFalseRendererProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<boolean | null>(
     progress?.completed
@@ -59,9 +60,17 @@ export function TrueFalseRenderer({
     : '';
 
   return (
-    <div className="border rounded-lg p-6 space-y-4">
+    <div
+      className="border rounded-lg p-6 space-y-4"
+      style={{
+        borderRadius: 'var(--player-radius)',
+        fontFamily: 'var(--player-font)',
+      }}
+    >
       {/* Statement */}
-      <h3 className="font-medium text-lg">{block.data.statement}</h3>
+      <h3 className="font-medium text-lg" style={{ color: 'var(--player-text)' }}>
+        {block.data.statement}
+      </h3>
 
       {/* True / False buttons */}
       <div className="flex gap-3">
@@ -77,11 +86,19 @@ export function TrueFalseRenderer({
               className={cn(
                 'flex-1 p-4 rounded-lg border-2 text-center font-medium transition-colors',
                 !submitted && 'hover:bg-accent/50 cursor-pointer',
-                isSelected && !submitted && 'border-primary bg-primary/5',
                 submitted && isCorrectAnswer && 'border-green-500 bg-green-50 dark:bg-green-950/20',
                 submitted && isSelected && !isCorrectAnswer && 'border-red-500 bg-red-50 dark:bg-red-950/20',
                 submitted && !isSelected && !isCorrectAnswer && 'opacity-60'
               )}
+              style={{
+                borderRadius: 'var(--player-radius)',
+                ...(isSelected && !submitted
+                  ? {
+                      borderColor: 'var(--player-primary)',
+                      backgroundColor: 'color-mix(in srgb, var(--player-primary) 5%, transparent)',
+                    }
+                  : {}),
+              }}
               onClick={() => !submitted && setSelectedAnswer(value)}
             >
               <div className="flex items-center justify-center gap-2">
@@ -126,12 +143,24 @@ export function TrueFalseRenderer({
       {/* Actions */}
       <div className="flex items-center gap-2">
         {!submitted && (
-          <Button onClick={handleSubmit} disabled={selectedAnswer === null}>
+          <Button
+            onClick={handleSubmit}
+            disabled={selectedAnswer === null}
+            style={{
+              backgroundColor: 'var(--player-primary)',
+              borderRadius: 'var(--player-radius)',
+            }}
+          >
             Submit Answer
           </Button>
         )}
         {submitted && !isCorrect && (
-          <Button variant="outline" onClick={handleRetry} className="gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRetry}
+            className="gap-2"
+            style={{ borderRadius: 'var(--player-radius)' }}
+          >
             <RotateCcw className="w-4 h-4" />
             Try Again
           </Button>

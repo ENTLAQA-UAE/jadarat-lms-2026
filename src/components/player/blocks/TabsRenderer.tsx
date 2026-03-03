@@ -16,6 +16,7 @@ export function TabsRenderer({
   block,
   progress,
   onComplete,
+  theme,
 }: TabsRendererProps) {
   const [activeTab, setActiveTab] = useState(block.data.tabs[0]?.id ?? '');
   const [viewedTabs, setViewedTabs] = useState<Set<string>>(
@@ -46,7 +47,13 @@ export function TabsRenderer({
   const isVertical = block.data.style === 'vertical';
 
   return (
-    <div className={cn('border rounded-lg', isVertical ? 'flex' : '')}>
+    <div
+      className={cn('border rounded-lg', isVertical ? 'flex' : '')}
+      style={{
+        borderRadius: 'var(--player-radius)',
+        fontFamily: 'var(--player-font)',
+      }}
+    >
       {/* Tab headers */}
       <div
         className={cn(
@@ -55,27 +62,33 @@ export function TabsRenderer({
             : 'flex border-b overflow-x-auto'
         )}
       >
-        {block.data.tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={cn(
-              'px-4 py-3 text-sm font-medium text-start whitespace-nowrap transition-colors',
-              activeTab === tab.id
-                ? 'bg-primary/10 text-primary border-primary'
-                : 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
-              !isVertical &&
-                activeTab === tab.id &&
-                'border-b-2 -mb-px',
-              isVertical &&
-                activeTab === tab.id &&
-                'border-e-2 -me-px'
-            )}
-            onClick={() => handleTabClick(tab.id)}
-          >
-            {tab.icon && <span className="me-2">{tab.icon}</span>}
-            {tab.label}
-          </button>
-        ))}
+        {block.data.tabs.map((tab) => {
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              className={cn(
+                'px-4 py-3 text-sm font-medium text-start whitespace-nowrap transition-colors',
+                !isActive && 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
+                !isVertical && isActive && 'border-b-2 -mb-px',
+                isVertical && isActive && 'border-e-2 -me-px'
+              )}
+              style={
+                isActive
+                  ? {
+                      color: 'var(--player-primary)',
+                      borderColor: 'var(--player-primary)',
+                      backgroundColor: 'color-mix(in srgb, var(--player-primary) 10%, transparent)',
+                    }
+                  : undefined
+              }
+              onClick={() => handleTabClick(tab.id)}
+            >
+              {tab.icon && <span className="me-2">{tab.icon}</span>}
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Tab content */}

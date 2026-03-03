@@ -18,6 +18,7 @@ export function FlashcardRenderer({
   block,
   progress,
   onComplete,
+  theme,
 }: FlashcardRendererProps) {
   const cards = useMemo(() => {
     if (block.data.shuffle) {
@@ -81,7 +82,13 @@ export function FlashcardRenderer({
   }
 
   return (
-    <div className="border rounded-lg p-6 space-y-4">
+    <div
+      className="border rounded-lg p-6 space-y-4"
+      style={{
+        borderRadius: 'var(--player-radius)',
+        fontFamily: 'var(--player-font)',
+      }}
+    >
       {/* Card container with flip animation */}
       <div
         className="relative mx-auto w-full max-w-lg cursor-pointer"
@@ -168,14 +175,15 @@ export function FlashcardRenderer({
         {cards.map((card, index) => (
           <div
             key={card.id}
-            className={cn(
-              'h-1.5 w-1.5 rounded-full transition-colors',
-              index === currentIndex
-                ? 'bg-primary'
-                : viewedCards.has(card.id)
-                  ? 'bg-primary/40'
-                  : 'bg-muted-foreground/20'
-            )}
+            className="h-1.5 w-1.5 rounded-full transition-colors"
+            style={{
+              backgroundColor:
+                index === currentIndex
+                  ? 'var(--player-primary)'
+                  : viewedCards.has(card.id)
+                    ? 'color-mix(in srgb, var(--player-primary) 40%, transparent)'
+                    : 'hsl(var(--muted-foreground) / 0.2)',
+            }}
           />
         ))}
       </div>

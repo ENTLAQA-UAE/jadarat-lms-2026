@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { ProgressSidebar } from './ProgressSidebar';
+import { PlayerHeader } from './PlayerHeader';
+import { PlayerSidebar } from './PlayerSidebar';
 import { LessonRenderer } from './LessonRenderer';
+import { getThemeCSSVars } from './theme-utils';
 import type { CourseContent, Block } from '@/types/authoring';
 
 export interface BlockProgress {
@@ -30,6 +33,7 @@ export function CoursePlayer({
   courseName,
   initialProgress,
 }: CoursePlayerProps) {
+  const router = useRouter();
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [blockProgress, setBlockProgress] = useState<Map<string, BlockProgress>>(
@@ -39,6 +43,7 @@ export function CoursePlayer({
 
   const currentModule = content.modules[currentModuleIndex];
   const currentLesson = currentModule?.lessons[currentLessonIndex];
+  const isSequential = content.settings.navigation === 'sequential';
 
   // Calculate overall progress
   const totalBlocks = content.modules.reduce(
@@ -57,6 +62,40 @@ export function CoursePlayer({
       setShowCertificate(true);
     }
   }, [overallProgress, showCertificate]);
+
+  // Check if a specific lesson is complete
+  const isLessonComplete = useCallback(
+    (moduleIndex: number, lessonIndex: number): boolean => {
+      const lesson = content.modules[moduleIndex]?.lessons[lessonIndex];
+      if (!lesson || lesson.blocks.length === 0) return true;
+      return lesson.blocks.every(
+        (block) => blockProgress.get(block.id)?.completed
+      );
+    },
+    [content.modules, blockProgress]
+  );
+
+  // Sequential navigation: a lesson is accessible if free mode or if all
+  // previous lessons in order are complete.
+  const isLessonAccessible = useCallback(
+    (moduleIndex: number, lessonIndex: number): boolean => {
+      if (!isSequential) return true;
+
+      // First lesson is always accessible
+      if (moduleIndex === 0 && lessonIndex === 0) return true;
+
+      // Check all lessons before this one
+      for (let mi = 0; mi <= moduleIndex; mi++) {
+        const mod = content.modules[mi];
+        const maxLi = mi < moduleIndex ? mod.lessons.length : lessonIndex;
+        for (let li = 0; li < maxLi; li++) {
+          if (!isLessonComplete(mi, li)) return false;
+        }
+      }
+      return true;
+    },
+    [isSequential, content.modules, isLessonComplete]
+  );
 
   const handleBlockComplete = useCallback(
     async (
@@ -98,11 +137,17 @@ export function CoursePlayer({
 
   const navigateToLesson = useCallback(
     (moduleIndex: number, lessonIndex: number) => {
+      // Enforce sequential navigation
+      if (isSequential && !isLessonAccessible(moduleIndex, lessonIndex)) return;
+
       setCurrentModuleIndex(moduleIndex);
       setCurrentLessonIndex(lessonIndex);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Scroll the main content area to top
+      document
+        .getElementById('player-content')
+        ?.scrollTo({ top: 0, behavior: 'smooth' });
     },
-    []
+    [isSequential, isLessonAccessible]
   );
 
   const goToNextLesson = useCallback(() => {
@@ -129,6 +174,10 @@ export function CoursePlayer({
     }
   }, [currentModuleIndex, currentLessonIndex, content.modules, navigateToLesson]);
 
+  const handleClose = useCallback(() => {
+    router.back();
+  }, [router]);
+
   if (!currentLesson) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -143,45 +192,68 @@ export function CoursePlayer({
     currentLessonIndex === currentModule.lessons.length - 1;
 
   return (
-    <div className="flex h-full" dir={content.settings.direction}>
-      <ProgressSidebar
-        modules={content.modules}
-        currentModuleIndex={currentModuleIndex}
-        currentLessonIndex={currentLessonIndex}
-        blockProgress={blockProgress}
-        overallProgress={overallProgress}
-        onNavigate={navigateToLesson}
-        courseId={courseId}
-        userId={userId}
+    <div
+      className="flex flex-col h-screen"
+      dir={content.settings.direction}
+      style={getThemeCSSVars(content.settings.theme)}
+    >
+      {/* Top header bar */}
+      <PlayerHeader
         courseName={courseName}
-        userName={userName}
-        showCertificate={showCertificate}
+        moduleTitle={currentModule.title}
+        lessonTitle={currentLesson.title}
+        overallProgress={overallProgress}
+        direction={content.settings.direction}
+        onClose={handleClose}
       />
 
-      <main className="flex-1 overflow-y-auto bg-background">
-        <div className="max-w-3xl mx-auto p-6">
-          <LessonRenderer
-            lesson={currentLesson}
-            moduleId={currentModule.id}
-            blockProgress={blockProgress}
-            onBlockComplete={(block, score, responseData) =>
-              handleBlockComplete(
-                block,
-                currentModule.id,
-                currentLesson.id,
-                score,
-                responseData
-              )
-            }
-            onNextLesson={goToNextLesson}
-            onPreviousLesson={goToPreviousLesson}
-            isFirstLesson={isFirstLesson}
-            isLastLesson={isLastLesson}
-            theme={content.settings.theme}
-            direction={content.settings.direction}
-          />
-        </div>
-      </main>
+      {/* Body: sidebar + content */}
+      <div className="flex flex-1 overflow-hidden">
+        <PlayerSidebar
+          modules={content.modules}
+          currentModuleIndex={currentModuleIndex}
+          currentLessonIndex={currentLessonIndex}
+          blockProgress={blockProgress}
+          overallProgress={overallProgress}
+          onNavigate={navigateToLesson}
+          courseId={courseId}
+          userId={userId}
+          courseName={courseName}
+          userName={userName}
+          showCertificate={showCertificate}
+          isSequential={isSequential}
+          isLessonAccessible={isLessonAccessible}
+        />
+
+        <main
+          id="player-content"
+          className="flex-1 overflow-y-auto"
+          style={{ backgroundColor: 'var(--player-bg)' }}
+        >
+          <div className="max-w-3xl mx-auto p-6">
+            <LessonRenderer
+              lesson={currentLesson}
+              moduleId={currentModule.id}
+              blockProgress={blockProgress}
+              onBlockComplete={(block, score, responseData) =>
+                handleBlockComplete(
+                  block,
+                  currentModule.id,
+                  currentLesson.id,
+                  score,
+                  responseData
+                )
+              }
+              onNextLesson={goToNextLesson}
+              onPreviousLesson={goToPreviousLesson}
+              isFirstLesson={isFirstLesson}
+              isLastLesson={isLastLesson}
+              theme={content.settings.theme}
+              direction={content.settings.direction}
+            />
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

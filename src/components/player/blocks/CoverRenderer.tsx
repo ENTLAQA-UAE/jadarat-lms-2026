@@ -63,7 +63,7 @@ export function CoverRenderer({
       <div className="relative z-10">
         <h2
           className="text-3xl font-bold text-white"
-          style={{ fontFamily: theme.font_family }}
+          style={{ fontFamily: 'var(--player-font)' }}
         >
           {block.data.title}
         </h2>
