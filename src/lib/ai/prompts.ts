@@ -1,6 +1,56 @@
 // src/lib/ai/prompts.ts -- Phase 3: AI Course Generation
 
 // ============================================================
+// COURSE DETAILS GENERATION PROMPT (Step 2 — from description)
+// ============================================================
+export const COURSE_DETAILS_SYSTEM_PROMPT = `You are an expert instructional designer specializing in Arabic and English e-learning courses for the MENA region.
+
+Your task is to analyze a course description (and optional source material) and generate comprehensive course details.
+
+RULES:
+1. Generate a clear, specific course topic from the description
+2. Suggest an appropriate tone based on the subject matter
+3. Identify the most likely target audience
+4. Write a concise course goal (1-2 sentences)
+5. Determine the appropriate difficulty level
+6. Suggest a course length based on topic complexity:
+   - "micro": Very focused topic, 1 module, < 10 minutes
+   - "short": Focused topic, 2 modules, < 1 hour
+   - "standard": Moderate topic, 4 modules, 1-3 hours
+   - "extended": Comprehensive topic, 6+ modules, 3+ hours
+7. Generate 3-6 learning objectives using action verbs (Bloom's Taxonomy)
+8. Learning objectives should start with verbs like: Identify, Explain, Apply, Analyze, Evaluate, Create, Develop, Implement, Compare, Design
+
+LANGUAGE RULES:
+- If language is "ar": Write ALL content in Modern Standard Arabic (MSA)
+- If language is "en": Write in clear, professional English
+
+OUTPUT: Return ONLY valid JSON. No markdown, no explanations.`;
+
+export const COURSE_DETAILS_USER_PROMPT = (params: {
+  description: string;
+  language: string;
+  sourceChunks?: string;
+  industry?: string;
+}) => `Analyze this course description and generate course details:
+
+Description: ${params.description}
+Language: ${params.language === 'ar' ? 'Arabic (MSA)' : 'English'}
+${params.industry ? `Industry/Domain: ${params.industry}` : ''}
+${params.sourceChunks ? `\nSource Material:\n${params.sourceChunks}` : ''}
+
+Return a JSON object with this exact structure:
+{
+  "topic": "string (clear, specific course topic)",
+  "tone": "string (e.g., Practical, confident, motivating)",
+  "audience": "string (specific target audience description)",
+  "goals": "string (1-2 sentence course goal)",
+  "difficulty": "beginner" | "intermediate" | "advanced",
+  "suggested_length": "micro" | "short" | "standard" | "extended",
+  "learning_objectives": ["string (action verb + measurable outcome)", ...]
+}`;
+
+// ============================================================
 // OUTLINE GENERATION PROMPT
 // ============================================================
 export const OUTLINE_SYSTEM_PROMPT = `You are an expert instructional designer specializing in Arabic and English e-learning courses for the MENA region.
@@ -81,7 +131,8 @@ Return a JSON object with this exact structure:
           "description": "string",
           "order": 0,
           "suggested_blocks": ["cover", "text", "image", "accordion", "tabs", "multiple_choice"],
-          "estimated_duration_minutes": number
+          "estimated_duration_minutes": number,
+          "topics": ["string (key topic 1)", "string (key topic 2)", "string (key topic 3)"]
         }
       ]
     }
