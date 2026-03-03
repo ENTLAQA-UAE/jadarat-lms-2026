@@ -15,11 +15,12 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Sparkles, LayoutGrid } from 'lucide-react';
 import { useEditorStore } from '@/stores/editor.store';
 import { BlockEditor } from '@/components/authoring/blocks';
 import { BlockWrapper } from './BlockWrapper';
 import { BlockToolbar } from './BlockToolbar';
+import { QuickAddBar } from './QuickAddBar';
 import { BlockType, type Block } from '@/types/authoring';
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/lib/utils';
@@ -224,26 +225,26 @@ export function EditorCanvas() {
   if (blocks.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
-        <div className="text-center max-w-md">
-          {/* Decorative dots background */}
-          <div className="relative mx-auto mb-6">
-            <div className="absolute inset-0 -m-6 rounded-3xl bg-[radial-gradient(circle_at_center,_hsl(var(--primary)/0.03)_1px,_transparent_1px)] bg-[length:16px_16px]" />
-            <div className="relative flex h-20 w-20 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-primary/12 to-primary/5 border border-primary/15 shadow-lg shadow-primary/5">
-              <Plus className="h-8 w-8 text-primary/60" />
-            </div>
-          </div>
-          <h3 className="text-lg font-semibold text-foreground mb-1.5">Start building your lesson</h3>
-          <p className="text-sm text-muted-foreground mb-8 max-w-xs mx-auto leading-relaxed">
-            Add content blocks like text, images, videos, quizzes, and interactive elements.
+        <div className="text-center max-w-lg">
+          {/* Module > Lesson breadcrumb */}
+          <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider mb-6">
+            {currentModule.title} / {currentLesson.title}
           </p>
-          <BlockToolbar onInsertBlock={handleInsertBlock} />
+
+          <h3 className="text-xl font-semibold text-foreground mb-2">Add your first block</h3>
+          <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto leading-relaxed">
+            Use the Block Library or quick-add bar below to start building your lesson content.
+          </p>
+
+          {/* Quick-add bar (Rise-style) */}
+          <QuickAddBar onInsertBlock={handleInsertBlock} />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-1 px-6 py-8">
+    <div className="mx-auto w-full max-w-3xl space-y-2 px-6 py-8">
       {/* Lesson header breadcrumb */}
       <div className="mb-8 flex items-center gap-3">
         <div className="flex-1 min-w-0">
@@ -317,12 +318,12 @@ export function EditorCanvas() {
         </SortableContext>
       </DndContext>
 
-      {/* Bottom "Add Block" area */}
-      <div className="pt-4 flex justify-center">
-        <BlockToolbar onInsertBlock={handleInsertBlock} />
+      {/* Bottom quick-add bar (Rise-style) */}
+      <div className="pt-6 flex justify-center">
+        <QuickAddBar onInsertBlock={handleInsertBlock} />
       </div>
 
-      <div className="h-32" />
+      <div className="h-20" />
     </div>
   );
 }

@@ -10,7 +10,10 @@ import { saveContent, publishContent, loadCourseWithContent } from '@/action/aut
 import { EditorHeader } from '@/components/authoring/EditorHeader';
 import { ModuleSidebar } from '@/components/authoring/ModuleSidebar';
 import { EditorCanvas } from '@/components/authoring/EditorCanvas';
+import { BlockLibrarySidebar } from '@/components/authoring/BlockLibrarySidebar';
 import { AICourseWizard } from '@/components/authoring/ai/AICourseWizard';
+import { BlockType, type Block } from '@/types/authoring';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function BuildCoursePage() {
   const searchParams = useSearchParams();
@@ -243,6 +246,39 @@ export default function BuildCoursePage() {
     );
   }
 
+  const handleBlockLibraryInsert = useCallback(
+    (type: BlockType) => {
+      if (!store.selectedModuleId || !store.selectedLessonId) return;
+
+      const now = new Date().toISOString();
+      const base = {
+        id: uuidv4(),
+        order: 0,
+        visible: true,
+        locked: false,
+        metadata: { created_at: now, updated_at: now, created_by: 'human' as const },
+      };
+
+      // Simple default data for each type - the store handles ordering
+      let block: Block;
+      switch (type) {
+        case BlockType.TEXT:
+          block = { ...base, type, data: { content: '', alignment: 'start', direction: 'auto' } } as Block;
+          break;
+        case BlockType.DIVIDER:
+          block = { ...base, type, data: { style: 'line', spacing: 'medium' } } as Block;
+          break;
+        default:
+          // Use a minimal fallback — the BlockEditor normalizer will fill arrays
+          block = { ...base, type, data: {} } as Block;
+          break;
+      }
+
+      store.addBlock(store.selectedModuleId, store.selectedLessonId, block);
+    },
+    [store],
+  );
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
       <EditorHeader
@@ -252,9 +288,15 @@ export default function BuildCoursePage() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        {store.sidebarOpen && <ModuleSidebar />}
+        {/* Structure sidebar */}
+        {store.sidebarOpen && !store.blockLibraryOpen && <ModuleSidebar />}
 
-        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-muted/20 to-muted/40">
+        {/* Block Library sidebar (Rise-style) */}
+        {store.blockLibraryOpen && (
+          <BlockLibrarySidebar onInsertBlock={handleBlockLibraryInsert} />
+        )}
+
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-muted/10 to-muted/30">
           <EditorCanvas />
         </main>
       </div>

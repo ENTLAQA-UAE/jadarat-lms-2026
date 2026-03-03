@@ -70,6 +70,7 @@ export interface EditorState {
   isPublishing: boolean;
   previewMode: boolean;
   sidebarOpen: boolean;
+  blockLibraryOpen: boolean;
   undoStack: CourseContent[];
   redoStack: CourseContent[];
 }
@@ -136,6 +137,8 @@ export interface EditorActions {
   setPublishing: (publishing: boolean) => void;
   togglePreview: () => void;
   toggleSidebar: () => void;
+  toggleBlockLibrary: () => void;
+  setBlockLibraryOpen: (open: boolean) => void;
 
   // Computed getters
   getCurrentModule: () => Module | null;
@@ -178,6 +181,7 @@ const initialState: EditorState = {
   isPublishing: false,
   previewMode: false,
   sidebarOpen: true,
+  blockLibraryOpen: false,
   undoStack: [],
   redoStack: [],
 };
@@ -782,6 +786,10 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   togglePreview: () => set((state) => ({ previewMode: !state.previewMode })),
 
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+
+  toggleBlockLibrary: () => set((state) => ({ blockLibraryOpen: !state.blockLibraryOpen })),
+
+  setBlockLibraryOpen: (open: boolean) => set({ blockLibraryOpen: open }),
 
   // --------------------------------------------------------
   // Computed getters

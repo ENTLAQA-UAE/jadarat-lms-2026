@@ -82,10 +82,10 @@ export function BlockWrapper({
         ref={setNodeRef}
         style={style}
         className={cn(
-          'group/block relative rounded-xl border bg-card transition-all duration-200',
+          'group/block relative rounded-xl bg-card transition-all duration-200',
           isSelected
-            ? 'border-primary/40 shadow-md shadow-primary/5 ring-2 ring-primary/8'
-            : 'border-border/40 hover:border-border/70 hover:shadow-sm',
+            ? 'border border-primary/30 shadow-md shadow-primary/5 ring-2 ring-primary/8'
+            : 'border border-transparent hover:border-border/50 hover:shadow-sm',
           isDragging && 'opacity-50 shadow-2xl scale-[1.01] ring-2 ring-primary/20',
         )}
         onClick={(e) => {

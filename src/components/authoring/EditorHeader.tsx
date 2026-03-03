@@ -15,6 +15,7 @@ import {
   PanelLeftClose,
   PanelLeft,
   Sparkles,
+  LayoutGrid,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -50,6 +51,8 @@ export function EditorHeader({
   const redo = useEditorStore((s) => s.redo);
   const togglePreview = useEditorStore((s) => s.togglePreview);
   const toggleSidebar = useEditorStore((s) => s.toggleSidebar);
+  const blockLibraryOpen = useEditorStore((s) => s.blockLibraryOpen);
+  const toggleBlockLibrary = useEditorStore((s) => s.toggleBlockLibrary);
 
   const [isSaveLoading, setIsSaveLoading] = useState(false);
   const [isPublishLoading, setIsPublishLoading] = useState(false);
@@ -133,6 +136,28 @@ export function EditorHeader({
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={8} className="text-xs font-medium">
               {sidebarOpen ? 'Hide sidebar' : 'Show sidebar'}
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Block Library toggle */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={blockLibraryOpen ? 'secondary' : 'ghost'}
+                size="icon"
+                onClick={toggleBlockLibrary}
+                className={cn(
+                  'h-8 w-8 shrink-0 rounded-lg transition-all duration-200',
+                  blockLibraryOpen
+                    ? 'bg-primary/10 text-primary border border-primary/20'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/80',
+                )}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={8} className="text-xs font-medium">
+              {blockLibraryOpen ? 'Close Block Library' : 'Block Library'}
             </TooltipContent>
           </Tooltip>
 
