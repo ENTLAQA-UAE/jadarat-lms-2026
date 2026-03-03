@@ -197,11 +197,25 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
     contentId: string | null,
     version: number,
   ) => {
+    // Merge loaded settings with defaults so older courses get new fields
+    const mergedSettings: CourseSettings = {
+      ...DEFAULT_SETTINGS,
+      ...content.settings,
+      theme: {
+        ...DEFAULT_SETTINGS.theme,
+        ...(content.settings?.theme ?? {}),
+      },
+      quiz_settings: {
+        ...DEFAULT_SETTINGS.quiz_settings,
+        ...(content.settings?.quiz_settings ?? {}),
+      },
+    };
+
     set({
       courseId,
       contentId,
       version,
-      content: deepClone(content),
+      content: deepClone({ ...content, settings: mergedSettings }),
       selectedModuleId: null,
       selectedLessonId: null,
       selectedBlockId: null,

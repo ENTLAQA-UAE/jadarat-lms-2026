@@ -68,6 +68,18 @@ export default function BuildCoursePage() {
           completion_criteria: 'all_blocks' as const,
           language: 'ar' as const,
           direction: 'rtl' as const,
+          sidebar_default_open: true,
+          allow_search: true,
+          allow_mark_complete: false,
+          show_lesson_count: true,
+          quiz_settings: {
+            allow_retries: true,
+            max_retries: 0,
+            randomize_questions: false,
+            shuffle_answers: true,
+            require_passing_to_continue: false,
+          },
+          block_entrance_animations: true,
         },
       };
 
