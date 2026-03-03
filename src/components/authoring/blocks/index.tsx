@@ -36,6 +36,11 @@ import { ListBlockEditor } from './ListBlock';
 
 // Phase 5 block editors -- Content
 import { CalloutBlockEditor } from './CalloutBlock';
+import { StatementBlockEditor } from './StatementBlock';
+import { ButtonBlockEditor } from './ButtonBlock';
+
+// Phase 5 block editors -- Completion
+import { ContinueBlockEditor } from './ContinueBlock';
 
 // Phase 5 block editors -- Advanced
 import { ScenarioBlockEditor } from './ScenarioBlock';
@@ -75,6 +80,9 @@ export {
   TableBlockEditor,
   CodeBlockEditor,
   CalloutBlockEditor,
+  StatementBlockEditor,
+  ButtonBlockEditor,
+  ContinueBlockEditor,
 };
 
 // Unified BlockEditor that switches on block.type
@@ -155,6 +163,12 @@ export function BlockEditor({
       return <CodeBlockEditor block={block} onChange={onChange} />;
     case BlockType.CALLOUT:
       return <CalloutBlockEditor block={block} onChange={onChange} />;
+    case BlockType.STATEMENT:
+      return <StatementBlockEditor block={block} onChange={onChange} />;
+    case BlockType.BUTTON:
+      return <ButtonBlockEditor block={block} onChange={onChange} />;
+    case BlockType.CONTINUE:
+      return <ContinueBlockEditor block={block} onChange={onChange} />;
 
     default:
       return (

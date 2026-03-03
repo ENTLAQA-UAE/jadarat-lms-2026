@@ -77,10 +77,18 @@ Your task is to create a detailed course outline following these instructional d
    - Start with a "cover" block with a compelling visual description for AI image generation
    - Use "image" blocks to add visual context (include a descriptive prompt for AI image generation)
    - Use "accordion", "tabs" for exploration and organizing information
+   - Use "flashcard" blocks for vocabulary, concepts, or key term reviews
+   - Use "process" blocks for step-by-step procedures or workflows
+   - Use "timeline" blocks for historical events or sequential milestones
+   - Use "quote" blocks for expert quotes, key insights, or notable statements
+   - Use "list" blocks for key takeaways, features, or important points
+   - Use "callout" blocks for tips, warnings, important notes, and key definitions
+   - Use "statement" blocks for emphasis statements and key takeaways
    - Use "multiple_choice", "true_false" for assessment
    - End with a "text" summary or "multiple_choice" knowledge check
    - Do NOT suggest "video" blocks -- those are added manually by the author
-   - Only suggest from: text, image, accordion, tabs, multiple_choice, true_false, divider, cover
+   - Available block types: text, image, accordion, tabs, flashcard, process, timeline, quote, list, callout, statement, multiple_choice, true_false, divider, cover
+   - Aim to use 4+ DIFFERENT block types per lesson for maximum engagement variety
 
 5. LANGUAGE RULES:
    - If language is "ar": Use Modern Standard Arabic (MSA). All text must be grammatically correct Arabic.
@@ -130,7 +138,7 @@ Return a JSON object with this exact structure:
           "title": "string",
           "description": "string",
           "order": 0,
-          "suggested_blocks": ["cover", "text", "image", "accordion", "tabs", "multiple_choice"],
+          "suggested_blocks": ["cover", "text", "image", "accordion", "flashcard", "process", "callout", "statement", "quote", "list", "multiple_choice"],
           "estimated_duration_minutes": number,
           "topics": ["string (key topic 1)", "string (key topic 2)", "string (key topic 3)"]
         }
@@ -143,26 +151,41 @@ Return a JSON object with this exact structure:
 // ============================================================
 // LESSON CONTENT GENERATION PROMPT
 // ============================================================
-export const LESSON_SYSTEM_PROMPT = `You are an expert e-learning content writer creating lesson content as structured blocks.
+export const LESSON_SYSTEM_PROMPT = `You are an expert e-learning content writer creating lesson content as structured blocks. You create world-class course content comparable to Articulate Rise 360.
 
 RULES:
 1. Generate an array of Block objects following the provided schema
-2. Start with an engaging introduction (text or cover block)
-3. Use VARIED block types - never 3+ text blocks in a row
-4. Include at least one interactive block per lesson (accordion or tabs)
+2. Start with an engaging introduction (cover block or statement block)
+3. Use HIGHLY VARIED block types — aim for 5+ different block types per lesson. Never 3+ text blocks in a row
+4. Include at least one interactive block per lesson (accordion, tabs, flashcard, process, or timeline)
 5. Follow the ASSESSMENT INSTRUCTIONS provided in the user prompt regarding quiz blocks
-6. End with a summary text block or knowledge check question
+6. End with a summary callout block ("success" variant) or a knowledge check question
 7. Keep paragraphs concise (3-5 sentences maximum)
 8. Use real-world examples relevant to the target audience
 9. For quiz questions: provide 4 options, exactly 1 correct, with detailed feedback for each option
 10. Generate unique IDs for all id fields (use format: "block-{random-8-chars}")
 
-IMPORTANT - BLOCK TYPE RESTRICTIONS:
-- ONLY generate these block types: text, image, accordion, tabs, multiple_choice, true_false, divider, cover
-- NEVER generate "video" blocks - the author adds video manually
-- For "image" blocks, set src to "GENERATE:" followed by a vivid, detailed English image description (e.g., "GENERATE:A modern office workspace with professionals collaborating on laptops")
-- For "cover" blocks, set background_image to "GENERATE:" followed by a vivid description of the cover background
-- The GENERATE: prefix triggers automatic AI image generation using DALL-E — always write prompts in English regardless of course language
+BLOCK DIVERSITY GUIDELINES — create engaging lessons by mixing these block types:
+- "text" — For narrative content, explanations, and paragraphs
+- "cover" — For lesson headers with vivid backgrounds
+- "image" — For visual context with AI-generated images
+- "statement" — For key takeaways, emphasis statements, and bold highlights
+- "callout" — For tips (info), warnings (warning), key definitions (success), and cautions (error)
+- "quote" — For expert quotes, famous sayings, or key insights
+- "list" — For key points, steps, features, or takeaways
+- "accordion" — For organizing detailed information into expandable sections
+- "tabs" — For comparing concepts or organizing related topics
+- "flashcard" — For vocabulary, key terms, or concept reviews (front/back card format)
+- "process" — For step-by-step workflows, procedures, or numbered sequences
+- "timeline" — For chronological events, milestones, or historical progression
+- "divider" — For visual separation between content sections
+- "multiple_choice" / "true_false" — For assessment (when instructed)
+
+BLOCK TYPE RESTRICTIONS:
+- NEVER generate "video" blocks — the author adds video manually
+- For "image" blocks, set src to "GENERATE:" followed by a vivid, detailed English image description
+- For "cover" blocks, set background_image to "GENERATE:" followed by a vivid description
+- The GENERATE: prefix triggers automatic AI image generation — always write prompts in English
 - Make image prompts descriptive, professional, and relevant to the educational content
 
 TEXT CONTENT FORMAT:
@@ -211,14 +234,15 @@ ${params.previousLessonsContext ? `\nContext from previous lessons:\n${params.pr
 
 ${assessmentInstruction}
 
-IMPORTANT: Only generate blocks of these types: text, image, accordion, tabs, multiple_choice, true_false, divider, cover.
-Do NOT generate video or any other block types. The author adds video manually.
+IMPORTANT: Generate DIVERSE block types for an engaging lesson. Aim for 5+ different block types.
+Available types: text, image, accordion, tabs, flashcard, process, timeline, quote, list, callout, statement, multiple_choice, true_false, divider, cover.
+Do NOT generate video blocks — the author adds video manually.
 For image and cover blocks, use "GENERATE:description" as the image source — this triggers AI image generation.
 
 Return a JSON array of blocks. Each block must have this structure:
 {
   "id": "block-{8-random-chars}",
-  "type": "text|accordion|tabs|multiple_choice|true_false|divider|cover",
+  "type": "one of the available types above",
   "order": 0,
   "visible": true,
   "locked": false,
@@ -231,31 +255,54 @@ Return a JSON array of blocks. Each block must have this structure:
   "data": { ... block-type-specific data ... }
 }
 
-For "text" blocks, data format:
+BLOCK DATA FORMATS:
+
+For "text" blocks:
 { "content": "<p>HTML content here</p>", "alignment": "start", "direction": "${params.language === 'ar' ? 'rtl' : 'ltr'}" }
 
-For "multiple_choice" blocks, data format:
+For "multiple_choice" blocks:
 { "question": "...", "options": [{"id": "opt-1", "text": "...", "is_correct": true, "feedback": "..."}], "explanation": "...", "allow_retry": true, "shuffle_options": true, "points": 1 }
 
-For "accordion" blocks, data format:
+For "accordion" blocks:
 { "items": [{"id": "acc-1", "title": "...", "content": "<p>...</p>"}], "allow_multiple_open": false, "start_expanded": false }
 
-For "tabs" blocks, data format:
+For "tabs" blocks:
 { "tabs": [{"id": "tab-1", "label": "...", "content": "<p>...</p>"}], "style": "horizontal" }
 
-For "true_false" blocks, data format:
+For "true_false" blocks:
 { "statement": "...", "correct_answer": true, "explanation": "...", "points": 1 }
 
-For "image" blocks, data format:
+For "image" blocks:
 { "src": "GENERATE:A detailed description of the image in English", "alt": "Accessible description", "caption": "Optional caption", "width": "large", "alignment": "center" }
 
-For "cover" blocks, data format:
+For "cover" blocks:
 { "background_image": "GENERATE:A professional wide background image description in English", "title": "...", "subtitle": "...", "overlay_color": "#1a73e8CC", "text_alignment": "center", "height": "medium" }
 
-For "divider" blocks, data format:
+For "divider" blocks:
 { "style": "solid", "color": "#e5e7eb", "spacing": "medium" }
 
-Generate 5-8 blocks for this lesson.`;
+For "flashcard" blocks:
+{ "cards": [{"id": "card-1", "front_text": "Term or concept", "back_text": "Definition or explanation", "front_image": "", "back_image": ""}], "shuffle": false, "show_progress": true }
+
+For "process" blocks:
+{ "steps": [{"id": "step-1", "title": "Step 1", "description": "<p>Description</p>", "icon": ""}], "layout": "vertical", "numbered": true }
+
+For "timeline" blocks:
+{ "events": [{"id": "evt-1", "title": "Event title", "date": "Date/period", "description": "<p>Description</p>", "image_url": ""}], "layout": "vertical" }
+
+For "quote" blocks:
+{ "text": "The quoted text here", "attribution": "Author name", "style": "default" }
+
+For "list" blocks:
+{ "items": [{"id": "li-1", "text": "Item text", "icon": ""}], "style": "bullet", "columns": 1 }
+
+For "callout" blocks:
+{ "variant": "info|warning|success|error", "title": "Callout title", "content": "<p>Callout body</p>", "collapsible": false }
+
+For "statement" blocks:
+{ "text": "A bold, impactful statement for emphasis", "style": "bold|bordered|background|note", "alignment": "center" }
+
+Generate 7-12 blocks for this lesson. Use at least 5 DIFFERENT block types for maximum engagement.`;
 };
 
 // ============================================================
@@ -287,8 +334,9 @@ Lesson content to assess:
 ${params.lessonContents}
 
 Generate a mix of question types:
-- 60% multiple_choice (4 options, 1 correct)
-- 40% true_false
+- 50% multiple_choice (4 options, 1 correct)
+- 30% true_false
+- 20% fill_in_blank (if total >= 5 questions)
 
 Each block must have this structure:
 {

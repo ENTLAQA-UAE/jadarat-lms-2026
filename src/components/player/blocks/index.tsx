@@ -35,6 +35,9 @@ import { ListRenderer } from './ListRenderer';
 
 // Phase 5 renderers -- Content
 import { CalloutRenderer } from './CalloutRenderer';
+import { StatementRenderer } from './StatementRenderer';
+import { ButtonRenderer } from './ButtonRenderer';
+import { ContinueRenderer } from './ContinueRenderer';
 
 // Phase 5 renderers -- Advanced
 import { ScenarioRenderer } from './ScenarioRenderer';
@@ -50,6 +53,11 @@ interface BlockRendererProps {
   onComplete: (score?: number, responseData?: Record<string, unknown>) => void;
   theme: CourseTheme;
   direction: 'rtl' | 'ltr' | 'auto';
+  /** For ContinueBlock: whether requirements above are met */
+  isContinueUnlocked?: boolean;
+  /** For ButtonBlock: navigate to next/previous lesson */
+  onNextLesson?: () => void;
+  onPreviousLesson?: () => void;
 }
 
 export function BlockRenderer({
@@ -58,6 +66,9 @@ export function BlockRenderer({
   onComplete,
   theme,
   direction,
+  isContinueUnlocked,
+  onNextLesson,
+  onPreviousLesson,
 }: BlockRendererProps) {
   switch (block.type) {
     // Phase 1 -- Content
@@ -343,6 +354,39 @@ export function BlockRenderer({
         <CalloutRenderer
           block={block}
           theme={theme}
+        />
+      );
+
+    case BlockType.STATEMENT:
+      return (
+        <StatementRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          theme={theme}
+        />
+      );
+
+    case BlockType.BUTTON:
+      return (
+        <ButtonRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          onNextLesson={onNextLesson}
+          onPreviousLesson={onPreviousLesson}
+          theme={theme}
+        />
+      );
+
+    case BlockType.CONTINUE:
+      return (
+        <ContinueRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          theme={theme}
+          isUnlocked={isContinueUnlocked ?? true}
         />
       );
 
