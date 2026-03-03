@@ -180,8 +180,17 @@ export function AICourseWizard({
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Failed to generate outline');
+        const errData = await res.json();
+        const fieldDetails = errData.details?.fieldErrors
+          ? Object.entries(errData.details.fieldErrors)
+              .map(([k, v]) => `${k}: ${(v as string[]).join(', ')}`)
+              .join('; ')
+          : '';
+        throw new Error(
+          fieldDetails
+            ? `${errData.error}: ${fieldDetails}`
+            : errData.error || 'Failed to generate outline'
+        );
       }
 
       const data = await res.json();

@@ -9,13 +9,13 @@ import type { CourseOutline } from '@/types/authoring';
 export const maxDuration = 120;
 
 const requestSchema = z.object({
-  topic: z.string().min(3).max(500),
-  audience: z.string().min(3).max(200),
+  topic: z.string().min(1).max(500),
+  audience: z.string().min(1).max(500),
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
   language: z.enum(['ar', 'en']),
   tone: z.enum(['formal', 'conversational', 'academic']).default('formal'),
-  module_count: z.number().int().min(3).max(7).default(5),
-  lessons_per_module: z.number().int().min(2).max(5).default(3),
+  module_count: z.number().int().min(1).max(10).default(5),
+  lessons_per_module: z.number().int().min(1).max(7).default(3),
   source_chunks: z.string().optional(),
 });
 
