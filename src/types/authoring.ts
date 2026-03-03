@@ -529,6 +529,50 @@ export interface CourseTheme {
 // AI GENERATION TYPES
 // ============================================================
 
+export type CourseLength = 'micro' | 'short' | 'standard' | 'extended';
+
+/** AI-generated course details — produced from just a description in Step 2 */
+export interface CourseDetails {
+  topic: string;
+  tone: string;
+  audience: string;
+  goals: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  suggested_length: CourseLength;
+  learning_objectives: string[];
+}
+
+/** Content generation options selected in Step 5 */
+export interface ContentOptions {
+  content_format: 'interactive' | 'text_only';
+  generate_images: boolean;
+  assessment_density: 'per_lesson' | 'per_module' | 'none';
+}
+
+/** Course length → module/lesson mapping */
+export const COURSE_LENGTH_CONFIG: Record<CourseLength, { modules: number; lessonsPerModule: number; label: string; description: string; duration: string }> = {
+  micro: { modules: 1, lessonsPerModule: 2, label: 'Micro', description: '1 module, 2 lessons', duration: '< 10 min' },
+  short: { modules: 2, lessonsPerModule: 3, label: 'Short', description: '2 modules, ~6 lessons', duration: '< 1 hour' },
+  standard: { modules: 4, lessonsPerModule: 3, label: 'Standard', description: '4 modules, ~12 lessons', duration: '1-3 hours' },
+  extended: { modules: 6, lessonsPerModule: 4, label: 'Extended', description: '6+ modules, ~24 lessons', duration: '3+ hours' },
+};
+
+export interface CourseOutlineLesson {
+  title: string;
+  description: string;
+  order: number;
+  suggested_blocks: BlockType[];
+  estimated_duration_minutes: number;
+  topics: string[];                     // Key topics covered in this lesson
+}
+
+export interface CourseOutlineModule {
+  title: string;
+  description: string;
+  order: number;
+  lessons: CourseOutlineLesson[];
+}
+
 export interface CourseOutline {
   title: string;
   description: string;
@@ -536,18 +580,7 @@ export interface CourseOutline {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   language: 'ar' | 'en';
   estimated_duration_minutes: number;
-  modules: {
-    title: string;
-    description: string;
-    order: number;
-    lessons: {
-      title: string;
-      description: string;
-      order: number;
-      suggested_blocks: BlockType[];    // AI suggests which block types to use
-      estimated_duration_minutes: number;
-    }[];
-  }[];
+  modules: CourseOutlineModule[];
   learning_outcomes: string[];
 }
 

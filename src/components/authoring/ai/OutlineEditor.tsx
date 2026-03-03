@@ -80,6 +80,7 @@ export function OutlineEditor({
             order: 0,
             suggested_blocks: [BlockType.TEXT, BlockType.ACCORDION, BlockType.MULTIPLE_CHOICE],
             estimated_duration_minutes: 10,
+            topics: [],
           },
         ],
       });
@@ -112,6 +113,7 @@ export function OutlineEditor({
         order: lessons.length,
         suggested_blocks: [BlockType.TEXT, BlockType.ACCORDION, BlockType.MULTIPLE_CHOICE],
         estimated_duration_minutes: 10,
+        topics: [],
       });
       return next;
     });
