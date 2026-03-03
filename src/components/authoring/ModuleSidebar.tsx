@@ -7,6 +7,7 @@ import {
   Plus,
   X,
   FileText,
+  FolderOpen,
   Folder,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,6 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
     }
   }, [isEditing]);
 
-  // Keep editValue in sync when value changes externally
   useEffect(() => {
     if (!isEditing) {
       setEditValue(value);
@@ -74,7 +74,7 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
         onChange={(e) => setEditValue(e.target.value)}
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
-        className="h-6 px-1 py-0 text-xs"
+        className="h-6 px-1.5 py-0 text-xs border-primary/40 bg-primary/5 focus-visible:ring-primary/20"
       />
     );
   }
@@ -83,7 +83,7 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
     <span
       onDoubleClick={() => setIsEditing(true)}
       className={cn('cursor-default truncate select-none', className)}
-      title="Double-click to rename"
+      title={`${value} — Double-click to rename`}
     >
       {value}
     </span>
@@ -107,16 +107,10 @@ export function ModuleSidebar() {
   const selectModule = useEditorStore((s) => s.selectModule);
   const selectLesson = useEditorStore((s) => s.selectLesson);
 
-  // Track which modules are expanded/collapsed
   const [expandedModules, setExpandedModules] = useState<Set<string>>(
     () => new Set(modules.map((m) => m.id)),
   );
 
-  // Track which item is being hovered for showing delete button
-  const [hoveredModuleId, setHoveredModuleId] = useState<string | null>(null);
-  const [hoveredLessonId, setHoveredLessonId] = useState<string | null>(null);
-
-  // Auto-expand newly added modules
   useEffect(() => {
     setExpandedModules((prev) => {
       const next = new Set(prev);
@@ -191,119 +185,141 @@ export function ModuleSidebar() {
   );
 
   return (
-    <div className="flex h-full w-64 flex-col border-e border-border bg-muted/30">
+    <div className="flex h-full w-72 flex-col border-e border-border/60 bg-muted/20">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border px-3 py-3">
-        <h2 className="text-sm font-semibold text-foreground">
+      <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
+        <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
           Course Structure
         </h2>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleAddModule}
-          className="h-7 gap-1 px-2 text-xs"
+          className="h-7 gap-1 px-2 text-xs text-primary hover:text-primary hover:bg-primary/10"
         >
           <Plus className="h-3.5 w-3.5" />
-          Add Module
+          Module
         </Button>
       </div>
 
       {/* Module Tree */}
       <ScrollArea className="flex-1">
-        <div className="p-2">
+        <div className="p-2.5 space-y-1">
           {modules.length === 0 && (
-            <div className="px-3 py-8 text-center text-xs text-muted-foreground">
-              No modules yet. Click &quot;Add Module&quot; to get started.
+            <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/5 border border-primary/10">
+                <FolderOpen className="h-5 w-5 text-primary/50" />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                No modules yet.
+              </p>
+              <button
+                onClick={handleAddModule}
+                className="mt-2 text-xs font-medium text-primary hover:underline"
+              >
+                Create your first module
+              </button>
             </div>
           )}
 
           {modules.map((module) => {
             const isExpanded = expandedModules.has(module.id);
-            const isModuleHovered = hoveredModuleId === module.id;
+            const isModuleSelected =
+              selectedModuleId === module.id && !selectedLessonId;
+            const lessonCount = module.lessons.length;
 
             return (
-              <div key={module.id} className="mb-1">
+              <div key={module.id}>
                 {/* Module Row */}
                 <div
                   className={cn(
-                    'group flex items-center gap-1 rounded-md px-2 py-1.5 text-sm transition-colors',
-                    'hover:bg-muted cursor-pointer',
-                    selectedModuleId === module.id &&
-                      !selectedLessonId &&
-                      'bg-primary/10 text-primary',
+                    'group/mod flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm transition-all duration-150 cursor-pointer',
+                    isModuleSelected
+                      ? 'bg-primary/10 text-primary'
+                      : 'hover:bg-muted text-foreground',
                   )}
                   onClick={() => toggleModuleExpanded(module.id)}
-                  onMouseEnter={() => setHoveredModuleId(module.id)}
-                  onMouseLeave={() => setHoveredModuleId(null)}
                 >
-                  {/* Expand/Collapse chevron */}
-                  {isExpanded ? (
-                    <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                  ) : (
-                    <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                  )}
-
-                  {/* Folder icon */}
-                  <Folder className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-
-                  {/* Order number */}
-                  <span className="shrink-0 text-xs text-muted-foreground">
-                    {module.order + 1}.
+                  {/* Expand chevron */}
+                  <span className="shrink-0 text-muted-foreground">
+                    {isExpanded ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
                   </span>
 
-                  {/* Module title (inline editable) */}
+                  {/* Folder icon */}
+                  {isExpanded ? (
+                    <FolderOpen className="h-4 w-4 shrink-0 text-primary/60" />
+                  ) : (
+                    <Folder className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  )}
+
+                  {/* Module title */}
                   <InlineEdit
                     value={module.title}
                     onSave={(newTitle) =>
                       handleModuleRename(module.id, newTitle)
                     }
-                    className="flex-1 text-sm"
+                    className="flex-1 text-sm font-medium"
                   />
 
-                  {/* Delete button (visible on hover) */}
-                  {isModuleHovered && (
-                    <button
-                      onClick={(e) => handleDeleteModule(e, module.id)}
-                      className="shrink-0 rounded p-0.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                      title="Delete module"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  )}
+                  {/* Lesson count badge */}
+                  <span
+                    className={cn(
+                      'shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium tabular-nums transition-colors',
+                      isModuleSelected
+                        ? 'bg-primary/20 text-primary'
+                        : 'bg-muted text-muted-foreground',
+                    )}
+                  >
+                    {lessonCount}
+                  </span>
+
+                  {/* Delete button */}
+                  <button
+                    onClick={(e) => handleDeleteModule(e, module.id)}
+                    className="shrink-0 rounded-md p-1 text-muted-foreground transition-all opacity-0 group-hover/mod:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                    title="Delete module"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
                 </div>
 
-                {/* Lessons (visible when module is expanded) */}
+                {/* Lessons */}
                 {isExpanded && (
-                  <div className="ms-4 mt-0.5 border-s border-border ps-2">
+                  <div className="ms-4 mt-0.5 border-s-2 border-border/40 ps-2 space-y-0.5">
                     {module.lessons.map((lesson) => {
                       const isSelected =
                         selectedModuleId === module.id &&
                         selectedLessonId === lesson.id;
-                      const isLessonHovered = hoveredLessonId === lesson.id;
+                      const blockCount = lesson.blocks?.length ?? 0;
 
                       return (
                         <div
                           key={lesson.id}
                           className={cn(
-                            'group flex items-center gap-1.5 rounded-md px-2 py-1 text-sm transition-colors',
-                            'hover:bg-muted cursor-pointer',
-                            isSelected && 'bg-primary/10 text-primary',
+                            'group/lesson flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-all duration-150 cursor-pointer',
+                            isSelected
+                              ? 'bg-primary/10 text-primary font-medium'
+                              : 'hover:bg-muted text-foreground/80',
                           )}
                           onClick={() =>
                             handleLessonClick(module.id, lesson.id)
                           }
-                          onMouseEnter={() => setHoveredLessonId(lesson.id)}
-                          onMouseLeave={() => setHoveredLessonId(null)}
                         >
                           {/* Lesson icon */}
-                          <FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                          <FileText
+                            className={cn(
+                              'h-3.5 w-3.5 shrink-0',
+                              isSelected
+                                ? 'text-primary'
+                                : 'text-muted-foreground',
+                            )}
+                          />
 
-                          {/* Order number */}
-                          <span className="shrink-0 text-xs text-muted-foreground">
-                            {lesson.order + 1}.
-                          </span>
-
-                          {/* Lesson title (inline editable) */}
+                          {/* Lesson title */}
                           <InlineEdit
                             value={lesson.title}
                             onSave={(newTitle) =>
@@ -316,31 +332,36 @@ export function ModuleSidebar() {
                             className="flex-1 text-xs"
                           />
 
+                          {/* Block count */}
+                          {blockCount > 0 && (
+                            <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
+                              {blockCount}
+                            </span>
+                          )}
+
                           {/* Selected indicator */}
                           {isSelected && (
                             <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
                           )}
 
-                          {/* Delete button (visible on hover) */}
-                          {isLessonHovered && (
-                            <button
-                              onClick={(e) =>
-                                handleDeleteLesson(e, module.id, lesson.id)
-                              }
-                              className="shrink-0 rounded p-0.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                              title="Delete lesson"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          )}
+                          {/* Delete */}
+                          <button
+                            onClick={(e) =>
+                              handleDeleteLesson(e, module.id, lesson.id)
+                            }
+                            className="shrink-0 rounded-md p-0.5 text-muted-foreground transition-all opacity-0 group-hover/lesson:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                            title="Delete lesson"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
                         </div>
                       );
                     })}
 
-                    {/* Add Lesson button */}
+                    {/* Add Lesson */}
                     <button
                       onClick={() => handleAddLesson(module.id)}
-                      className="mt-0.5 flex w-full items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground transition-all hover:bg-primary/5 hover:text-primary"
                     >
                       <Plus className="h-3 w-3" />
                       Add Lesson
