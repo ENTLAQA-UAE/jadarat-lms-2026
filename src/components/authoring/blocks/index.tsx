@@ -34,6 +34,9 @@ import { EmbedBlockEditor } from './EmbedBlock';
 import { QuoteBlockEditor } from './QuoteBlock';
 import { ListBlockEditor } from './ListBlock';
 
+// Phase 5 block editors -- Content
+import { CalloutBlockEditor } from './CalloutBlock';
+
 // Phase 5 block editors -- Advanced
 import { ScenarioBlockEditor } from './ScenarioBlock';
 import { HotspotBlockEditor } from './HotspotBlock';
@@ -71,6 +74,7 @@ export {
   ChartBlockEditor,
   TableBlockEditor,
   CodeBlockEditor,
+  CalloutBlockEditor,
 };
 
 // Unified BlockEditor that switches on block.type
@@ -149,6 +153,8 @@ export function BlockEditor({
       return <TableBlockEditor block={block} onChange={onChange} />;
     case BlockType.CODE:
       return <CodeBlockEditor block={block} onChange={onChange} />;
+    case BlockType.CALLOUT:
+      return <CalloutBlockEditor block={block} onChange={onChange} />;
 
     default:
       return (

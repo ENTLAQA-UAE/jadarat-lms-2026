@@ -28,6 +28,7 @@ export enum BlockType {
   COVER = 'cover',
   GALLERY = 'gallery',
   CHART = 'chart',
+  CALLOUT = 'callout',
 
   // Interactive blocks
   ACCORDION = 'accordion',
@@ -442,6 +443,17 @@ export interface SortingBlock extends BaseBlock {
   };
 }
 
+export interface CalloutBlock extends BaseBlock {
+  type: BlockType.CALLOUT;
+  data: {
+    variant: 'info' | 'warning' | 'success' | 'error';
+    title: string;
+    content: string;                   // HTML content
+    icon?: string;                     // optional custom emoji/icon
+    collapsible: boolean;
+  };
+}
+
 // ============================================================
 // DISCRIMINATED UNION -- the master Block type
 // ============================================================
@@ -473,7 +485,8 @@ export type Block =
   | MultipleResponseBlock
   | FillInBlankBlock
   | MatchingBlock
-  | SortingBlock;
+  | SortingBlock
+  | CalloutBlock;
 
 // ============================================================
 // COURSE STRUCTURE

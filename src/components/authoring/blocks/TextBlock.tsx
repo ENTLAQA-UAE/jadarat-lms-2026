@@ -2,10 +2,8 @@
 
 import {
   type TextBlock,
-  type BlockType,
 } from '@/types/authoring';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -14,8 +12,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { AlignLeft } from 'lucide-react';
 import { InlineAIToolbar } from '@/components/authoring/ai/InlineAIToolbar';
+import { TiptapEditor } from './TiptapEditor';
 
 interface TextBlockEditorProps {
   block: TextBlock;
@@ -40,51 +39,19 @@ export function TextBlockEditor({ block, onChange }: TextBlockEditorProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Content editor - simple textarea placeholder for Tiptap */}
+        {/* Tiptap rich text editor */}
         <div className="space-y-2">
-          <Label htmlFor={`text-content-${block.id}`}>Content</Label>
-          <Textarea
-            id={`text-content-${block.id}`}
-            value={data.content}
-            onChange={(e) => onChange({ content: e.target.value })}
-            placeholder="Enter text content... (Rich text editor will be integrated later)"
-            className="min-h-[160px] resize-y"
-            dir={data.direction === 'auto' ? undefined : data.direction}
+          <Label>Content</Label>
+          <TiptapEditor
+            content={data.content}
+            onChange={(html) => onChange({ content: html })}
+            direction={data.direction}
+            placeholder="Start writing your lesson content..."
           />
-          <p className="text-xs text-muted-foreground">
-            Tiptap rich text editor will replace this textarea in a future update.
-          </p>
         </div>
 
-        {/* Alignment and Direction controls */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Alignment */}
-          <div className="space-y-2">
-            <Label>Alignment</Label>
-            <div className="flex gap-1">
-              {([
-                { value: 'start', icon: AlignLeft, label: 'Start' },
-                { value: 'center', icon: AlignCenter, label: 'Center' },
-                { value: 'end', icon: AlignRight, label: 'End' },
-              ] as const).map(({ value, icon: Icon, label }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => onChange({ alignment: value })}
-                  className={`flex h-9 w-9 items-center justify-center rounded-md border transition-colors ${
-                    data.alignment === value
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border bg-background text-muted-foreground hover:bg-muted'
-                  }`}
-                  title={label}
-                >
-                  <Icon className="h-4 w-4" />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Direction */}
+        {/* Direction control */}
+        <div className="max-w-[200px]">
           <div className="space-y-2">
             <Label>Direction</Label>
             <Select

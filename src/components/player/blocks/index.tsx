@@ -33,6 +33,9 @@ import { EmbedRenderer } from './EmbedRenderer';
 import { QuoteRenderer } from './QuoteRenderer';
 import { ListRenderer } from './ListRenderer';
 
+// Phase 5 renderers -- Content
+import { CalloutRenderer } from './CalloutRenderer';
+
 // Phase 5 renderers -- Advanced
 import { ScenarioRenderer } from './ScenarioRenderer';
 import { HotspotRenderer } from './HotspotRenderer';
@@ -331,6 +334,14 @@ export function BlockRenderer({
           block={block}
           progress={progress}
           onComplete={(score, data) => onComplete(score, data)}
+          theme={theme}
+        />
+      );
+
+    case BlockType.CALLOUT:
+      return (
+        <CalloutRenderer
+          block={block}
           theme={theme}
         />
       );

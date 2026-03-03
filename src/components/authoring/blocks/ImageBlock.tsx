@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { type ImageBlock } from '@/types/authoring';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -12,8 +13,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlignLeft, AlignCenter, AlignRight, ImageIcon, Upload } from 'lucide-react';
+import {
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  ImageIcon,
+  Upload,
+  Loader2,
+  Trash2,
+} from 'lucide-react';
 import { AIImageGenerator } from '@/components/authoring/ai/AIImageGenerator';
+import { useImageUpload } from './useImageUpload';
 
 interface ImageBlockEditorProps {
   block: ImageBlock;
@@ -23,6 +33,18 @@ interface ImageBlockEditorProps {
 export function ImageBlockEditor({ block, onChange }: ImageBlockEditorProps) {
   const { data } = block;
   const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploading, uploadFile } = useImageUpload();
+
+  const handleFile = useCallback(
+    async (file: File) => {
+      const url = await uploadFile(file);
+      if (url) {
+        onChange({ src: url });
+      }
+    },
+    [uploadFile, onChange]
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -44,13 +66,19 @@ export function ImageBlockEditor({ block, onChange }: ImageBlockEditorProps) {
 
       const files = Array.from(e.dataTransfer.files);
       const imageFile = files.find((f) => f.type.startsWith('image/'));
-      if (imageFile) {
-        // Create a local preview URL for the dropped image
-        const previewUrl = URL.createObjectURL(imageFile);
-        onChange({ src: previewUrl });
-      }
+      if (imageFile) handleFile(imageFile);
     },
-    [onChange]
+    [handleFile]
+  );
+
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) handleFile(file);
+      // Reset the input so the same file can be re-selected
+      e.target.value = '';
+    },
+    [handleFile]
   );
 
   const widthOptions = [
@@ -88,25 +116,57 @@ export function ImageBlockEditor({ block, onChange }: ImageBlockEditorProps) {
                 : 'border-border bg-muted/30'
           }`}
         >
-          {data.src ? (
-            <div className="w-full p-2">
+          {uploading ? (
+            <div className="flex flex-col items-center gap-2 p-6 text-muted-foreground">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm font-medium">Uploading image...</p>
+            </div>
+          ) : data.src ? (
+            <div className="relative w-full p-2 group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={data.src}
                 alt={data.alt || 'Preview'}
                 className="mx-auto max-h-[300px] rounded-md object-contain"
               />
+              <Button
+                variant="destructive"
+                size="icon"
+                className="absolute top-4 right-4 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => onChange({ src: '' })}
+                title="Remove image"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 p-6 text-muted-foreground">
               <Upload className="h-8 w-8" />
               <p className="text-sm font-medium">Drop an image here</p>
-              <p className="text-xs">or enter an image URL below</p>
+              <p className="text-xs">or</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="h-3.5 w-3.5 mr-1.5" />
+                Browse files
+              </Button>
+              <p className="text-xs text-muted-foreground mt-1">
+                PNG, JPG, GIF, WebP up to 10 MB
+              </p>
             </div>
           )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
         </div>
 
-        {/* Image URL */}
+        {/* Image URL (alternative) */}
         <div className="space-y-2">
           <Label htmlFor={`image-src-${block.id}`}>Image URL</Label>
           <Input
@@ -117,7 +177,7 @@ export function ImageBlockEditor({ block, onChange }: ImageBlockEditorProps) {
             type="url"
           />
           <p className="text-xs text-muted-foreground">
-            Paste a URL, drop an image, or use &quot;Generate with AI&quot; above.
+            Upload a file, paste a URL, or use &quot;Generate with AI&quot;.
           </p>
         </div>
 
