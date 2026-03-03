@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -19,14 +20,21 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
+  Download,
+  FileText,
   GripVertical,
   Plus,
   Sparkles,
   Trash2,
   X,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { BlockType } from '@/types/authoring';
-import type { CourseOutline, CourseOutlineLesson } from '@/types/authoring';
+import type {
+  CourseOutline,
+  CourseOutlineLesson,
+  CourseOutlineModule,
+} from '@/types/authoring';
 import { cn } from '@/lib/utils';
 
 interface StepOutlineEditorProps {
@@ -36,17 +44,25 @@ interface StepOutlineEditorProps {
   onBack: () => void;
 }
 
+type Selection =
+  | { type: 'module'; moduleIndex: number }
+  | { type: 'lesson'; moduleIndex: number; lessonIndex: number };
+
 export function StepOutlineEditor({
   outline,
   onChange,
   onNext,
   onBack,
 }: StepOutlineEditorProps) {
-  const [selectedModuleIndex, setSelectedModuleIndex] = useState(0);
-  const [selectedLessonIndex, setSelectedLessonIndex] = useState(0);
+  const [selection, setSelection] = useState<Selection>({
+    type: 'lesson',
+    moduleIndex: 0,
+    lessonIndex: 0,
+  });
   const [expandedModules, setExpandedModules] = useState<Set<number>>(
     new Set(outline.modules.map((_, i) => i))
   );
+  const [isExporting, setIsExporting] = useState(false);
 
   const toggleModule = (index: number) => {
     setExpandedModules((prev) => {
@@ -57,15 +73,28 @@ export function StepOutlineEditor({
     });
   };
 
-  const selectLesson = (moduleIndex: number, lessonIndex: number) => {
-    setSelectedModuleIndex(moduleIndex);
-    setSelectedLessonIndex(lessonIndex);
+  const selectModule = (moduleIndex: number) => {
+    setSelection({ type: 'module', moduleIndex });
   };
 
-  const selectedLesson: CourseOutlineLesson | null =
-    outline.modules[selectedModuleIndex]?.lessons[selectedLessonIndex] ?? null;
+  const selectLesson = (moduleIndex: number, lessonIndex: number) => {
+    setSelection({ type: 'lesson', moduleIndex, lessonIndex });
+  };
 
-  // Mutation helpers
+  const selectedModuleIndex = selection.moduleIndex;
+  const selectedLessonIndex =
+    selection.type === 'lesson' ? selection.lessonIndex : -1;
+
+  const selectedModule: CourseOutlineModule | null =
+    outline.modules[selectedModuleIndex] ?? null;
+  const selectedLesson: CourseOutlineLesson | null =
+    selection.type === 'lesson'
+      ? outline.modules[selectedModuleIndex]?.lessons[selectedLessonIndex] ??
+        null
+      : null;
+
+  // ── Mutation helpers ─────────────────────────────────────
+
   const updateOutline = (mutator: (draft: CourseOutline) => void) => {
     const draft = structuredClone(outline);
     mutator(draft);
@@ -75,6 +104,12 @@ export function StepOutlineEditor({
   const updateModuleTitle = (mi: number, title: string) => {
     updateOutline((d) => {
       d.modules[mi].title = title;
+    });
+  };
+
+  const updateModuleDescription = (mi: number, description: string) => {
+    updateOutline((d) => {
+      d.modules[mi].description = description;
     });
   };
 
@@ -142,8 +177,7 @@ export function StepOutlineEditor({
         next.add(newIndex);
         return next;
       });
-      setSelectedModuleIndex(newIndex);
-      setSelectedLessonIndex(0);
+      setSelection({ type: 'module', moduleIndex: newIndex });
     });
   };
 
@@ -153,19 +187,18 @@ export function StepOutlineEditor({
       d.modules.splice(mi, 1);
       d.modules.forEach((m, i) => (m.order = i));
     });
-    if (selectedModuleIndex >= outline.modules.length - 1) {
-      setSelectedModuleIndex(Math.max(0, outline.modules.length - 2));
-      setSelectedLessonIndex(0);
-    }
+    const newMi = Math.max(0, mi - 1);
+    setSelection({ type: 'module', moduleIndex: newMi });
   };
 
-  const addLesson = (mi: number) => {
+  const addBlankLesson = (mi: number) => {
     updateOutline((d) => {
       const lessons = d.modules[mi].lessons;
+      const newLi = lessons.length;
       lessons.push({
         title: 'New Lesson',
         description: '',
-        order: lessons.length,
+        order: newLi,
         suggested_blocks: [
           BlockType.TEXT,
           BlockType.ACCORDION,
@@ -175,6 +208,20 @@ export function StepOutlineEditor({
         topics: [],
       });
     });
+    setSelection({
+      type: 'lesson',
+      moduleIndex: mi,
+      lessonIndex: outline.modules[mi].lessons.length,
+    });
+  };
+
+  const addAILesson = async (mi: number) => {
+    // For now, add a blank lesson with a placeholder — AI generation will be wired later
+    addBlankLesson(mi);
+    toast.info('AI lesson generation coming soon', {
+      description:
+        'For now, a blank lesson was added. You can edit it manually.',
+    });
   };
 
   const deleteLesson = (mi: number, li: number) => {
@@ -183,15 +230,38 @@ export function StepOutlineEditor({
       d.modules[mi].lessons.splice(li, 1);
       d.modules[mi].lessons.forEach((l, i) => (l.order = i));
     });
-    if (
-      selectedModuleIndex === mi &&
-      selectedLessonIndex >= outline.modules[mi].lessons.length - 1
-    ) {
-      setSelectedLessonIndex(
-        Math.max(0, outline.modules[mi].lessons.length - 2)
-      );
+    const newLi = Math.max(0, li - 1);
+    setSelection({ type: 'lesson', moduleIndex: mi, lessonIndex: newLi });
+  };
+
+  // ── PDF Export ───────────────────────────────────────────
+
+  const exportPDF = async () => {
+    setIsExporting(true);
+    try {
+      const content = buildExportContent(outline);
+      const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+
+      // Open in new window and trigger print (save as PDF)
+      const printWindow = window.open(url, '_blank');
+      if (printWindow) {
+        printWindow.onload = () => {
+          printWindow.print();
+        };
+      }
+
+      toast.success('PDF export ready', {
+        description: 'Use your browser print dialog to save as PDF.',
+      });
+    } catch {
+      toast.error('Export failed');
+    } finally {
+      setIsExporting(false);
     }
   };
+
+  // ── Computed values ──────────────────────────────────────
 
   const totalLessons = outline.modules.reduce(
     (s, m) => s + m.lessons.length,
@@ -201,7 +271,7 @@ export function StepOutlineEditor({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
           <h2 className="text-xl font-semibold">
             Your course is coming together!
@@ -211,27 +281,52 @@ export function StepOutlineEditor({
             refine it before generating lessons.
           </p>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-1.5 shrink-0">
-              <Sparkles className="h-3.5 w-3.5" />
-              Edit with AI
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem disabled>
-              <Sparkles className="h-4 w-4 mr-2" />
-              Restructure outline (coming soon)
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Export dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Download className="h-3.5 w-3.5" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportPDF} disabled={isExporting}>
+                <FileText className="h-4 w-4 mr-2" />
+                Export as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Edit with AI dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" />
+                Edit with AI
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem disabled>
+                <Sparkles className="h-4 w-4 mr-2" />
+                Restructure outline (coming soon)
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <Sparkles className="h-4 w-4 mr-2" />
+                Add more detail (coming soon)
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>
+                <Sparkles className="h-4 w-4 mr-2" />
+                Simplify outline (coming soon)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Summary badges */}
       <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary">
-          {outline.modules.length} Modules
-        </Badge>
+        <Badge variant="secondary">{outline.modules.length} Modules</Badge>
         <Badge variant="secondary">{totalLessons} Lessons</Badge>
         <Badge variant="secondary">
           <Clock className="h-3 w-3 mr-1" />~
@@ -245,7 +340,7 @@ export function StepOutlineEditor({
 
       {/* Split panel */}
       <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4 min-h-[400px]">
-        {/* LEFT SIDEBAR — Module/Lesson tree */}
+        {/* ── LEFT SIDEBAR — Module/Lesson tree ── */}
         <Card className="overflow-hidden">
           <CardHeader className="py-3 px-4">
             <CardTitle className="text-sm flex items-center gap-1.5">
@@ -256,11 +351,20 @@ export function StepOutlineEditor({
           <CardContent className="p-0">
             <div className="max-h-[450px] overflow-y-auto">
               {outline.modules.map((mod, mi) => (
-                <div key={mi}>
+                <div key={mi} className="group/module">
                   {/* Module header */}
                   <div
-                    className="flex items-center gap-1.5 px-3 py-2 bg-muted/30 border-b cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => toggleModule(mi)}
+                    className={cn(
+                      'flex items-center gap-1.5 px-3 py-2 border-b cursor-pointer transition-colors',
+                      selection.type === 'module' &&
+                        selectedModuleIndex === mi
+                        ? 'bg-primary/5 border-l-2 border-l-primary'
+                        : 'bg-muted/30 hover:bg-muted/50'
+                    )}
+                    onClick={() => {
+                      toggleModule(mi);
+                      selectModule(mi);
+                    }}
                   >
                     <GripVertical className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
                     {expandedModules.has(mi) ? (
@@ -280,7 +384,7 @@ export function StepOutlineEditor({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-5 w-5 shrink-0 text-destructive opacity-0 group-hover:opacity-100"
+                      className="h-5 w-5 shrink-0 text-destructive opacity-0 group-hover/module:opacity-100"
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteModule(mi);
@@ -296,6 +400,7 @@ export function StepOutlineEditor({
                     <div>
                       {mod.lessons.map((les, li) => {
                         const isActive =
+                          selection.type === 'lesson' &&
                           selectedModuleIndex === mi &&
                           selectedLessonIndex === li;
                         return (
@@ -319,14 +424,26 @@ export function StepOutlineEditor({
                           </button>
                         );
                       })}
-                      <button
-                        type="button"
-                        onClick={() => addLesson(mi)}
-                        className="w-full flex items-center gap-1 px-4 pl-8 py-2 text-xs text-muted-foreground hover:text-primary transition-colors border-b"
-                      >
-                        <Plus className="h-3 w-3" />
-                        Add lesson
-                      </button>
+
+                      {/* Add lesson options */}
+                      <div className="flex items-center border-b">
+                        <button
+                          type="button"
+                          onClick={() => addBlankLesson(mi)}
+                          className="flex-1 flex items-center gap-1 px-4 pl-8 py-2 text-xs text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <Plus className="h-3 w-3" />
+                          Blank lesson
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => addAILesson(mi)}
+                          className="flex items-center gap-1 px-3 py-2 text-xs text-muted-foreground hover:text-primary transition-colors border-s"
+                        >
+                          <Sparkles className="h-3 w-3" />
+                          Add with AI
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -348,11 +465,145 @@ export function StepOutlineEditor({
           </CardContent>
         </Card>
 
-        {/* RIGHT PANEL — Selected lesson details */}
+        {/* ── RIGHT PANEL — Selected item details ── */}
         <Card>
           <CardContent className="pt-6">
-            {selectedLesson ? (
+            {/* Module detail view */}
+            {selection.type === 'module' && selectedModule ? (
               <div className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                    Module Details
+                  </h3>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1.5 text-xs"
+                      >
+                        <Sparkles className="h-3 w-3" />
+                        Edit with AI
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem disabled>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Expand module (coming soon)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem disabled>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Add lessons with AI (coming soon)
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Module title */}
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground">
+                    Module Title
+                  </Label>
+                  <Input
+                    value={selectedModule.title}
+                    onChange={(e) =>
+                      updateModuleTitle(selectedModuleIndex, e.target.value)
+                    }
+                    className="text-base font-medium"
+                  />
+                </div>
+
+                {/* Module description */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-muted-foreground">
+                      Description
+                    </Label>
+                    <span className="text-[10px] text-muted-foreground">
+                      {(selectedModule.description || '').length}/300
+                    </span>
+                  </div>
+                  <Textarea
+                    value={selectedModule.description}
+                    onChange={(e) =>
+                      updateModuleDescription(
+                        selectedModuleIndex,
+                        e.target.value
+                      )
+                    }
+                    rows={4}
+                    className="resize-none text-sm"
+                    placeholder="Brief description of what this module covers..."
+                    maxLength={300}
+                  />
+                </div>
+
+                {/* Module stats */}
+                <div className="flex gap-3 pt-2 border-t">
+                  <div className="text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">
+                      {selectedModule.lessons.length}
+                    </span>{' '}
+                    lessons
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">
+                      {selectedModule.lessons.reduce(
+                        (s, l) => s + l.estimated_duration_minutes,
+                        0
+                      )}
+                    </span>{' '}
+                    min total
+                  </div>
+                </div>
+
+                {/* Delete module */}
+                <div className="pt-2 border-t">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive text-xs"
+                    onClick={() => deleteModule(selectedModuleIndex)}
+                    disabled={outline.modules.length <= 1}
+                  >
+                    <Trash2 className="h-3 w-3 mr-1" />
+                    Delete this module
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Lesson detail view */}
+            {selection.type === 'lesson' && selectedLesson ? (
+              <div className="space-y-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                    Lesson Details
+                  </h3>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1.5 text-xs"
+                      >
+                        <Sparkles className="h-3 w-3" />
+                        Edit with AI
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem disabled>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Rewrite description (coming soon)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem disabled>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Suggest topics (coming soon)
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
                 {/* Lesson title */}
                 <div className="space-y-2">
                   <Label className="text-xs text-muted-foreground">
@@ -496,9 +747,12 @@ export function StepOutlineEditor({
                   </Button>
                 </div>
               </div>
-            ) : (
+            ) : null}
+
+            {/* Empty state */}
+            {!selectedModule && !selectedLesson && (
               <div className="flex items-center justify-center h-48 text-sm text-muted-foreground">
-                Select a lesson from the outline to edit its details.
+                Select a module or lesson from the outline to edit its details.
               </div>
             )}
           </CardContent>
@@ -520,7 +774,10 @@ export function StepOutlineEditor({
   );
 }
 
-// Re-exported for the Input label reference
+// ══════════════════════════════════════════════════════════════
+// Internal Label component
+// ══════════════════════════════════════════════════════════════
+
 function Label({
   className,
   children,
@@ -531,4 +788,93 @@ function Label({
       {children}
     </label>
   );
+}
+
+// ══════════════════════════════════════════════════════════════
+// PDF Export — builds an HTML document for browser print-to-PDF
+// ══════════════════════════════════════════════════════════════
+
+function buildExportContent(outline: CourseOutline): string {
+  const today = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const modulesHTML = outline.modules
+    .map(
+      (mod, mi) => `
+    <div class="module">
+      <h2>Module ${mi + 1}: ${escapeHtml(mod.title)}</h2>
+      ${mod.description ? `<p class="desc">${escapeHtml(mod.description)}</p>` : ''}
+      ${mod.lessons
+        .map(
+          (les, li) => `
+        <div class="lesson">
+          <h3>Lesson ${mi + 1}.${li + 1}: ${escapeHtml(les.title)}</h3>
+          ${les.description ? `<p class="desc">${escapeHtml(les.description)}</p>` : ''}
+          ${les.estimated_duration_minutes ? `<p class="meta">Duration: ~${les.estimated_duration_minutes} minutes</p>` : ''}
+          ${
+            les.topics && les.topics.length > 0
+              ? `<ul>${les.topics.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
+              : ''
+          }
+        </div>`
+        )
+        .join('')}
+    </div>`
+    )
+    .join('');
+
+  const objectivesHTML =
+    outline.learning_outcomes && outline.learning_outcomes.length > 0
+      ? `<div class="section"><h2>Learning Objectives</h2><ol>${outline.learning_outcomes.map((o) => `<li>${escapeHtml(o)}</li>`).join('')}</ol></div>`
+      : '';
+
+  return `<!DOCTYPE html>
+<html lang="${outline.language}">
+<head>
+  <meta charset="UTF-8" />
+  <title>${escapeHtml(outline.title)} — Course Outline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1f2937; padding: 40px; max-width: 800px; margin: 0 auto; font-size: 14px; line-height: 1.6; }
+    h1 { font-size: 24px; margin-bottom: 8px; color: #111827; }
+    h2 { font-size: 18px; margin: 24px 0 8px; color: #1a73e8; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
+    h3 { font-size: 15px; margin: 16px 0 4px; color: #374151; }
+    .meta-header { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0 16px; color: #6b7280; font-size: 13px; }
+    .meta-header span { background: #f3f4f6; padding: 2px 8px; border-radius: 4px; }
+    .desc { color: #4b5563; margin: 4px 0 8px; }
+    .meta { color: #6b7280; font-size: 13px; font-style: italic; }
+    .module { margin-bottom: 24px; }
+    .lesson { margin-left: 20px; margin-bottom: 12px; }
+    ul, ol { margin: 8px 0 8px 24px; }
+    li { margin-bottom: 2px; }
+    .section { margin-bottom: 24px; }
+    .footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 12px; text-align: center; }
+    @media print { body { padding: 20px; } .footer { position: fixed; bottom: 20px; left: 0; right: 0; } }
+  </style>
+</head>
+<body>
+  <h1>${escapeHtml(outline.title)}</h1>
+  ${outline.description ? `<p class="desc">${escapeHtml(outline.description)}</p>` : ''}
+  <div class="meta-header">
+    <span>Language: ${outline.language === 'ar' ? 'Arabic' : 'English'}</span>
+    <span>Difficulty: ${outline.difficulty}</span>
+    <span>Duration: ~${outline.estimated_duration_minutes} min</span>
+    <span>${outline.modules.length} modules, ${outline.modules.reduce((s, m) => s + m.lessons.length, 0)} lessons</span>
+  </div>
+  ${objectivesHTML}
+  ${modulesHTML}
+  <div class="footer">Generated by Jadarat LMS AI &mdash; ${today}</div>
+</body>
+</html>`;
+}
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
