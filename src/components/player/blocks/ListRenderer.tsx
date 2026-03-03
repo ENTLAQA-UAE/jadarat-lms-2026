@@ -41,7 +41,7 @@ export function ListRenderer({
           {/* Bullet / Number / Icon */}
           <span
             className="mt-0.5 shrink-0 font-semibold text-sm"
-            style={{ color: theme.primary_color }}
+            style={{ color: 'var(--player-primary)' }}
           >
             {style === 'bullet' && (
               <span className="text-lg leading-none">&bull;</span>

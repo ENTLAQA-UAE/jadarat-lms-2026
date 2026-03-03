@@ -34,7 +34,8 @@ export function TextRenderer({
       dir={textDirection}
       style={{
         textAlign: block.data.alignment,
-        fontFamily: theme.font_family,
+        fontFamily: 'var(--player-font)',
+        color: 'var(--player-text)',
       }}
       dangerouslySetInnerHTML={{ __html: block.data.content }}
     />

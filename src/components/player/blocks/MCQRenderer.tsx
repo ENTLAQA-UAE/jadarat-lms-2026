@@ -18,6 +18,7 @@ export function MCQRenderer({
   block,
   progress,
   onComplete,
+  theme,
 }: MCQRendererProps) {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(
     (progress?.response_data as Record<string, unknown>)?.selected_option_id as string | null
@@ -61,9 +62,17 @@ export function MCQRenderer({
   };
 
   return (
-    <div className="border rounded-lg p-6 space-y-4">
+    <div
+      className="border rounded-lg p-6 space-y-4"
+      style={{
+        borderRadius: 'var(--player-radius)',
+        fontFamily: 'var(--player-font)',
+      }}
+    >
       {/* Question */}
-      <h3 className="font-medium text-lg">{block.data.question}</h3>
+      <h3 className="font-medium text-lg" style={{ color: 'var(--player-text)' }}>
+        {block.data.question}
+      </h3>
 
       {/* Options */}
       <div className="space-y-2">
@@ -78,34 +87,46 @@ export function MCQRenderer({
               className={cn(
                 'w-full flex items-start gap-3 p-3 rounded-lg border text-start transition-colors',
                 !submitted && 'hover:bg-accent/50 cursor-pointer',
-                isSelected && !submitted && 'border-primary bg-primary/5',
                 submitted && option.is_correct && 'border-green-500 bg-green-50 dark:bg-green-950/20',
                 submitted && isSelected && !option.is_correct && 'border-red-500 bg-red-50 dark:bg-red-950/20',
                 submitted && !isSelected && !option.is_correct && 'opacity-60'
               )}
+              style={
+                isSelected && !submitted
+                  ? {
+                      borderColor: 'var(--player-primary)',
+                      backgroundColor: 'color-mix(in srgb, var(--player-primary) 5%, transparent)',
+                    }
+                  : undefined
+              }
               onClick={() => !submitted && setSelectedOptionId(option.id)}
             >
               {/* Radio circle */}
               <div
                 className={cn(
                   'w-5 h-5 rounded-full border-2 mt-0.5 shrink-0 flex items-center justify-center',
-                  isSelected
-                    ? 'border-primary'
-                    : 'border-muted-foreground/40',
+                  !isSelected && 'border-muted-foreground/40',
                   submitted && option.is_correct && 'border-green-500',
                   submitted && isSelected && !option.is_correct && 'border-red-500'
                 )}
+                style={
+                  isSelected && !submitted
+                    ? { borderColor: 'var(--player-primary)' }
+                    : undefined
+                }
               >
                 {isSelected && (
                   <div
                     className={cn(
                       'w-2.5 h-2.5 rounded-full',
-                      submitted && option.is_correct
-                        ? 'bg-green-500'
-                        : submitted && !option.is_correct
-                          ? 'bg-red-500'
-                          : 'bg-primary'
+                      submitted && option.is_correct && 'bg-green-500',
+                      submitted && !option.is_correct && 'bg-red-500'
                     )}
+                    style={
+                      !submitted
+                        ? { backgroundColor: 'var(--player-primary)' }
+                        : undefined
+                    }
                   />
                 )}
               </div>
@@ -158,12 +179,24 @@ export function MCQRenderer({
       {/* Actions */}
       <div className="flex items-center gap-2">
         {!submitted && (
-          <Button onClick={handleSubmit} disabled={!selectedOptionId}>
+          <Button
+            onClick={handleSubmit}
+            disabled={!selectedOptionId}
+            style={{
+              backgroundColor: 'var(--player-primary)',
+              borderRadius: 'var(--player-radius)',
+            }}
+          >
             Submit Answer
           </Button>
         )}
         {submitted && !isCorrect && block.data.allow_retry && (
-          <Button variant="outline" onClick={handleRetry} className="gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRetry}
+            className="gap-2"
+            style={{ borderRadius: 'var(--player-radius)' }}
+          >
             <RotateCcw className="w-4 h-4" />
             Try Again
           </Button>
