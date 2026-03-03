@@ -215,7 +215,11 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
       courseId,
       contentId,
       version,
-      content: deepClone({ ...content, settings: mergedSettings }),
+      content: deepClone({
+        ...content,
+        modules: Array.isArray(content.modules) ? content.modules : [],
+        settings: mergedSettings,
+      }),
       selectedModuleId: null,
       selectedLessonId: null,
       selectedBlockId: null,

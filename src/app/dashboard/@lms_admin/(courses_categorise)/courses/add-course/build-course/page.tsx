@@ -3,7 +3,8 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle, ArrowLeft, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useEditorStore } from '@/stores/editor.store';
 import { saveContent, publishContent, loadCourseWithContent } from '@/action/authoring/content';
 import { EditorHeader } from '@/components/authoring/EditorHeader';
@@ -47,9 +48,10 @@ export default function BuildCoursePage() {
       setCourseTitle(course.title || '');
 
       // Initialize editor store with course content
-      const content = course.content || {
-        modules: [],
-        settings: {
+      const rawContent = course.content || {};
+      const content = {
+        modules: Array.isArray(rawContent.modules) ? rawContent.modules : [],
+        settings: rawContent.settings || {
           theme: {
             primary_color: '#1a73e8',
             secondary_color: '#f59e0b',
@@ -155,31 +157,71 @@ export default function BuildCoursePage() {
 
   if (!courseId) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-muted-foreground">No course ID provided.</p>
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="text-center max-w-sm">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/15">
+            <AlertTriangle className="h-6 w-6 text-amber-500" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground mb-1.5">No course ID</h2>
+          <p className="text-sm text-muted-foreground mb-6">A valid course ID is required to open the editor.</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push('/dashboard/courses')}
+            className="gap-2 rounded-lg"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Back to courses
+          </Button>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex flex-col items-center justify-center h-screen bg-background gap-4">
+        <div className="relative">
+          <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping" />
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          </div>
+        </div>
+        <div className="text-center">
+          <p className="text-sm font-medium text-foreground">Loading course editor</p>
+          <p className="text-xs text-muted-foreground mt-1">Preparing your workspace...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-center space-y-4">
-          <p className="text-destructive">{error}</p>
-          <button
-            onClick={() => router.push('/dashboard/courses')}
-            className="text-primary underline"
-          >
-            Back to courses
-          </button>
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="text-center max-w-sm">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/10 border border-destructive/15">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground mb-1.5">Failed to load course</h2>
+          <p className="text-sm text-muted-foreground mb-6">{error}</p>
+          <div className="flex items-center justify-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push('/dashboard/courses')}
+              className="gap-2 rounded-lg"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to courses
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => window.location.reload()}
+              className="rounded-lg"
+            >
+              Try again
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -188,7 +230,7 @@ export default function BuildCoursePage() {
   // AI Wizard mode
   if (showAIWizard && courseId) {
     return (
-      <div className="min-h-screen bg-muted/30 p-6">
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 p-6">
         <AICourseWizard
           courseId={parseInt(courseId)}
           onComplete={() => {
@@ -202,7 +244,7 @@ export default function BuildCoursePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden bg-background">
       <EditorHeader
         courseTitle={courseTitle}
         onSave={handleSave}
@@ -212,7 +254,7 @@ export default function BuildCoursePage() {
       <div className="flex flex-1 overflow-hidden">
         {store.sidebarOpen && <ModuleSidebar />}
 
-        <main className="flex-1 overflow-y-auto bg-muted/30 p-6">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-muted/20 to-muted/40">
           <EditorCanvas />
         </main>
       </div>

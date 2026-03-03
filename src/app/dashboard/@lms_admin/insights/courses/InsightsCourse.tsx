@@ -79,7 +79,7 @@ const BarChartCard = ({
     </CardHeader>
     <CardContent>
       <div className="h-[200px]">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={200}>
           <BarChart data={barChartData}>
             <XAxis dataKey="month" />
             <Tooltip />
@@ -116,7 +116,7 @@ const CourseStatusPieChart = ({ data }: { data: { name: string; value: number }[
       </CardHeader>
       <CardContent>
         <div className="h-[200px]">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
                 data={data}
@@ -166,7 +166,7 @@ const PieChartCard = ({
     </CardHeader>
     <CardContent>
       <div className="h-[200px]">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={200}>
           <PieChart className="exclude-weglot">
             <Pie
               data={pieChartData}

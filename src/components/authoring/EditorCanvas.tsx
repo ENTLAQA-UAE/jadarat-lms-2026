@@ -70,6 +70,38 @@ function createDefaultBlock(type: BlockType): Block {
       return { ...base, type, data: { question: '', options: [{ id: uuidv4(), text: '', is_correct: false }], explanation: '', allow_retry: true, shuffle_options: false, points: 1 } };
     case BlockType.TRUE_FALSE:
       return { ...base, type, data: { statement: '', correct_answer: true, explanation_true: '', explanation_false: '', points: 1 } };
+    case BlockType.AUDIO:
+      return { ...base, type, data: { src: '', title: '', duration_seconds: 0, show_transcript: false } };
+    case BlockType.EMBED:
+      return { ...base, type, data: { url: '', provider: 'youtube', aspect_ratio: '16:9', allow_fullscreen: true } };
+    case BlockType.TABLE:
+      return { ...base, type, data: { headers: ['Column 1', 'Column 2'], rows: [['', '']], has_header_row: true, striped: false } };
+    case BlockType.GALLERY:
+      return { ...base, type, data: { images: [], layout: 'grid', columns: 3 } };
+    case BlockType.CHART:
+      return { ...base, type, data: { chart_type: 'bar', title: '', labels: ['Label 1'], datasets: [{ label: 'Dataset 1', data: [0], color: '#1a73e8' }], show_legend: true } };
+    case BlockType.TABS:
+      return { ...base, type, data: { tabs: [{ id: uuidv4(), label: 'Tab 1', content: '' }], style: 'horizontal' } };
+    case BlockType.FLASHCARD:
+      return { ...base, type, data: { cards: [{ id: uuidv4(), front: '', back: '' }], shuffle: false } };
+    case BlockType.LABELED_GRAPHIC:
+      return { ...base, type, data: { image: '', markers: [] } };
+    case BlockType.PROCESS:
+      return { ...base, type, data: { steps: [{ id: uuidv4(), title: 'Step 1', description: '' }], layout: 'vertical', numbered: true } };
+    case BlockType.TIMELINE:
+      return { ...base, type, data: { events: [{ id: uuidv4(), date: '', title: 'Event 1', description: '' }], direction: 'vertical' } };
+    case BlockType.HOTSPOT:
+      return { ...base, type, data: { image: '', regions: [], mode: 'explore' } };
+    case BlockType.SCENARIO:
+      return { ...base, type, data: { title: '', description: '', nodes: [{ id: uuidv4(), type: 'question', content: '', choices: [] }], start_node_id: '' } };
+    case BlockType.MULTIPLE_RESPONSE:
+      return { ...base, type, data: { question: '', options: [{ id: uuidv4(), text: '', is_correct: false }], explanation: '', min_selections: 1, max_selections: 2, scoring: 'all_or_nothing', points: 1 } };
+    case BlockType.FILL_IN_BLANK:
+      return { ...base, type, data: { text_with_blanks: '', blanks: [{ id: 'blank_1', correct_answers: [''], case_sensitive: false }], explanation: '', points: 1 } };
+    case BlockType.MATCHING:
+      return { ...base, type, data: { instruction: '', pairs: [{ id: uuidv4(), left: '', right: '' }], shuffle: true, explanation: '', points: 1 } };
+    case BlockType.SORTING:
+      return { ...base, type, data: { instruction: '', categories: [{ id: uuidv4(), name: 'Category 1' }], items: [{ id: uuidv4(), text: '', correct_category_id: '' }], explanation: '', points: 1 } };
     default:
       return { ...base, data: {} } as Block;
   }
@@ -167,9 +199,10 @@ export function EditorCanvas() {
   if (!selectedModuleId || !currentModule) {
     return (
       <EmptyState
-        icon={<Sparkles className="h-8 w-8 text-primary/60" />}
-        title="No module selected"
-        description="Select a module from the sidebar or create a new one to start building."
+        icon={<Sparkles className="h-8 w-8 text-primary/50" />}
+        title="Select a module"
+        description="Choose a module from the sidebar, or create a new one to start building your course."
+        accent="primary"
       />
     );
   }
@@ -177,26 +210,31 @@ export function EditorCanvas() {
   if (!selectedLessonId || !currentLesson) {
     return (
       <EmptyState
-        icon={<Plus className="h-8 w-8 text-primary/60" />}
-        title="No lesson selected"
-        description="Select a lesson from the sidebar to start editing its content blocks."
+        icon={<Plus className="h-8 w-8 text-primary/50" />}
+        title="Select a lesson"
+        description="Pick a lesson from the sidebar to start adding content blocks."
+        accent="primary"
       />
     );
   }
 
-  const blocks = currentLesson.blocks;
+  const blocks = currentLesson.blocks ?? [];
   const blockIds = blocks.map((b) => b.id);
 
   if (blocks.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
-        <div className="text-center max-w-sm">
-          <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
-            <Plus className="h-8 w-8 text-primary/60" />
+        <div className="text-center max-w-md">
+          {/* Decorative dots background */}
+          <div className="relative mx-auto mb-6">
+            <div className="absolute inset-0 -m-6 rounded-3xl bg-[radial-gradient(circle_at_center,_hsl(var(--primary)/0.03)_1px,_transparent_1px)] bg-[length:16px_16px]" />
+            <div className="relative flex h-20 w-20 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-primary/12 to-primary/5 border border-primary/15 shadow-lg shadow-primary/5">
+              <Plus className="h-8 w-8 text-primary/60" />
+            </div>
           </div>
-          <h3 className="text-lg font-semibold text-foreground">Start building</h3>
-          <p className="mt-1.5 mb-6 text-sm text-muted-foreground">
-            Add blocks to create an engaging lesson. Mix text, images, interactive elements, and quizzes.
+          <h3 className="text-lg font-semibold text-foreground mb-1.5">Start building your lesson</h3>
+          <p className="text-sm text-muted-foreground mb-8 max-w-xs mx-auto leading-relaxed">
+            Add content blocks like text, images, videos, quizzes, and interactive elements.
           </p>
           <BlockToolbar onInsertBlock={handleInsertBlock} />
         </div>
@@ -207,17 +245,18 @@ export function EditorCanvas() {
   return (
     <div className="mx-auto w-full max-w-4xl space-y-1 px-6 py-8">
       {/* Lesson header breadcrumb */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="flex-1">
+      <div className="mb-8 flex items-center gap-3">
+        <div className="flex-1 min-w-0">
           <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
             {currentModule.title}
           </p>
-          <h2 className="text-lg font-semibold text-foreground">
+          <h2 className="text-xl font-semibold text-foreground tracking-tight truncate">
             {currentLesson.title}
           </h2>
         </div>
-        <div className="text-xs text-muted-foreground bg-muted/60 rounded-full px-3 py-1 border border-border/40">
-          {blocks.length} {blocks.length === 1 ? 'block' : 'blocks'}
+        <div className="shrink-0 flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 rounded-full px-3 py-1.5 border border-border/30">
+          <span className="font-medium tabular-nums">{blocks.length}</span>
+          <span>{blocks.length === 1 ? 'block' : 'blocks'}</span>
         </div>
       </div>
 
@@ -296,19 +335,25 @@ function EmptyState({
   icon,
   title,
   description,
+  accent = 'primary',
 }: {
   icon: React.ReactNode;
   title: string;
   description: string;
+  accent?: string;
 }) {
   return (
     <div className="flex h-full items-center justify-center p-8">
-      <div className="text-center max-w-xs">
-        <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
-          {icon}
+      <div className="text-center max-w-sm">
+        {/* Subtle decorative background */}
+        <div className="relative mx-auto mb-6">
+          <div className="absolute inset-0 -m-8 rounded-full bg-gradient-to-br from-primary/5 to-transparent blur-2xl" />
+          <div className="relative flex h-20 w-20 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-primary/12 to-primary/5 border border-primary/15 shadow-lg shadow-primary/5">
+            {icon}
+          </div>
         </div>
-        <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-        <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
+        <h3 className="text-lg font-semibold text-foreground mb-1.5">{title}</h3>
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{description}</p>
       </div>
     </div>
   );
@@ -330,17 +375,17 @@ function InlineInsertButton({
   return (
     <div
       className={cn(
-        'group/insert relative flex items-center justify-center transition-all',
-        isOpen ? 'py-2' : 'py-0.5',
+        'group/insert relative flex items-center justify-center transition-all duration-300',
+        isOpen ? 'py-3' : 'py-1',
       )}
     >
       {/* Horizontal line */}
       <div
         className={cn(
-          'absolute inset-x-0 top-1/2 h-px transition-colors duration-200',
+          'absolute inset-x-0 top-1/2 h-px transition-all duration-300',
           isOpen
-            ? 'bg-primary/30'
-            : 'bg-transparent group-hover/insert:bg-border',
+            ? 'bg-gradient-to-r from-transparent via-primary/30 to-transparent'
+            : 'bg-transparent group-hover/insert:bg-gradient-to-r group-hover/insert:from-transparent group-hover/insert:via-border/60 group-hover/insert:to-transparent',
         )}
       />
 
@@ -349,15 +394,15 @@ function InlineInsertButton({
         type="button"
         onClick={onToggle}
         className={cn(
-          'relative z-10 flex h-6 w-6 items-center justify-center rounded-full border transition-all duration-200',
+          'relative z-10 flex h-6 w-6 items-center justify-center rounded-full border transition-all duration-300',
           isOpen
-            ? 'bg-primary text-primary-foreground border-primary shadow-md scale-110'
-            : 'bg-background text-muted-foreground border-border/60 opacity-0 group-hover/insert:opacity-100 hover:border-primary hover:text-primary hover:shadow-sm',
+            ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-110'
+            : 'bg-background text-muted-foreground/60 border-border/40 opacity-0 group-hover/insert:opacity-100 hover:border-primary/50 hover:text-primary hover:shadow-sm hover:scale-110',
         )}
       >
         <Plus
           className={cn(
-            'h-3.5 w-3.5 transition-transform duration-200',
+            'h-3 w-3 transition-transform duration-300',
             isOpen && 'rotate-45',
           )}
         />
@@ -365,7 +410,7 @@ function InlineInsertButton({
 
       {/* Popover-style insert menu */}
       {isOpen && (
-        <div className="absolute top-full z-30 mt-1">
+        <div className="absolute top-full z-30 mt-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
           <BlockToolbar onInsertBlock={onInsert} />
         </div>
       )}

@@ -9,6 +9,8 @@ import {
   FileText,
   FolderOpen,
   Folder,
+  GripVertical,
+  BookOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,7 +76,7 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
         onChange={(e) => setEditValue(e.target.value)}
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
-        className="h-6 px-1.5 py-0 text-xs border-primary/40 bg-primary/5 focus-visible:ring-primary/20"
+        className="h-6 px-1.5 py-0 text-xs border-primary/40 bg-primary/5 focus-visible:ring-primary/20 rounded-md"
       />
     );
   }
@@ -95,7 +97,7 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
 // ============================================================
 
 export function ModuleSidebar() {
-  const modules = useEditorStore((s) => s.content.modules);
+  const modules = useEditorStore((s) => s.content.modules) ?? [];
   const selectedModuleId = useEditorStore((s) => s.selectedModuleId);
   const selectedLessonId = useEditorStore((s) => s.selectedLessonId);
   const addModule = useEditorStore((s) => s.addModule);
@@ -185,17 +187,22 @@ export function ModuleSidebar() {
   );
 
   return (
-    <div className="flex h-full w-72 flex-col border-e border-border/60 bg-muted/20">
+    <div className="flex h-full w-72 flex-col border-e border-border/40 bg-background/50 backdrop-blur-sm">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
-        <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
-          Course Structure
-        </h2>
+      <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10">
+            <BookOpen className="h-3 w-3 text-primary" />
+          </div>
+          <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
+            Structure
+          </h2>
+        </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleAddModule}
-          className="h-7 gap-1 px-2 text-xs text-primary hover:text-primary hover:bg-primary/10"
+          className="h-7 gap-1 px-2 text-xs text-primary hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-200"
         >
           <Plus className="h-3.5 w-3.5" />
           Module
@@ -204,57 +211,73 @@ export function ModuleSidebar() {
 
       {/* Module Tree */}
       <ScrollArea className="flex-1">
-        <div className="p-2.5 space-y-1">
+        <div className="p-2 space-y-0.5">
           {modules.length === 0 && (
-            <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/5 border border-primary/10">
-                <FolderOpen className="h-5 w-5 text-primary/50" />
+            <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
+                <FolderOpen className="h-6 w-6 text-primary/40" />
               </div>
-              <p className="text-xs text-muted-foreground">
-                No modules yet.
+              <p className="text-sm font-medium text-foreground/70 mb-1">
+                No modules yet
               </p>
-              <button
+              <p className="text-xs text-muted-foreground mb-4">
+                Create your first module to start building
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleAddModule}
-                className="mt-2 text-xs font-medium text-primary hover:underline"
+                className="gap-1.5 text-xs rounded-lg border-dashed border-primary/30 text-primary hover:bg-primary/5 hover:border-primary/50 transition-all duration-200"
               >
-                Create your first module
-              </button>
+                <Plus className="h-3.5 w-3.5" />
+                Create Module
+              </Button>
             </div>
           )}
 
-          {modules.map((module) => {
+          {modules.map((module, moduleIndex) => {
             const isExpanded = expandedModules.has(module.id);
             const isModuleSelected =
               selectedModuleId === module.id && !selectedLessonId;
-            const lessonCount = module.lessons.length;
+            const lessonCount = module.lessons?.length ?? 0;
 
             return (
-              <div key={module.id}>
+              <div key={module.id} className="animate-in fade-in duration-200">
                 {/* Module Row */}
                 <div
                   className={cn(
-                    'group/mod flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-sm transition-all duration-150 cursor-pointer',
+                    'group/mod flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm transition-all duration-200 cursor-pointer',
                     isModuleSelected
-                      ? 'bg-primary/10 text-primary'
-                      : 'hover:bg-muted text-foreground',
+                      ? 'bg-primary/8 text-primary shadow-sm shadow-primary/5 border border-primary/15'
+                      : 'hover:bg-muted/60 text-foreground border border-transparent',
                   )}
                   onClick={() => toggleModuleExpanded(module.id)}
                 >
                   {/* Expand chevron */}
-                  <span className="shrink-0 text-muted-foreground">
+                  <span className={cn(
+                    'shrink-0 transition-transform duration-200',
+                    isExpanded ? 'text-primary/60' : 'text-muted-foreground',
+                  )}>
                     {isExpanded ? (
-                      <ChevronDown className="h-4 w-4" />
+                      <ChevronDown className="h-3.5 w-3.5" />
                     ) : (
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-3.5 w-3.5" />
                     )}
                   </span>
 
                   {/* Folder icon */}
-                  {isExpanded ? (
-                    <FolderOpen className="h-4 w-4 shrink-0 text-primary/60" />
-                  ) : (
-                    <Folder className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  )}
+                  <div className={cn(
+                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-all duration-200',
+                    isModuleSelected || isExpanded
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted/50 text-muted-foreground',
+                  )}>
+                    {isExpanded ? (
+                      <FolderOpen className="h-3.5 w-3.5" />
+                    ) : (
+                      <Folder className="h-3.5 w-3.5" />
+                    )}
+                  </div>
 
                   {/* Module title */}
                   <InlineEdit
@@ -262,16 +285,16 @@ export function ModuleSidebar() {
                     onSave={(newTitle) =>
                       handleModuleRename(module.id, newTitle)
                     }
-                    className="flex-1 text-sm font-medium"
+                    className="flex-1 text-[13px] font-medium"
                   />
 
                   {/* Lesson count badge */}
                   <span
                     className={cn(
-                      'shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium tabular-nums transition-colors',
+                      'shrink-0 flex h-5 min-w-[20px] items-center justify-center rounded-md px-1 text-[10px] font-semibold tabular-nums transition-all duration-200',
                       isModuleSelected
-                        ? 'bg-primary/20 text-primary'
-                        : 'bg-muted text-muted-foreground',
+                        ? 'bg-primary/15 text-primary'
+                        : 'bg-muted/60 text-muted-foreground',
                     )}
                   >
                     {lessonCount}
@@ -280,7 +303,7 @@ export function ModuleSidebar() {
                   {/* Delete button */}
                   <button
                     onClick={(e) => handleDeleteModule(e, module.id)}
-                    className="shrink-0 rounded-md p-1 text-muted-foreground transition-all opacity-0 group-hover/mod:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                    className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-all duration-200 opacity-0 group-hover/mod:opacity-100 hover:bg-destructive/10 hover:text-destructive"
                     title="Delete module"
                   >
                     <X className="h-3 w-3" />
@@ -289,8 +312,8 @@ export function ModuleSidebar() {
 
                 {/* Lessons */}
                 {isExpanded && (
-                  <div className="ms-4 mt-0.5 border-s-2 border-border/40 ps-2 space-y-0.5">
-                    {module.lessons.map((lesson) => {
+                  <div className="ms-5 mt-0.5 border-s-2 border-border/30 ps-1.5 space-y-0.5 animate-in slide-in-from-top-1 duration-200">
+                    {(module.lessons ?? []).map((lesson) => {
                       const isSelected =
                         selectedModuleId === module.id &&
                         selectedLessonId === lesson.id;
@@ -300,24 +323,24 @@ export function ModuleSidebar() {
                         <div
                           key={lesson.id}
                           className={cn(
-                            'group/lesson flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-all duration-150 cursor-pointer',
+                            'group/lesson flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm transition-all duration-200 cursor-pointer',
                             isSelected
-                              ? 'bg-primary/10 text-primary font-medium'
-                              : 'hover:bg-muted text-foreground/80',
+                              ? 'bg-primary/8 text-primary font-medium border border-primary/15'
+                              : 'hover:bg-muted/50 text-foreground/75 border border-transparent',
                           )}
                           onClick={() =>
                             handleLessonClick(module.id, lesson.id)
                           }
                         >
                           {/* Lesson icon */}
-                          <FileText
-                            className={cn(
-                              'h-3.5 w-3.5 shrink-0',
-                              isSelected
-                                ? 'text-primary'
-                                : 'text-muted-foreground',
-                            )}
-                          />
+                          <div className={cn(
+                            'flex h-5 w-5 shrink-0 items-center justify-center rounded transition-all duration-200',
+                            isSelected
+                              ? 'text-primary'
+                              : 'text-muted-foreground/60',
+                          )}>
+                            <FileText className="h-3.5 w-3.5" />
+                          </div>
 
                           {/* Lesson title */}
                           <InlineEdit
@@ -334,14 +357,17 @@ export function ModuleSidebar() {
 
                           {/* Block count */}
                           {blockCount > 0 && (
-                            <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
+                            <span className={cn(
+                              'shrink-0 text-[10px] tabular-nums transition-colors',
+                              isSelected ? 'text-primary/60' : 'text-muted-foreground/50',
+                            )}>
                               {blockCount}
                             </span>
                           )}
 
-                          {/* Selected indicator */}
+                          {/* Selected dot indicator */}
                           {isSelected && (
-                            <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                            <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-sm shadow-primary/30" />
                           )}
 
                           {/* Delete */}
@@ -349,7 +375,7 @@ export function ModuleSidebar() {
                             onClick={(e) =>
                               handleDeleteLesson(e, module.id, lesson.id)
                             }
-                            className="shrink-0 rounded-md p-0.5 text-muted-foreground transition-all opacity-0 group-hover/lesson:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                            className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition-all duration-200 opacity-0 group-hover/lesson:opacity-100 hover:bg-destructive/10 hover:text-destructive"
                             title="Delete lesson"
                           >
                             <X className="h-3 w-3" />
@@ -361,7 +387,7 @@ export function ModuleSidebar() {
                     {/* Add Lesson */}
                     <button
                       onClick={() => handleAddLesson(module.id)}
-                      className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground transition-all hover:bg-primary/5 hover:text-primary"
+                      className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-primary border border-transparent hover:border-primary/10"
                     >
                       <Plus className="h-3 w-3" />
                       Add Lesson
@@ -373,6 +399,18 @@ export function ModuleSidebar() {
           })}
         </div>
       </ScrollArea>
+
+      {/* Footer stats */}
+      {modules.length > 0 && (
+        <div className="border-t border-border/40 px-4 py-2.5">
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+            <span>{modules.length} {modules.length === 1 ? 'module' : 'modules'}</span>
+            <span>
+              {modules.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0)} lessons
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
