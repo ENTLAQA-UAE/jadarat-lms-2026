@@ -164,7 +164,7 @@ export function BlockToolbar({ onInsertBlock }: BlockToolbarProps) {
         <Button
           variant="outline"
           size="sm"
-          className="gap-1.5 border-dashed hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-colors"
+          className="gap-1.5 rounded-xl border-dashed border-border/50 hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-all duration-200 shadow-sm hover:shadow-md"
         >
           <Plus className="h-4 w-4" />
           Add Block
@@ -172,31 +172,33 @@ export function BlockToolbar({ onInsertBlock }: BlockToolbarProps) {
       </PopoverTrigger>
       <PopoverContent
         align="start"
-        className="w-[440px] max-h-[520px] overflow-hidden p-0"
+        className="w-[460px] max-h-[540px] overflow-hidden p-0 rounded-xl border-border/40 shadow-xl shadow-black/5"
       >
         {/* Search input */}
-        <div className="sticky top-0 z-10 border-b border-border/60 bg-background p-2.5">
+        <div className="sticky top-0 z-10 border-b border-border/40 bg-background/95 backdrop-blur-xl p-3">
           <div className="relative">
-            <Search className="absolute start-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
             <input
               ref={searchRef}
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search blocks..."
-              className="w-full rounded-md border border-border/60 bg-muted/30 py-1.5 ps-8 pe-3 text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-colors"
+              className="w-full rounded-xl border border-border/40 bg-muted/20 py-2 ps-9 pe-3 text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary/30 transition-all duration-200"
             />
           </div>
         </div>
 
         {/* Results area */}
-        <div className="overflow-y-auto max-h-[440px]">
+        <div className="overflow-y-auto max-h-[460px]">
           {showSearch ? (
-            /* ── Search results (list view) ── */
+            /* Search results */
             <div className="p-2">
               {filteredResults.length === 0 ? (
-                <div className="flex flex-col items-center py-8 text-center">
-                  <Search className="h-8 w-8 text-muted-foreground/30 mb-2" />
+                <div className="flex flex-col items-center py-10 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/40 mb-3">
+                    <Search className="h-5 w-5 text-muted-foreground/30" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     No blocks match &ldquo;{search}&rdquo;
                   </p>
@@ -210,9 +212,9 @@ export function BlockToolbar({ onInsertBlock }: BlockToolbarProps) {
                         key={block.type}
                         type="button"
                         onClick={() => handleSelect(block)}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-start transition-colors hover:bg-muted group"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition-all duration-200 hover:bg-primary/5 group"
                       >
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted/60 border border-border/40 group-hover:bg-primary/10 group-hover:border-primary/20 group-hover:text-primary transition-colors">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted/40 border border-border/30 group-hover:bg-primary/10 group-hover:border-primary/20 group-hover:text-primary transition-all duration-200">
                           <Icon className="h-4 w-4" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -220,11 +222,11 @@ export function BlockToolbar({ onInsertBlock }: BlockToolbarProps) {
                             <span className="text-sm font-medium text-foreground">
                               {block.label}
                             </span>
-                            <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">
+                            <span className="rounded-md bg-muted/50 px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground/70 uppercase tracking-wider">
                               {block.category}
                             </span>
                           </div>
-                          <p className="text-xs text-muted-foreground truncate">
+                          <p className="text-xs text-muted-foreground/70 truncate mt-0.5">
                             {block.description}
                           </p>
                         </div>
@@ -235,11 +237,11 @@ export function BlockToolbar({ onInsertBlock }: BlockToolbarProps) {
               )}
             </div>
           ) : (
-            /* ── Category grid view ── */
-            <div className="p-3 space-y-4">
+            /* Category grid view */
+            <div className="p-3 space-y-5">
               {BLOCK_CATEGORIES.map((category) => (
                 <div key={category.name}>
-                  <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 px-1">
+                  <h4 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 mb-2.5 px-1">
                     {category.name}
                   </h4>
                   <div className="grid grid-cols-3 gap-1">
@@ -254,28 +256,28 @@ export function BlockToolbar({ onInsertBlock }: BlockToolbarProps) {
                           disabled={disabled}
                           onClick={() => handleSelect(block)}
                           className={cn(
-                            'group relative flex flex-col items-center gap-1.5 rounded-lg px-2 py-3 text-xs transition-all',
+                            'group relative flex flex-col items-center gap-1.5 rounded-xl px-2 py-3 text-xs transition-all duration-200',
                             disabled
-                              ? 'cursor-not-allowed opacity-40'
-                              : 'hover:bg-primary/5 hover:text-primary cursor-pointer',
+                              ? 'cursor-not-allowed opacity-30'
+                              : 'hover:bg-primary/5 hover:text-primary hover:shadow-sm cursor-pointer',
                           )}
                           title={block.description}
                         >
                           <div
                             className={cn(
-                              'flex h-9 w-9 items-center justify-center rounded-lg transition-colors',
+                              'flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200',
                               disabled
-                                ? 'bg-muted/40'
-                                : 'bg-muted/60 border border-border/40 group-hover:bg-primary/10 group-hover:border-primary/20',
+                                ? 'bg-muted/30'
+                                : 'bg-muted/40 border border-border/30 group-hover:bg-primary/10 group-hover:border-primary/20 group-hover:shadow-sm group-hover:scale-105',
                             )}
                           >
                             <Icon className="h-4 w-4 shrink-0" />
                           </div>
-                          <span className="leading-tight text-center">
+                          <span className="leading-tight text-center font-medium">
                             {block.label}
                           </span>
                           {disabled && (
-                            <span className="absolute -top-0.5 -end-0.5 rounded bg-muted px-1 py-px text-[9px] font-medium text-muted-foreground">
+                            <span className="absolute -top-0.5 -end-0.5 rounded-md bg-muted/80 px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground border border-border/30">
                               Soon
                             </span>
                           )}

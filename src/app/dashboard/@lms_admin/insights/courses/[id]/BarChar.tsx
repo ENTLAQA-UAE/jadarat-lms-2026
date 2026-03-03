@@ -23,8 +23,8 @@ function BarChar({ enrollmentCompletionData, loading, errorMessage }: BarChartPr
                 <CardTitle>Enrollments vs Completions</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="h-[300px] flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
+                <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={enrollmentCompletionData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />

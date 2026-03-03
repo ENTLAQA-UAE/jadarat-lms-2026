@@ -85,14 +85,57 @@ export {
   ContinueBlockEditor,
 };
 
+// Default array values per block type to prevent .map() on undefined
+const ARRAY_DEFAULTS: Record<string, Record<string, any[]>> = {
+  [BlockType.CHART]: { labels: [], datasets: [] },
+  [BlockType.TABS]: { tabs: [] },
+  [BlockType.ACCORDION]: { items: [] },
+  [BlockType.GALLERY]: { images: [] },
+  [BlockType.HOTSPOT]: { regions: [] },
+  [BlockType.PROCESS]: { steps: [] },
+  [BlockType.SCENARIO]: { nodes: [] },
+  [BlockType.TIMELINE]: { events: [] },
+  [BlockType.FLASHCARD]: { cards: [] },
+  [BlockType.LABELED_GRAPHIC]: { markers: [] },
+  [BlockType.MULTIPLE_CHOICE]: { options: [] },
+  [BlockType.MULTIPLE_RESPONSE]: { options: [] },
+  [BlockType.FILL_IN_BLANK]: { blanks: [] },
+  [BlockType.MATCHING]: { pairs: [] },
+  [BlockType.SORTING]: { categories: [], items: [] },
+  [BlockType.LIST]: { items: [] },
+  [BlockType.BUTTON]: { buttons: [] },
+  [BlockType.TABLE]: { headers: [], rows: [] },
+  [BlockType.VIDEO]: { captions: [], chapters: [] },
+};
+
+/** Ensure all required arrays exist in block data to prevent .map() on undefined */
+function normalizeBlock(block: Block): Block {
+  const defaults = ARRAY_DEFAULTS[block.type];
+  if (!defaults) return block;
+
+  const data = block.data ?? {};
+  let needsMerge = false;
+  for (const key of Object.keys(defaults)) {
+    if (!Array.isArray((data as any)[key])) {
+      needsMerge = true;
+      break;
+    }
+  }
+  if (!needsMerge) return block;
+
+  return { ...block, data: { ...defaults, ...data } } as Block;
+}
+
 // Unified BlockEditor that switches on block.type
 export function BlockEditor({
-  block,
+  block: rawBlock,
   onChange,
 }: {
   block: Block;
   onChange: (data: any) => void;
 }) {
+  const block = normalizeBlock(rawBlock);
+
   switch (block.type) {
     // Phase 1 -- Content
     case BlockType.TEXT:
