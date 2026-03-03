@@ -116,17 +116,43 @@ export function StepGeneration({
 
       try {
         // Determine suggested blocks based on content options
-        let suggestedBlocks = outlineLesson.suggested_blocks || [];
+        let suggestedBlocks: string[] = [...(outlineLesson.suggested_blocks || [])];
         if (options.content_format === 'text_only') {
           suggestedBlocks = suggestedBlocks.filter(
             (b) => b === 'text' || b === 'divider' || b === 'cover'
           );
-          if (suggestedBlocks.length === 0) suggestedBlocks = ['text', 'cover'] as any;
+          if (suggestedBlocks.length === 0) suggestedBlocks = ['text', 'cover'];
         }
         if (options.assessment_density === 'none') {
+          // Remove quiz blocks when assessments disabled
           suggestedBlocks = suggestedBlocks.filter(
             (b) => b !== 'multiple_choice' && b !== 'true_false'
           );
+        } else if (options.assessment_density === 'per_lesson') {
+          // Ensure quiz blocks are present for every lesson
+          const hasQuiz = suggestedBlocks.some(
+            (b) => b === 'multiple_choice' || b === 'true_false'
+          );
+          if (!hasQuiz) {
+            suggestedBlocks.push('multiple_choice', 'true_false');
+          }
+        } else if (options.assessment_density === 'per_module') {
+          // Only add quiz blocks to the last lesson of each module
+          const moduleData = outline.modules[lesson.moduleIndex];
+          const isLastLesson =
+            lesson.lessonIndex === moduleData.lessons.length - 1;
+          if (isLastLesson) {
+            const hasQuiz = suggestedBlocks.some(
+              (b) => b === 'multiple_choice' || b === 'true_false'
+            );
+            if (!hasQuiz) {
+              suggestedBlocks.push('multiple_choice', 'true_false');
+            }
+          } else {
+            suggestedBlocks = suggestedBlocks.filter(
+              (b) => b !== 'multiple_choice' && b !== 'true_false'
+            );
+          }
         }
 
         const res = await fetch('/api/ai/generate-lesson', {
@@ -138,6 +164,7 @@ export function StepGeneration({
             module_title: outline.modules[lesson.moduleIndex].title,
             course_title: outline.title,
             suggested_blocks: suggestedBlocks,
+            assessment_density: options.assessment_density,
             language,
             difficulty,
             audience,

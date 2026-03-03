@@ -150,11 +150,11 @@ RULES:
 2. Start with an engaging introduction (text or cover block)
 3. Use VARIED block types - never 3+ text blocks in a row
 4. Include at least one interactive block per lesson (accordion or tabs)
-5. Include at least one assessment block per lesson (multiple_choice or true_false)
+5. Follow the ASSESSMENT INSTRUCTIONS provided in the user prompt regarding quiz blocks
 6. End with a summary text block or knowledge check question
 7. Keep paragraphs concise (3-5 sentences maximum)
 8. Use real-world examples relevant to the target audience
-9. For quiz questions: provide 4 options, exactly 1 correct, with explanations
+9. For quiz questions: provide 4 options, exactly 1 correct, with detailed feedback for each option
 10. Generate unique IDs for all id fields (use format: "block-{random-8-chars}")
 
 IMPORTANT - BLOCK TYPE RESTRICTIONS:
@@ -178,11 +178,26 @@ export const LESSON_USER_PROMPT = (params: {
   moduleTitle: string;
   courseTitle: string;
   suggestedBlocks: string[];
+  assessmentDensity: string;
   language: string;
   difficulty: string;
   audience: string;
   previousLessonsContext?: string;
-}) => `Generate the content blocks for this lesson:
+}) => {
+  const hasQuizBlocks = params.suggestedBlocks.some(
+    (b) => b === 'multiple_choice' || b === 'true_false'
+  );
+
+  let assessmentInstruction: string;
+  if (params.assessmentDensity === 'per_lesson' && hasQuizBlocks) {
+    assessmentInstruction = `ASSESSMENT INSTRUCTIONS: You MUST include at least 2 quiz blocks in this lesson — use a mix of multiple_choice and true_false types. Place them after the teaching content, before the final summary. Each quiz question must have detailed feedback/explanations for all options.`;
+  } else if (params.assessmentDensity === 'per_module' && hasQuizBlocks) {
+    assessmentInstruction = `ASSESSMENT INSTRUCTIONS: This is the last lesson in the module. You MUST include 3-4 quiz blocks as a module-level knowledge check — use a mix of multiple_choice and true_false types. Place them at the end as a comprehensive assessment. Each question must have detailed feedback.`;
+  } else {
+    assessmentInstruction = `ASSESSMENT INSTRUCTIONS: Do NOT include any multiple_choice or true_false blocks in this lesson.`;
+  }
+
+  return `Generate the content blocks for this lesson:
 
 Course: ${params.courseTitle}
 Module: ${params.moduleTitle}
@@ -193,6 +208,8 @@ Difficulty: ${params.difficulty}
 Audience: ${params.audience}
 Suggested Block Types: ${params.suggestedBlocks.join(', ')}
 ${params.previousLessonsContext ? `\nContext from previous lessons:\n${params.previousLessonsContext}` : ''}
+
+${assessmentInstruction}
 
 IMPORTANT: Only generate blocks of these types: text, image, accordion, tabs, multiple_choice, true_false, divider, cover.
 Do NOT generate video or any other block types. The author adds video manually.
@@ -239,6 +256,7 @@ For "divider" blocks, data format:
 { "style": "solid", "color": "#e5e7eb", "spacing": "medium" }
 
 Generate 5-8 blocks for this lesson.`;
+};
 
 // ============================================================
 // QUIZ GENERATION PROMPT
