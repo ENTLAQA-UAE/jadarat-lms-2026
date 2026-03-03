@@ -27,11 +27,12 @@ export function resolveRadius(theme: CourseTheme): string {
  * All player components reference these variables instead of hardcoded colors.
  */
 export function getThemeCSSVars(theme: CourseTheme): React.CSSProperties {
+  const isDark = theme.dark_mode;
   return {
     '--player-primary': theme.primary_color,
     '--player-secondary': theme.secondary_color,
-    '--player-bg': theme.background_color,
-    '--player-text': theme.text_color,
+    '--player-bg': isDark ? '#1a1a2e' : theme.background_color,
+    '--player-text': isDark ? '#e2e8f0' : theme.text_color,
     '--player-font': resolveFont(theme),
     '--player-radius': resolveRadius(theme),
   } as React.CSSProperties;

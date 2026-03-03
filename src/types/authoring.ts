@@ -523,6 +523,10 @@ export interface CourseTheme {
   font_family: string;                 // 'cairo' | 'inter' | 'tajawal' | 'system'
   border_radius: 'none' | 'small' | 'medium' | 'large';
   cover_style: 'gradient' | 'image' | 'solid';
+  navigation_style: 'sidebar' | 'top_bar' | 'hidden';
+  lesson_header_style: 'full_width_banner' | 'compact' | 'none';
+  dark_mode: boolean;
+  cover_image_url?: string;
 }
 
 // ============================================================

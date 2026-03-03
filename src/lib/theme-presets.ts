@@ -1,0 +1,113 @@
+import type { CourseTheme } from '@/types/authoring';
+
+export interface ThemePreset {
+  id: string;
+  name: string;
+  nameAr: string;
+  theme: CourseTheme;
+}
+
+export const THEME_PRESETS: ThemePreset[] = [
+  {
+    id: 'jadarat',
+    name: 'Jadarat',
+    nameAr: 'جدارات',
+    theme: {
+      primary_color: '#1a73e8',
+      secondary_color: '#f59e0b',
+      background_color: '#ffffff',
+      text_color: '#1f2937',
+      font_family: 'cairo',
+      border_radius: 'medium',
+      cover_style: 'gradient',
+      navigation_style: 'sidebar',
+      lesson_header_style: 'full_width_banner',
+      dark_mode: false,
+    },
+  },
+  {
+    id: 'corporate',
+    name: 'Corporate',
+    nameAr: 'مؤسسي',
+    theme: {
+      primary_color: '#1e3a5f',
+      secondary_color: '#c0a36e',
+      background_color: '#fafafa',
+      text_color: '#1a1a2e',
+      font_family: 'inter',
+      border_radius: 'small',
+      cover_style: 'solid',
+      navigation_style: 'sidebar',
+      lesson_header_style: 'compact',
+      dark_mode: false,
+    },
+  },
+  {
+    id: 'arabian',
+    name: 'Arabian',
+    nameAr: 'عربي',
+    theme: {
+      primary_color: '#c0956b',
+      secondary_color: '#2d4a3e',
+      background_color: '#fdf8f0',
+      text_color: '#2c1810',
+      font_family: 'tajawal',
+      border_radius: 'medium',
+      cover_style: 'image',
+      navigation_style: 'sidebar',
+      lesson_header_style: 'full_width_banner',
+      dark_mode: false,
+    },
+  },
+  {
+    id: 'modern',
+    name: 'Modern',
+    nameAr: 'عصري',
+    theme: {
+      primary_color: '#6366f1',
+      secondary_color: '#ec4899',
+      background_color: '#fafafe',
+      text_color: '#1e1b4b',
+      font_family: 'inter',
+      border_radius: 'large',
+      cover_style: 'gradient',
+      navigation_style: 'top_bar',
+      lesson_header_style: 'full_width_banner',
+      dark_mode: false,
+    },
+  },
+  {
+    id: 'minimal',
+    name: 'Minimal',
+    nameAr: 'بسيط',
+    theme: {
+      primary_color: '#18181b',
+      secondary_color: '#71717a',
+      background_color: '#ffffff',
+      text_color: '#27272a',
+      font_family: 'system',
+      border_radius: 'small',
+      cover_style: 'solid',
+      navigation_style: 'hidden',
+      lesson_header_style: 'none',
+      dark_mode: false,
+    },
+  },
+  {
+    id: 'ocean',
+    name: 'Ocean',
+    nameAr: 'محيط',
+    theme: {
+      primary_color: '#0891b2',
+      secondary_color: '#06b6d4',
+      background_color: '#f0fdfa',
+      text_color: '#134e4a',
+      font_family: 'cairo',
+      border_radius: 'medium',
+      cover_style: 'gradient',
+      navigation_style: 'sidebar',
+      lesson_header_style: 'compact',
+      dark_mode: false,
+    },
+  },
+];
