@@ -104,6 +104,7 @@ export interface EditorActions {
   ) => void;
   deleteLesson: (moduleId: string, lessonId: string) => void;
   reorderLessons: (moduleId: string, fromIndex: number, toIndex: number) => void;
+  moveLessonToModule: (fromModuleId: string, lessonId: string, toModuleId: string) => void;
 
   // Block CRUD
   addBlock: (moduleId: string, lessonId: string, block: Block, atIndex?: number) => void;
@@ -473,6 +474,46 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
         ...state.content,
         modules: updatedModules,
       },
+      isDirty: true,
+      redoStack: [],
+    });
+  },
+
+  moveLessonToModule: (fromModuleId: string, lessonId: string, toModuleId: string) => {
+    if (fromModuleId === toModuleId) return;
+    const state = get();
+
+    const sourceModule = state.content.modules.find((m) => m.id === fromModuleId);
+    if (!sourceModule) return;
+    const lesson = sourceModule.lessons.find((l) => l.id === lessonId);
+    if (!lesson) return;
+
+    state.pushSnapshot();
+
+    const updatedModules = state.content.modules.map((m) => {
+      if (m.id === fromModuleId) {
+        return {
+          ...m,
+          lessons: recalculateOrder(m.lessons.filter((l) => l.id !== lessonId)),
+        };
+      }
+      if (m.id === toModuleId) {
+        return {
+          ...m,
+          lessons: recalculateOrder([...m.lessons, { ...lesson }]),
+        };
+      }
+      return m;
+    });
+
+    set({
+      content: {
+        ...state.content,
+        modules: updatedModules,
+      },
+      // Update selection to follow the moved lesson
+      selectedModuleId: toModuleId,
+      selectedLessonId: lessonId,
       isDirty: true,
       redoStack: [],
     });

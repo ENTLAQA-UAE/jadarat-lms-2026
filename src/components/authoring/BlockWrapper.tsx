@@ -41,7 +41,7 @@ interface BlockWrapperProps {
   children: React.ReactNode;
 }
 
-export function BlockWrapper({
+export const BlockWrapper = React.memo(function BlockWrapper({
   id,
   isSelected,
   blockType,
@@ -265,4 +265,4 @@ export function BlockWrapper({
       </div>
     </TooltipProvider>
   );
-}
+});

@@ -252,7 +252,7 @@ export function CourseForm({ onSave, onChange, isLoading, initialData = {}, cate
               control={control}
               render={({ field }) => (
                 <Select
-                  defaultValue={initialData.category_id?.toString() || ''}
+                  defaultValue={initialData.category_id && initialData.category_id > 0 ? initialData.category_id.toString() : ''}
                   onValueChange={(value) => {
                     field.onChange(value);
                     onChange({ category_id: parseInt(value) });

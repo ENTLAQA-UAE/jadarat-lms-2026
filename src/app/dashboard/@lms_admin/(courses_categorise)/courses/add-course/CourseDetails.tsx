@@ -43,8 +43,8 @@ export default function CourseDetails({ categories, features }: { categories: Co
    }, [])
 
    useEffect(() => {
-      const category_name = categories.find((category) => category.id === courseDetails?.category_id)?.name || null;
-      setCourseDetails(prevData => ({ ...prevData, category_name: category_name! }));
+      const category_name = categories.find((category) => category.id === courseDetails?.category_id)?.name ?? '';
+      setCourseDetails(prevData => ({ ...prevData, category_name }));
    }, [courseDetails?.category_id, categories]);
 
    const handleChange = (data: Partial<typeof courseDetails>) => {

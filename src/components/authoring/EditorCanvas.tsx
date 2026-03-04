@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -129,29 +129,47 @@ export function EditorCanvas() {
   // Track which inline inserter is open
   const [insertAfterIndex, setInsertAfterIndex] = useState<number | null>(null);
 
-  // Undo/Redo keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z)
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-      if (!isCtrlOrCmd) return;
-
       const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+      const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+
+      // Ctrl+Z / Ctrl+Shift+Z — Undo/Redo (skip if inside input)
+      if (isCtrlOrCmd && !isInput) {
+        if (e.key === 'z' && e.shiftKey) {
+          e.preventDefault();
+          redo();
+          return;
+        } else if (e.key === 'z') {
+          e.preventDefault();
+          undo();
+          return;
+        }
+      }
+
+      // Skip remaining shortcuts when editing text
+      if (isInput) return;
+
+      // Escape — deselect block
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        selectBlock(null);
         return;
       }
 
-      if (e.key === 'z' && e.shiftKey) {
+      // Delete / Backspace — delete selected block
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedBlockId && selectedModuleId && selectedLessonId) {
         e.preventDefault();
-        redo();
-      } else if (e.key === 'z') {
-        e.preventDefault();
-        undo();
+        deleteBlock(selectedModuleId, selectedLessonId, selectedBlockId);
+        return;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo]);
+  }, [undo, redo, selectBlock, deleteBlock, selectedBlockId, selectedModuleId, selectedLessonId]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -277,7 +295,11 @@ export function EditorCanvas() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-2 px-6 py-8">
+    <div
+      className="mx-auto w-full max-w-3xl space-y-2 px-6 py-8"
+      role="region"
+      aria-label={`Editing lesson: ${currentLesson.title}`}
+    >
       {/* Lesson header breadcrumb */}
       <div className="mb-8 flex items-center gap-3">
         <div className="flex-1 min-w-0">
@@ -339,12 +361,14 @@ export function EditorCanvas() {
                     : undefined
                 }
               >
-                <BlockEditor
-                  block={block}
-                  onChange={(data) =>
-                    updateBlock(selectedModuleId, selectedLessonId, block.id, data)
-                  }
-                />
+                <LazyBlockContent>
+                  <BlockEditor
+                    block={block}
+                    onChange={(data) =>
+                      updateBlock(selectedModuleId, selectedLessonId, block.id, data)
+                    }
+                  />
+                </LazyBlockContent>
               </BlockWrapper>
             </React.Fragment>
           ))}
@@ -357,6 +381,43 @@ export function EditorCanvas() {
       </div>
 
       <div className="h-20" />
+    </div>
+  );
+}
+
+// ============================================================
+// LAZY BLOCK CONTENT (defers rendering for off-screen blocks)
+// ============================================================
+
+function LazyBlockContent({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasBeenVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '300px 0px' }, // Pre-render 300px before entering viewport
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref}>
+      {hasBeenVisible ? (
+        children
+      ) : (
+        <div className="h-20 rounded-lg bg-muted/20 animate-pulse" />
+      )}
     </div>
   );
 }

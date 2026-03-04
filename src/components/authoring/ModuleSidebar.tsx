@@ -27,6 +27,7 @@ import {
   Folder,
   GripVertical,
   BookOpen,
+  ArrowRightLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,6 +43,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useEditorStore } from '@/stores/editor.store';
 import { cn } from '@/lib/utils';
 
@@ -151,6 +161,7 @@ interface SortableModuleProps {
   isModuleSelected: boolean;
   selectedModuleId: string | null;
   selectedLessonId: string | null;
+  otherModules: { id: string; title: string }[];
   onModuleClick: (moduleId: string) => void;
   onModuleRename: (moduleId: string, title: string) => void;
   onModuleDelete: (moduleId: string) => void;
@@ -159,6 +170,7 @@ interface SortableModuleProps {
   onLessonDelete: (moduleId: string, lessonId: string) => void;
   onAddLesson: (moduleId: string) => void;
   onReorderLessons: (moduleId: string, from: number, to: number) => void;
+  onMoveLessonToModule: (fromModuleId: string, lessonId: string, toModuleId: string) => void;
 }
 
 function SortableModuleRow({
@@ -167,6 +179,7 @@ function SortableModuleRow({
   isModuleSelected,
   selectedModuleId,
   selectedLessonId,
+  otherModules,
   onModuleClick,
   onModuleRename,
   onModuleDelete,
@@ -175,6 +188,7 @@ function SortableModuleRow({
   onLessonDelete,
   onAddLesson,
   onReorderLessons,
+  onMoveLessonToModule,
 }: SortableModuleProps) {
   const {
     attributes,
@@ -316,9 +330,11 @@ function SortableModuleRow({
                   lesson={lesson}
                   moduleId={module.id}
                   isSelected={selectedModuleId === module.id && selectedLessonId === lesson.id}
+                  otherModules={otherModules}
                   onLessonClick={onLessonClick}
                   onLessonRename={onLessonRename}
                   onLessonDelete={onLessonDelete}
+                  onMoveToModule={onMoveLessonToModule}
                 />
               ))}
             </SortableContext>
@@ -347,18 +363,22 @@ interface SortableLessonProps {
   lesson: { id: string; title: string; blocks?: unknown[] };
   moduleId: string;
   isSelected: boolean;
+  otherModules: { id: string; title: string }[];
   onLessonClick: (moduleId: string, lessonId: string) => void;
   onLessonRename: (moduleId: string, lessonId: string, title: string) => void;
   onLessonDelete: (moduleId: string, lessonId: string) => void;
+  onMoveToModule: (fromModuleId: string, lessonId: string, toModuleId: string) => void;
 }
 
 function SortableLessonRow({
   lesson,
   moduleId,
   isSelected,
+  otherModules,
   onLessonClick,
   onLessonRename,
   onLessonDelete,
+  onMoveToModule,
 }: SortableLessonProps) {
   const {
     attributes,
@@ -426,32 +446,68 @@ function SortableLessonRow({
       {/* Selected dot */}
       {isSelected && <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-sm shadow-primary/30" />}
 
-      {/* Delete */}
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
+      {/* Actions (Move + Delete) */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <button
             onClick={(e) => e.stopPropagation()}
-            className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition-all duration-200 opacity-0 group-hover/lesson:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-            aria-label={`Delete lesson ${lesson.title}`}
+            className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition-all duration-200 opacity-0 group-hover/lesson:opacity-100 hover:bg-muted/80 hover:text-foreground"
+            aria-label={`Actions for lesson ${lesson.title}`}
           >
             <X className="h-3 w-3" />
           </button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete lesson?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete <strong>{lesson.title}</strong> and all its {blockCount} {blockCount === 1 ? 'block' : 'blocks'}. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => onLessonDelete(moduleId, lesson.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48 rounded-xl">
+          {otherModules.length > 0 && (
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="rounded-lg text-xs">
+                <ArrowRightLeft className="mr-2 h-3 w-3" />
+                Move to module
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="rounded-xl">
+                {otherModules.map((m) => (
+                  <DropdownMenuItem
+                    key={m.id}
+                    className="rounded-lg text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoveToModule(moduleId, lesson.id, m.id);
+                    }}
+                  >
+                    <Folder className="mr-2 h-3 w-3" />
+                    {m.title}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          )}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <DropdownMenuItem
+                className="rounded-lg text-xs text-destructive focus:text-destructive focus:bg-destructive/10"
+                onSelect={(e) => e.preventDefault()}
+              >
+                <X className="mr-2 h-3 w-3" />
+                Delete lesson
+              </DropdownMenuItem>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete lesson?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete <strong>{lesson.title}</strong> and all its {blockCount} {blockCount === 1 ? 'block' : 'blocks'}. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => onLessonDelete(moduleId, lesson.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
@@ -474,6 +530,7 @@ export function ModuleSidebar() {
   const selectLesson = useEditorStore((s) => s.selectLesson);
   const reorderModules = useEditorStore((s) => s.reorderModules);
   const reorderLessons = useEditorStore((s) => s.reorderLessons);
+  const moveLessonToModule = useEditorStore((s) => s.moveLessonToModule);
 
   // Persisted expand/collapse state
   const [expandedModules, setExpandedModules] = useState<Set<string>>(() => {
@@ -610,6 +667,7 @@ export function ModuleSidebar() {
                   isModuleSelected={selectedModuleId === module.id && !selectedLessonId}
                   selectedModuleId={selectedModuleId}
                   selectedLessonId={selectedLessonId}
+                  otherModules={modules.filter((m) => m.id !== module.id).map((m) => ({ id: m.id, title: m.title }))}
                   onModuleClick={handleModuleClick}
                   onModuleRename={handleModuleRename}
                   onModuleDelete={deleteModule}
@@ -618,6 +676,7 @@ export function ModuleSidebar() {
                   onLessonDelete={deleteLesson}
                   onAddLesson={handleAddLesson}
                   onReorderLessons={reorderLessons}
+                  onMoveLessonToModule={moveLessonToModule}
                 />
               ))}
             </SortableContext>
