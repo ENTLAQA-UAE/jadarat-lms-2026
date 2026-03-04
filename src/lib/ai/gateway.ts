@@ -234,3 +234,27 @@ export class GatewayError extends Error {
     this.name = 'GatewayError';
   }
 }
+
+/**
+ * Retry an async function with exponential backoff.
+ * Retries on transient errors (network, 5xx, overloaded) only.
+ */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  { maxRetries = 2, baseDelay = 1000 }: { maxRetries?: number; baseDelay?: number } = {}
+): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastError = err;
+      // Don't retry on non-transient errors
+      if (err instanceof GatewayError && err.status < 500) throw err;
+      if (attempt === maxRetries) throw err;
+      // Exponential backoff: 1s, 2s, 4s
+      await new Promise((r) => setTimeout(r, baseDelay * Math.pow(2, attempt)));
+    }
+  }
+  throw lastError;
+}

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { getPlatformAIModel, logUsage, GatewayError } from '@/lib/ai/gateway';
+import { getPlatformAIModel, checkRateLimit, logUsage, GatewayError } from '@/lib/ai/gateway';
 import { streamText } from 'ai';
 import { LESSON_SYSTEM_PROMPT, LESSON_USER_PROMPT } from '@/lib/ai/prompts';
 import { z } from 'zod';
@@ -41,6 +41,16 @@ export async function POST(req: NextRequest) {
     }
 
     const params = parsed.data;
+
+    // Rate limiting — prevent abuse of the most expensive AI endpoint
+    const rateLimit = await checkRateLimit(supabase, user.id, 'generate_lesson');
+    if (!rateLimit.allowed) {
+      const isMinuteLimit = rateLimit.requests_minute >= rateLimit.limit_minute;
+      const detail = isMinuteLimit
+        ? `Rate limit exceeded: ${rateLimit.requests_minute}/${rateLimit.limit_minute} requests per minute`
+        : `Daily limit exceeded: ${rateLimit.requests_day}/${rateLimit.limit_day} requests per day`;
+      return new Response(JSON.stringify({ error: detail }), { status: 429 });
+    }
 
     // Use platform-level AI key (not tenant's per-org config)
     let platform;
