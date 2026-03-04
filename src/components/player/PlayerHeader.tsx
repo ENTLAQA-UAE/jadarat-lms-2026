@@ -2,7 +2,6 @@
 
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 interface PlayerHeaderProps {
   courseName: string;
@@ -11,6 +10,7 @@ interface PlayerHeaderProps {
   overallProgress: number;
   direction: 'rtl' | 'ltr' | 'auto';
   onClose: () => void;
+  logoUrl?: string;
 }
 
 export function PlayerHeader({
@@ -20,10 +20,11 @@ export function PlayerHeader({
   overallProgress,
   direction,
   onClose,
+  logoUrl,
 }: PlayerHeaderProps) {
   return (
     <header
-      className="h-14 border-b bg-card flex items-center shrink-0 z-30"
+      className="h-14 border-b bg-card/95 backdrop-blur-sm flex items-center shrink-0 z-30"
       style={{ fontFamily: 'var(--player-font)' }}
     >
       {/* Close button */}
@@ -31,7 +32,7 @@ export function PlayerHeader({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8"
+          className="h-8 w-8 rounded-lg hover:bg-muted/60"
           onClick={onClose}
           aria-label="Close course"
         >
@@ -39,13 +40,24 @@ export function PlayerHeader({
         </Button>
       </div>
 
+      {/* Logo (if provided) */}
+      {logoUrl && (
+        <div className="flex items-center px-3 border-e h-full">
+          <img
+            src={logoUrl}
+            alt=""
+            className="h-7 w-auto object-contain"
+          />
+        </div>
+      )}
+
       {/* Course info */}
       <div className="flex-1 flex items-center gap-3 px-4 min-w-0">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold truncate" style={{ color: 'var(--player-text)' }}>
             {courseName}
           </p>
-          <p className="text-xs text-muted-foreground truncate">
+          <p className="text-xs text-muted-foreground/60 truncate">
             {moduleTitle} — {lessonTitle}
           </p>
         </div>
@@ -53,19 +65,22 @@ export function PlayerHeader({
 
       {/* Progress bar */}
       <div className="flex items-center gap-3 px-4">
-        <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
-          {overallProgress}%
-        </span>
-        <div className="w-32 h-2 rounded-full bg-muted overflow-hidden hidden sm:block">
-          <div
-            className={cn(
-              'h-full rounded-full transition-all duration-500 ease-out'
-            )}
-            style={{
-              width: `${overallProgress}%`,
-              backgroundColor: 'var(--player-primary)',
-            }}
-          />
+        <div className="flex items-center gap-2">
+          <div className="w-28 h-1.5 rounded-full bg-muted/60 overflow-hidden hidden sm:block">
+            <div
+              className="h-full rounded-full transition-all duration-700 ease-out"
+              style={{
+                width: `${overallProgress}%`,
+                backgroundColor: 'var(--player-primary)',
+              }}
+            />
+          </div>
+          <span
+            className="text-xs font-semibold whitespace-nowrap tabular-nums"
+            style={{ color: 'var(--player-primary)' }}
+          >
+            {overallProgress}%
+          </span>
         </div>
       </div>
     </header>

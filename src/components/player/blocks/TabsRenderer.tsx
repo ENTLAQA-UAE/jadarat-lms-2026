@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { TabsBlock, CourseTheme } from '@/types/authoring';
 import type { BlockProgress } from '../CoursePlayer';
@@ -48,7 +49,7 @@ export function TabsRenderer({
 
   return (
     <div
-      className={cn('border rounded-lg', isVertical ? 'flex' : '')}
+      className={cn('border rounded-lg overflow-hidden', isVertical ? 'flex' : '')}
       style={{
         borderRadius: 'var(--player-radius)',
         fontFamily: 'var(--player-font)',
@@ -64,21 +65,19 @@ export function TabsRenderer({
       >
         {block.data.tabs.map((tab) => {
           const isActive = activeTab === tab.id;
+          const isViewed = viewedTabs.has(tab.id);
           return (
             <button
               key={tab.id}
               className={cn(
-                'px-4 py-3 text-sm font-medium text-start whitespace-nowrap transition-colors',
-                !isActive && 'text-muted-foreground hover:text-foreground hover:bg-accent/50',
-                !isVertical && isActive && 'border-b-2 -mb-px',
-                isVertical && isActive && 'border-e-2 -me-px'
+                'relative px-4 py-3 text-sm font-medium text-start whitespace-nowrap transition-all duration-200',
+                !isActive && 'text-muted-foreground hover:text-foreground hover:bg-accent/30',
               )}
               style={
                 isActive
                   ? {
                       color: 'var(--player-primary)',
-                      borderColor: 'var(--player-primary)',
-                      backgroundColor: 'color-mix(in srgb, var(--player-primary) 10%, transparent)',
+                      backgroundColor: 'color-mix(in srgb, var(--player-primary) 8%, transparent)',
                     }
                   : undefined
               }
@@ -86,19 +85,50 @@ export function TabsRenderer({
             >
               {tab.icon && <span className="me-2">{tab.icon}</span>}
               {tab.label}
+              {/* Viewed indicator dot */}
+              {isViewed && !isActive && (
+                <span
+                  className="absolute top-2 end-2 h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: 'color-mix(in srgb, var(--player-primary) 40%, transparent)' }}
+                />
+              )}
+              {/* Active underline/border */}
+              {isActive && !isVertical && (
+                <motion.div
+                  layoutId={`tab-indicator-${block.id}`}
+                  className="absolute bottom-0 inset-x-0 h-0.5"
+                  style={{ backgroundColor: 'var(--player-primary)' }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
+              {isActive && isVertical && (
+                <motion.div
+                  layoutId={`tab-indicator-${block.id}`}
+                  className="absolute inset-y-0 end-0 w-0.5"
+                  style={{ backgroundColor: 'var(--player-primary)' }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
             </button>
           );
         })}
       </div>
 
-      {/* Tab content */}
-      <div className="p-4">
-        {activeContent && (
-          <div
-            className="prose prose-sm max-w-none dark:prose-invert"
-            dangerouslySetInnerHTML={{ __html: activeContent.content }}
-          />
-        )}
+      {/* Tab content with animation */}
+      <div className="p-5 min-h-[100px]">
+        <AnimatePresence mode="wait">
+          {activeContent && (
+            <motion.div
+              key={activeContent.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="prose prose-sm max-w-none dark:prose-invert"
+              dangerouslySetInnerHTML={{ __html: activeContent.content }}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

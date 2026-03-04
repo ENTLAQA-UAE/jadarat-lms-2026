@@ -117,6 +117,8 @@ export function EditorCanvas() {
   const updateBlock = useEditorStore((s) => s.updateBlock);
   const deleteBlock = useEditorStore((s) => s.deleteBlock);
   const duplicateBlock = useEditorStore((s) => s.duplicateBlock);
+  const toggleBlockVisibility = useEditorStore((s) => s.toggleBlockVisibility);
+  const toggleBlockLock = useEditorStore((s) => s.toggleBlockLock);
   const selectBlock = useEditorStore((s) => s.selectBlock);
   const addBlock = useEditorStore((s) => s.addBlock);
 
@@ -342,6 +344,8 @@ export function EditorCanvas() {
                 blockType={block.type}
                 blockIndex={index}
                 totalBlocks={blocks.length}
+                isVisible={block.visible}
+                isLocked={block.locked}
                 onSelect={() => selectBlock(block.id)}
                 onDelete={() =>
                   deleteBlock(selectedModuleId, selectedLessonId, block.id)
@@ -358,6 +362,12 @@ export function EditorCanvas() {
                   index < blocks.length - 1
                     ? () => handleMoveBlock(index, index + 1)
                     : undefined
+                }
+                onToggleVisibility={() =>
+                  toggleBlockVisibility(selectedModuleId, selectedLessonId, block.id)
+                }
+                onToggleLock={() =>
+                  toggleBlockLock(selectedModuleId, selectedLessonId, block.id)
                 }
               >
                 <LazyBlockContent>
