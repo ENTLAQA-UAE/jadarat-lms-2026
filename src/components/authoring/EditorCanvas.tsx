@@ -213,16 +213,16 @@ export function EditorCanvas() {
     [selectedModuleId, selectedLessonId, addBlock],
   );
 
-  // ── Empty states (Rise-style) ────────────────────────────
+  // ── Empty states ────────────────────────────────────────
   if (!selectedModuleId || !currentModule) {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <div className="text-center max-w-md">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
-            <Sparkles className="h-7 w-7 text-primary/50" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100 to-violet-50 dark:from-indigo-500/15 dark:to-violet-500/10 border border-indigo-200/50 dark:border-indigo-500/15 shadow-lg shadow-indigo-500/5">
+            <Sparkles className="h-8 w-8 text-indigo-400" />
           </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2">Select a module</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto mb-8">
+          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">Select a module</h3>
+          <p className="text-sm text-slate-400 dark:text-slate-500 leading-relaxed max-w-xs mx-auto mb-8">
             Choose a module from the sidebar, or create a new one to start building your course.
           </p>
           <button
@@ -232,7 +232,7 @@ export function EditorCanvas() {
               const sidebarOpen = useEditorStore.getState().sidebarOpen;
               if (!sidebarOpen) toggleSidebar();
             }}
-            className="inline-flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-all"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 text-white px-5 py-2.5 text-sm font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-500/20 transition-all"
           >
             <LayoutGrid className="h-4 w-4" />
             Open Sidebar
@@ -246,12 +246,12 @@ export function EditorCanvas() {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <div className="text-center max-w-md">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
-            <Plus className="h-7 w-7 text-primary/50" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100 to-violet-50 dark:from-indigo-500/15 dark:to-violet-500/10 border border-indigo-200/50 dark:border-indigo-500/15 shadow-lg shadow-indigo-500/5">
+            <Plus className="h-8 w-8 text-indigo-400" />
           </div>
-          <h3 className="text-xl font-semibold text-foreground mb-2">Select a lesson</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto mb-8">
-            Pick a lesson from the <strong>{currentModule.title}</strong> module to start adding content blocks.
+          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">Select a lesson</h3>
+          <p className="text-sm text-slate-400 dark:text-slate-500 leading-relaxed max-w-xs mx-auto mb-8">
+            Pick a lesson from <strong className="text-slate-600 dark:text-slate-300">{currentModule.title}</strong> to start adding content blocks.
           </p>
           <button
             type="button"
@@ -260,7 +260,7 @@ export function EditorCanvas() {
               const sidebarOpen = useEditorStore.getState().sidebarOpen;
               if (!sidebarOpen) toggleSidebar();
             }}
-            className="inline-flex items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-4 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-all"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 text-white px-5 py-2.5 text-sm font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-500/20 transition-all"
           >
             <LayoutGrid className="h-4 w-4" />
             Open Sidebar
@@ -278,16 +278,15 @@ export function EditorCanvas() {
       <div className="flex h-full flex-col items-center justify-center p-8">
         <div className="text-center max-w-lg">
           {/* Module > Lesson breadcrumb */}
-          <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider mb-6">
+          <div className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-6 bg-slate-100 dark:bg-slate-800 rounded-full px-4 py-1.5">
             {currentModule.title} / {currentLesson.title}
-          </p>
+          </div>
 
-          <h3 className="text-xl font-semibold text-foreground mb-2">Add your first block</h3>
-          <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto leading-relaxed">
+          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">Add your first block</h3>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mb-8 max-w-sm mx-auto leading-relaxed">
             Use the Block Library or quick-add bar below to start building your lesson content.
           </p>
 
-          {/* Quick-add bar (Rise-style) */}
           <QuickAddBar onInsertBlock={handleInsertBlock} />
         </div>
       </div>
@@ -300,18 +299,18 @@ export function EditorCanvas() {
       role="region"
       aria-label={`Editing lesson: ${currentLesson.title}`}
     >
-      {/* Lesson header breadcrumb */}
+      {/* Lesson header */}
       <div className="mb-8 flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+          <p className="text-[11px] font-semibold text-indigo-500/70 dark:text-indigo-400/50 uppercase tracking-wider mb-1">
             {currentModule.title}
           </p>
-          <h2 className="text-xl font-semibold text-foreground tracking-tight truncate">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight truncate">
             {currentLesson.title}
           </h2>
         </div>
-        <div className="shrink-0 flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 rounded-full px-3 py-1.5 border border-border/30">
-          <span className="font-medium tabular-nums">{blocks.length}</span>
+        <div className="shrink-0 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 rounded-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 font-medium">
+          <span className="tabular-nums">{blocks.length}</span>
           <span>{blocks.length === 1 ? 'block' : 'blocks'}</span>
         </div>
       </div>
@@ -447,8 +446,8 @@ function InlineInsertButton({
         className={cn(
           'absolute inset-x-0 top-1/2 h-px transition-all duration-300',
           isOpen
-            ? 'bg-gradient-to-r from-transparent via-primary/30 to-transparent'
-            : 'bg-transparent group-hover/insert:bg-gradient-to-r group-hover/insert:from-transparent group-hover/insert:via-border/60 group-hover/insert:to-transparent',
+            ? 'bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent'
+            : 'bg-transparent group-hover/insert:bg-gradient-to-r group-hover/insert:from-transparent group-hover/insert:via-slate-300/60 dark:group-hover/insert:via-slate-600/60 group-hover/insert:to-transparent',
         )}
       />
 
@@ -459,8 +458,8 @@ function InlineInsertButton({
         className={cn(
           'relative z-10 flex h-6 w-6 items-center justify-center rounded-full border transition-all duration-300',
           isOpen
-            ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-110'
-            : 'bg-background text-muted-foreground/60 border-border/40 opacity-0 group-hover/insert:opacity-100 hover:border-primary/50 hover:text-primary hover:shadow-sm hover:scale-110',
+            ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-500/25 scale-110'
+            : 'bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700 opacity-0 group-hover/insert:opacity-100 hover:border-indigo-400 hover:text-indigo-500 hover:shadow-sm hover:scale-110',
         )}
       >
         <Plus

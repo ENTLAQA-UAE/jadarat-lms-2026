@@ -240,10 +240,10 @@ function SortableModuleRow({
       {/* Module Row */}
       <div
         className={cn(
-          'group/mod flex items-center gap-1 rounded-xl px-2 py-2 text-sm transition-all duration-200 cursor-pointer',
+          'group/mod flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm transition-all duration-200 cursor-pointer',
           isModuleSelected
-            ? 'bg-primary/8 text-primary shadow-sm shadow-primary/5 border border-primary/15'
-            : 'hover:bg-muted/60 text-foreground border border-transparent',
+            ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 shadow-sm ring-1 ring-indigo-200 dark:ring-indigo-500/20'
+            : 'hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:shadow-sm',
         )}
         onClick={() => onModuleClick(module.id)}
       >
@@ -266,8 +266,8 @@ function SortableModuleRow({
 
         {/* Folder icon */}
         <div className={cn(
-          'flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-all duration-200',
-          isModuleSelected || isExpanded ? 'bg-primary/10 text-primary' : 'bg-muted/50 text-muted-foreground',
+          'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-all duration-200',
+          isModuleSelected || isExpanded ? 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500',
         )}>
           {isExpanded ? <FolderOpen className="h-3.5 w-3.5" /> : <Folder className="h-3.5 w-3.5" />}
         </div>
@@ -281,8 +281,8 @@ function SortableModuleRow({
 
         {/* Lesson count */}
         <span className={cn(
-          'shrink-0 flex h-5 min-w-[20px] items-center justify-center rounded-md px-1 text-[10px] font-semibold tabular-nums',
-          isModuleSelected ? 'bg-primary/15 text-primary' : 'bg-muted/60 text-muted-foreground',
+          'shrink-0 flex h-5 min-w-[20px] items-center justify-center rounded-md px-1.5 text-[10px] font-bold tabular-nums',
+          isModuleSelected ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500',
         )}>
           {lessonCount}
         </span>
@@ -318,7 +318,7 @@ function SortableModuleRow({
       {/* Lessons (sortable) */}
       {isExpanded && (
         <div
-          className="ms-5 mt-0.5 border-s-2 border-border/30 ps-1.5 space-y-0.5 animate-in slide-in-from-top-1 duration-200"
+          className="ms-5 mt-0.5 border-s-2 border-indigo-200/60 dark:border-indigo-500/15 ps-1.5 space-y-0.5 animate-in slide-in-from-top-1 duration-200"
           role="group"
           aria-label={`Lessons in ${module.title}`}
         >
@@ -343,7 +343,7 @@ function SortableModuleRow({
           {/* Add Lesson */}
           <button
             onClick={() => onAddLesson(module.id)}
-            className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground/70 transition-all duration-200 hover:bg-primary/5 hover:text-primary border border-transparent hover:border-primary/10"
+            className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-slate-400 dark:text-slate-500 transition-all duration-200 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-400 border border-dashed border-transparent hover:border-indigo-200 dark:hover:border-indigo-500/20"
             aria-label={`Add lesson to ${module.title}`}
           >
             <Plus className="h-3 w-3" />
@@ -403,8 +403,8 @@ function SortableLessonRow({
       className={cn(
         'group/lesson flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm transition-all duration-200 cursor-pointer',
         isSelected
-          ? 'bg-primary/8 text-primary font-medium border border-primary/15'
-          : 'hover:bg-muted/50 text-foreground/75 border border-transparent',
+          ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 font-medium ring-1 ring-indigo-200 dark:ring-indigo-500/20'
+          : 'hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-transparent',
         isDragging && 'opacity-50 z-50',
       )}
       onClick={() => onLessonClick(moduleId, lesson.id)}
@@ -425,7 +425,7 @@ function SortableLessonRow({
       </button>
 
       {/* Icon */}
-      <div className={cn('flex h-5 w-5 shrink-0 items-center justify-center rounded', isSelected ? 'text-primary' : 'text-muted-foreground/60')}>
+      <div className={cn('flex h-5 w-5 shrink-0 items-center justify-center rounded', isSelected ? 'text-indigo-500 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500')}>
         <FileText className="h-3.5 w-3.5" />
       </div>
 
@@ -438,13 +438,13 @@ function SortableLessonRow({
 
       {/* Block count */}
       {blockCount > 0 && (
-        <span className={cn('shrink-0 text-[10px] tabular-nums', isSelected ? 'text-primary/60' : 'text-muted-foreground/50')}>
+        <span className={cn('shrink-0 text-[10px] tabular-nums font-medium', isSelected ? 'text-indigo-400' : 'text-slate-400 dark:text-slate-600')}>
           {blockCount}
         </span>
       )}
 
-      {/* Selected dot */}
-      {isSelected && <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-sm shadow-primary/30" />}
+      {/* Selected indicator */}
+      {isSelected && <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/30" />}
 
       {/* Actions (Move + Delete) */}
       <DropdownMenu>
@@ -609,25 +609,25 @@ export function ModuleSidebar() {
 
   return (
     <div
-      className="flex h-full w-72 flex-col border-e border-border/40 bg-background/50 backdrop-blur-sm"
+      className="flex h-full w-[280px] flex-col border-e border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50"
       role="tree"
       aria-label="Course structure"
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10">
-            <BookOpen className="h-3 w-3 text-primary" />
+      <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 shadow-sm shadow-indigo-500/20">
+            <BookOpen className="h-3.5 w-3.5 text-white" />
           </div>
-          <h2 className="text-xs font-semibold text-foreground uppercase tracking-wider">
-            Structure
+          <h2 className="text-[13px] font-semibold text-slate-800 dark:text-slate-200 tracking-tight">
+            Course Structure
           </h2>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleAddModule}
-          className="h-7 gap-1 px-2 text-xs text-primary hover:text-primary hover:bg-primary/10 rounded-lg transition-all duration-200"
+          className="h-7 gap-1.5 px-2.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-all duration-200"
           aria-label="Add new module"
         >
           <Plus className="h-3.5 w-3.5" />
@@ -640,16 +640,16 @@ export function ModuleSidebar() {
         <div className="p-2 space-y-0.5">
           {modules.length === 0 && (
             <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
-                <FolderOpen className="h-6 w-6 text-primary/40" />
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-100 to-violet-50 dark:from-indigo-500/15 dark:to-violet-500/10 border border-indigo-200/50 dark:border-indigo-500/15">
+                <FolderOpen className="h-6 w-6 text-indigo-400 dark:text-indigo-500" />
               </div>
-              <p className="text-sm font-medium text-foreground/70 mb-1">No modules yet</p>
-              <p className="text-xs text-muted-foreground mb-4">Create your first module to start building</p>
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">No modules yet</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">Create your first module to start building</p>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleAddModule}
-                className="gap-1.5 text-xs rounded-lg border-dashed border-primary/30 text-primary hover:bg-primary/5 hover:border-primary/50 transition-all duration-200"
+                className="gap-1.5 text-xs rounded-lg border-dashed border-indigo-300 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:border-indigo-400 transition-all duration-200"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Create Module
@@ -686,8 +686,8 @@ export function ModuleSidebar() {
 
       {/* Footer stats */}
       {modules.length > 0 && (
-        <div className="border-t border-border/40 px-4 py-2.5">
-          <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+        <div className="border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 bg-white/50 dark:bg-slate-900/50">
+          <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium">
             <span>{modules.length} {modules.length === 1 ? 'module' : 'modules'}</span>
             <span>{modules.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0)} lessons</span>
           </div>
