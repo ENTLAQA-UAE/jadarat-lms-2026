@@ -150,6 +150,7 @@ export function ThemeEditor() {
 
   const [previewViewport, setPreviewViewport] = useState<PreviewViewport>('desktop');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   const handleColorChange = useCallback(
     (field: keyof Pick<CourseTheme, 'primary_color' | 'secondary_color' | 'background_color' | 'text_color'>) =>
@@ -205,6 +206,25 @@ export function ThemeEditor() {
   const handleRemoveCoverImage = useCallback(() => {
     updateTheme({ cover_image_url: undefined });
     if (fileInputRef.current) fileInputRef.current.value = '';
+  }, [updateTheme]);
+
+  const handleLogoUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result as string;
+        updateTheme({ logo_url: dataUrl });
+      };
+      reader.readAsDataURL(file);
+    },
+    [updateTheme],
+  );
+
+  const handleRemoveLogo = useCallback(() => {
+    updateTheme({ logo_url: undefined });
+    if (logoInputRef.current) logoInputRef.current.value = '';
   }, [updateTheme]);
 
   const isPresetActive = (presetTheme: CourseTheme) => {
@@ -456,6 +476,54 @@ export function ThemeEditor() {
               onChange={handleCoverImageUpload}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* -------------------------------------------------------- */}
+      {/* Course Logo                                              */}
+      {/* -------------------------------------------------------- */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Course Logo</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Add a logo to display on the course cover and player header.
+          </p>
+          {theme.logo_url ? (
+            <div className="relative inline-block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={theme.logo_url}
+                alt="Course logo"
+                className="h-16 max-w-[200px] rounded-lg border border-border object-contain bg-muted/30 p-2"
+              />
+              <Button
+                variant="destructive"
+                size="icon"
+                className="absolute -top-2 -right-2 h-5 w-5"
+                onClick={handleRemoveLogo}
+              >
+                <X className="h-2.5 w-2.5" />
+              </Button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => logoInputRef.current?.click()}
+              className="flex h-16 w-full flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/30 hover:bg-muted/50"
+            >
+              <ImageIcon className="h-5 w-5" />
+              <span className="text-xs">Upload logo</span>
+            </button>
+          )}
+          <input
+            ref={logoInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleLogoUpload}
+          />
         </CardContent>
       </Card>
 

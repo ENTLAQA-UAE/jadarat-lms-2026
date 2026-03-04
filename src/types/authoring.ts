@@ -597,6 +597,7 @@ export interface CourseTheme {
   lesson_header_style: 'full_width_banner' | 'compact' | 'none';
   dark_mode: boolean;
   cover_image_url?: string;
+  logo_url?: string;                   // Course logo overlay on cover/header
 }
 
 // ============================================================

@@ -49,14 +49,21 @@ export function useImageUpload(): UseImageUploadReturn {
         .from(`LMS Resources/${orgId}`)
         .upload(fileName, file, { cacheControl: '3600', upsert: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Storage upload error:', error);
+        throw new Error(error.message || 'Failed to upload to storage');
+      }
 
       const { data: urlData, error: urlError } = await supabase.storage
         .from('LMS Resources')
         .createSignedUrl(`${orgId}/${data.path}`, 630720000); // ~20 years
 
-      if (urlError) throw urlError;
+      if (urlError) {
+        console.error('Signed URL error:', urlError);
+        throw new Error(urlError.message || 'Failed to generate image URL');
+      }
 
+      toast.success('Image uploaded', { description: 'Image uploaded successfully.' });
       return urlData.signedUrl;
     } catch (err) {
       toast.error('Upload failed', {
