@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { BunnyStream } from '@/lib/bunny/stream';
+import { createClient } from '@/utils/supabase/server';
 
 export async function POST(request: NextRequest) {
+  // Authenticate the user
+  const supabase = await createClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   let body: { title?: string };
 
   try {
@@ -29,6 +41,20 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Generate TUS upload credentials for client-side resumable upload
     const tusCredentials = bunny.generateTusCredentials(videoId);
+
+    // Step 3: Register the video in our database
+    const orgResult = await supabase.rpc('get_user_org_id');
+    const orgId = orgResult.data;
+
+    if (orgId) {
+      await supabase.rpc('register_bunny_video', {
+        p_organization_id: orgId,
+        p_bunny_video_id: videoId,
+        p_bunny_library_id: libraryId,
+        p_title: title,
+        p_user_id: user.id,
+      });
+    }
 
     return NextResponse.json({
       videoId: tusCredentials.videoId,
