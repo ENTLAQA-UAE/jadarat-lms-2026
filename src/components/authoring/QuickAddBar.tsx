@@ -50,7 +50,7 @@ export function QuickAddBar({ onInsertBlock, compact = false }: QuickAddBarProps
     <TooltipProvider delayDuration={200}>
       <div
         className={cn(
-          'flex items-center gap-1 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/50 p-1.5 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50',
+          'flex items-center gap-0.5 rounded-xl bg-card border border-border/40 p-1 shadow-elevation-2',
           compact ? 'flex-wrap justify-center' : '',
         )}
       >
@@ -61,10 +61,10 @@ export function QuickAddBar({ onInsertBlock, compact = false }: QuickAddBarProps
               type="button"
               onClick={toggleBlockLibrary}
               className={cn(
-                'flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200',
+                'flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all duration-150',
                 blockLibraryOpen
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                  : 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-500/15',
+                  ? 'gradient-vivid text-white shadow-sm shadow-primary/15'
+                  : 'bg-primary/[0.06] text-primary hover:bg-primary/[0.1]',
               )}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
@@ -81,7 +81,7 @@ export function QuickAddBar({ onInsertBlock, compact = false }: QuickAddBarProps
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold bg-gradient-to-r from-violet-50 to-fuchsia-50 dark:from-violet-500/10 dark:to-fuchsia-500/10 text-violet-600 dark:text-violet-400 hover:from-violet-100 hover:to-fuchsia-100 dark:hover:from-violet-500/15 dark:hover:to-fuchsia-500/15 transition-all duration-200"
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-semibold bg-accent/[0.06] text-accent hover:bg-accent/[0.1] transition-all duration-150"
             >
               <Sparkles className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">AI</span>
@@ -93,7 +93,7 @@ export function QuickAddBar({ onInsertBlock, compact = false }: QuickAddBarProps
         </Tooltip>
 
         {/* Divider */}
-        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-0.5" />
+        <div className="h-5 w-px bg-border/30 mx-0.5" />
 
         {/* Quick block buttons */}
         {QUICK_BLOCKS.map((block) => {
@@ -104,9 +104,9 @@ export function QuickAddBar({ onInsertBlock, compact = false }: QuickAddBarProps
                 <button
                   type="button"
                   onClick={() => onInsertBlock(block.type)}
-                  className="group flex flex-col items-center gap-0.5 rounded-xl p-2 text-slate-400 dark:text-slate-500 transition-all duration-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300"
+                  className="group flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-muted-foreground/40 transition-all duration-150 hover:bg-black/[0.03] dark:hover:bg-white/[0.04] hover:text-foreground/70"
                 >
-                  <Icon className="h-4 w-4 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors" />
+                  <Icon className="h-4 w-4 group-hover:text-primary transition-colors" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" sideOffset={8} className="text-xs font-medium">

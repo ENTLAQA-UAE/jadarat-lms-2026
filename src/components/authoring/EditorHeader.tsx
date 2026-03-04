@@ -15,7 +15,7 @@ import {
   PanelLeftClose,
   PanelLeft,
   LayoutGrid,
-  Zap,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -95,12 +95,9 @@ export function EditorHeader({
 
   return (
     <TooltipProvider delayDuration={200}>
-      <header className="relative z-30 flex h-14 items-center justify-between bg-slate-900 dark:bg-slate-950 px-4 shadow-lg shadow-slate-900/10">
-        {/* Accent gradient line at bottom */}
-        <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500 opacity-80" />
-
+      <header className="relative z-40 flex h-[52px] items-center justify-between px-3 glass-toolbar border-b border-black/[0.06] dark:border-white/[0.06]">
         {/* Left: Navigation + Title */}
-        <div className="flex items-center gap-1.5 min-w-0">
+        <div className="flex items-center gap-1 min-w-0">
           {/* Back */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -108,7 +105,7 @@ export function EditorHeader({
                 variant="ghost"
                 size="icon"
                 onClick={handleBack}
-                className="h-8 w-8 shrink-0 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-200"
+                className="h-8 w-8 shrink-0 rounded-lg text-muted-foreground hover:text-foreground hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all duration-150"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -118,8 +115,8 @@ export function EditorHeader({
             </TooltipContent>
           </Tooltip>
 
-          {/* Vertical divider */}
-          <div className="h-5 w-px bg-slate-700 shrink-0 mx-1" />
+          {/* Separator */}
+          <div className="h-4 w-px bg-border/60 shrink-0 mx-0.5" />
 
           {/* Sidebar toggle */}
           <Tooltip>
@@ -129,10 +126,10 @@ export function EditorHeader({
                 size="icon"
                 onClick={toggleSidebar}
                 className={cn(
-                  'h-8 w-8 shrink-0 rounded-lg transition-all duration-200',
+                  'h-8 w-8 shrink-0 rounded-lg transition-all duration-150',
                   sidebarOpen
-                    ? 'text-white bg-white/10'
-                    : 'text-slate-400 hover:text-white hover:bg-white/10',
+                    ? 'text-primary bg-primary/8 hover:bg-primary/12'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-black/[0.04] dark:hover:bg-white/[0.06]',
                 )}
               >
                 {sidebarOpen ? (
@@ -155,10 +152,10 @@ export function EditorHeader({
                 size="icon"
                 onClick={toggleBlockLibrary}
                 className={cn(
-                  'h-8 w-8 shrink-0 rounded-lg transition-all duration-200',
+                  'h-8 w-8 shrink-0 rounded-lg transition-all duration-150',
                   blockLibraryOpen
-                    ? 'text-indigo-300 bg-indigo-500/20 ring-1 ring-indigo-400/30'
-                    : 'text-slate-400 hover:text-white hover:bg-white/10',
+                    ? 'text-primary bg-primary/8 hover:bg-primary/12'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-black/[0.04] dark:hover:bg-white/[0.06]',
                 )}
               >
                 <LayoutGrid className="h-4 w-4" />
@@ -169,36 +166,34 @@ export function EditorHeader({
             </TooltipContent>
           </Tooltip>
 
-          {/* Vertical divider */}
-          <div className="h-5 w-px bg-slate-700 shrink-0 mx-1" />
+          {/* Separator */}
+          <div className="h-4 w-px bg-border/60 shrink-0 mx-0.5" />
 
           {/* Course title + brand icon */}
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 shadow-md shadow-indigo-500/25">
-              <Zap className="h-3.5 w-3.5 text-white" />
+          <div className="flex items-center gap-2 min-w-0 ms-1">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md gradient-vivid">
+              <Sparkles className="h-3 w-3 text-white" />
             </div>
-            <div className="min-w-0">
-              <h1 className="truncate text-sm font-semibold text-white max-w-[140px] sm:max-w-[260px] leading-tight">
-                {courseTitle || 'Untitled Course'}
-              </h1>
-            </div>
+            <h1 className="truncate text-[13px] font-semibold text-foreground max-w-[140px] sm:max-w-[260px] leading-tight tracking-tight">
+              {courseTitle || 'Untitled Course'}
+            </h1>
           </div>
 
-          {/* Save status */}
+          {/* Save status pill */}
           <div className="shrink-0 ms-2">
             {savingInProgress ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 <span className="hidden sm:inline">Saving</span>
               </span>
             ) : showSavedFeedback ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-medium text-emerald-400 animate-in fade-in duration-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-medium text-success animate-in fade-in duration-300">
                 <Check className="h-3 w-3" />
                 <span className="hidden sm:inline">Saved</span>
               </span>
             ) : isDirty ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-2.5 py-1 text-[11px] font-medium text-amber-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/10 px-2.5 py-1 text-[11px] font-medium text-warning">
+                <span className="h-1.5 w-1.5 rounded-full bg-warning animate-pulse" />
                 <span className="hidden sm:inline">Unsaved</span>
               </span>
             ) : null}
@@ -206,7 +201,7 @@ export function EditorHeader({
         </div>
 
         {/* Center: Undo/Redo */}
-        <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-0.5 rounded-lg bg-white/[0.06] border border-white/[0.08] p-0.5">
+        <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-0.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.04] p-0.5">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -214,13 +209,13 @@ export function EditorHeader({
                 size="icon"
                 onClick={undo}
                 disabled={undoStack.length === 0}
-                className="h-7 w-7 rounded-md text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-transparent transition-all duration-200"
+                className="h-7 w-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-black/[0.06] dark:hover:bg-white/[0.08] disabled:opacity-20 transition-all duration-150"
               >
                 <Undo2 className="h-3.5 w-3.5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={8} className="text-xs">
-              Undo <kbd className="ml-1.5 rounded-md bg-slate-700 border border-slate-600 px-1.5 py-0.5 text-[10px] font-mono text-slate-300">Ctrl+Z</kbd>
+              Undo <kbd className="ms-1.5 rounded bg-muted border border-border px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">Ctrl+Z</kbd>
             </TooltipContent>
           </Tooltip>
 
@@ -231,19 +226,19 @@ export function EditorHeader({
                 size="icon"
                 onClick={redo}
                 disabled={redoStack.length === 0}
-                className="h-7 w-7 rounded-md text-slate-400 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:hover:bg-transparent transition-all duration-200"
+                className="h-7 w-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-black/[0.06] dark:hover:bg-white/[0.08] disabled:opacity-20 transition-all duration-150"
               >
                 <Redo2 className="h-3.5 w-3.5" />
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={8} className="text-xs">
-              Redo <kbd className="ml-1.5 rounded-md bg-slate-700 border border-slate-600 px-1.5 py-0.5 text-[10px] font-mono text-slate-300">Ctrl+Shift+Z</kbd>
+              Redo <kbd className="ms-1.5 rounded bg-muted border border-border px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">Ctrl+Shift+Z</kbd>
             </TooltipContent>
           </Tooltip>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {/* Preview */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -252,10 +247,10 @@ export function EditorHeader({
                 size="sm"
                 onClick={togglePreview}
                 className={cn(
-                  'gap-1.5 h-8 rounded-lg text-xs font-medium transition-all duration-200',
+                  'gap-1.5 h-8 rounded-lg text-xs font-medium transition-all duration-150',
                   previewMode
-                    ? 'bg-indigo-500/20 text-indigo-300 ring-1 ring-indigo-400/30 hover:bg-indigo-500/25'
-                    : 'text-slate-400 hover:text-white hover:bg-white/10',
+                    ? 'bg-primary/8 text-primary hover:bg-primary/12'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-black/[0.04] dark:hover:bg-white/[0.06]',
                 )}
               >
                 {previewMode ? (
@@ -273,6 +268,9 @@ export function EditorHeader({
             </TooltipContent>
           </Tooltip>
 
+          {/* Separator */}
+          <div className="h-4 w-px bg-border/60 shrink-0" />
+
           {/* Save */}
           <Button
             variant="ghost"
@@ -280,16 +278,16 @@ export function EditorHeader({
             onClick={handleSave}
             disabled={savingInProgress || !isDirty}
             className={cn(
-              'gap-1.5 h-8 rounded-lg text-xs font-medium transition-all duration-200',
+              'gap-1.5 h-8 rounded-lg text-xs font-medium transition-all duration-150',
               isDirty && !savingInProgress
-                ? 'text-white bg-white/10 hover:bg-white/15 ring-1 ring-white/10'
-                : 'text-slate-500 hover:text-slate-300 disabled:opacity-30',
+                ? 'text-foreground bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1]'
+                : 'text-muted-foreground/50 disabled:opacity-30',
             )}
           >
             {savingInProgress ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : showSavedFeedback ? (
-              <Check className="h-3.5 w-3.5 text-emerald-400" />
+              <Check className="h-3.5 w-3.5 text-success" />
             ) : (
               <Save className="h-3.5 w-3.5" />
             )}
@@ -303,7 +301,7 @@ export function EditorHeader({
             size="sm"
             onClick={handlePublish}
             disabled={publishingInProgress || savingInProgress}
-            className="gap-1.5 h-8 rounded-lg text-xs font-semibold bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 text-white shadow-lg shadow-indigo-500/25 border-0 transition-all duration-200 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-500 disabled:shadow-none"
+            className="gap-1.5 h-8 rounded-lg text-xs font-semibold gradient-vivid text-white shadow-md shadow-primary/20 border-0 transition-all duration-200 hover:shadow-lg hover:shadow-primary/25 hover:brightness-110 disabled:opacity-40 disabled:shadow-none disabled:brightness-100"
           >
             {publishingInProgress ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />

@@ -82,25 +82,25 @@ export const BlockWrapper = React.memo(function BlockWrapper({
         ref={setNodeRef}
         style={style}
         className={cn(
-          'group/block relative rounded-2xl bg-white dark:bg-slate-900 transition-all duration-200',
+          'group/block relative rounded-xl transition-all duration-200',
           isSelected
-            ? 'border border-indigo-300 dark:border-indigo-500/30 shadow-lg shadow-indigo-500/5 ring-2 ring-indigo-500/10'
-            : 'border border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50',
-          isDragging && 'opacity-50 shadow-2xl scale-[1.01] ring-2 ring-indigo-500/20',
+            ? 'bg-card border border-primary/20 shadow-elevation-2 ring-1 ring-primary/8'
+            : 'bg-card border border-border/40 hover:border-border/70 hover:shadow-elevation-1',
+          isDragging && 'opacity-40 shadow-elevation-3 scale-[1.005] ring-2 ring-primary/15',
         )}
         onClick={(e) => {
           if ((e.target as HTMLElement).closest('[data-block-action]')) return;
           onSelect();
         }}
       >
-        {/* Block type label */}
+        {/* Block type label — only visible on selection or hover */}
         {blockType && (
           <div
             className={cn(
-              'absolute -top-2.5 start-3 z-10 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-all duration-200',
+              'absolute -top-2.5 start-3 z-10 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-all duration-150',
               isSelected
-                ? 'opacity-100 bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20'
-                : 'opacity-0 group-hover/block:opacity-100 bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700 shadow-sm',
+                ? 'opacity-100 bg-primary/8 text-primary/70 border border-primary/12'
+                : 'opacity-0 group-hover/block:opacity-100 bg-card text-muted-foreground/50 border border-border/50 shadow-xs',
             )}
           >
             {blockType.replace(/_/g, ' ')}
@@ -113,19 +113,19 @@ export const BlockWrapper = React.memo(function BlockWrapper({
           {...attributes}
           {...listeners}
           className={cn(
-            'absolute -start-3 top-1/2 -translate-y-1/2 flex h-10 w-6 cursor-grab items-center justify-center rounded-lg border bg-white dark:bg-slate-800 text-slate-300 dark:text-slate-600 shadow-sm transition-all duration-200 hover:shadow-md hover:text-indigo-500 hover:border-indigo-300 dark:hover:border-indigo-500/30 active:cursor-grabbing active:scale-90',
+            'absolute -start-2.5 top-1/2 -translate-y-1/2 flex h-9 w-5 cursor-grab items-center justify-center rounded-md border bg-card text-muted-foreground/25 transition-all duration-150 hover:text-primary hover:border-primary/20 hover:shadow-sm active:cursor-grabbing active:scale-90',
             isSelected || isDragging
-              ? 'opacity-100 border-indigo-200 dark:border-indigo-500/20'
-              : 'opacity-0 group-hover/block:opacity-100 border-slate-200 dark:border-slate-700',
+              ? 'opacity-100 border-primary/12'
+              : 'opacity-0 group-hover/block:opacity-100 border-border/40',
           )}
           aria-label="Drag to reorder block"
         >
-          <GripVertical className="h-3.5 w-3.5" />
+          <GripVertical className="h-3 w-3" />
         </div>
 
         {/* Floating action toolbar */}
         {isSelected && (
-          <div className="absolute -top-4 end-3 z-20 flex items-center gap-0.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-1 py-0.5 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 animate-in fade-in slide-in-from-bottom-1 duration-200">
+          <div className="absolute -top-3.5 end-3 z-20 flex items-center gap-px rounded-lg border border-border/50 bg-card px-0.5 py-0.5 shadow-elevation-2 animate-in fade-in slide-in-from-bottom-1 duration-200">
             {/* Move Up */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -133,7 +133,7 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 transition-all duration-150"
                   onClick={(e) => {
                     e.stopPropagation();
                     onMoveUp?.();
@@ -155,7 +155,7 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 transition-all duration-150"
                   onClick={(e) => {
                     e.stopPropagation();
                     onMoveDown?.();
@@ -170,7 +170,7 @@ export const BlockWrapper = React.memo(function BlockWrapper({
               </TooltipContent>
             </Tooltip>
 
-            <div className="mx-0.5 h-4 w-px bg-slate-200 dark:bg-slate-700" />
+            <div className="mx-px h-4 w-px bg-border/40" />
 
             {/* Duplicate */}
             <Tooltip>
@@ -179,7 +179,7 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-primary hover:bg-primary/[0.06] transition-all duration-150"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDuplicate();
@@ -200,7 +200,7 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-destructive hover:bg-destructive/8 transition-all duration-150"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete();
@@ -221,7 +221,7 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 transition-all duration-150"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <MoreHorizontal className="h-3.5 w-3.5" />
@@ -240,7 +240,7 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="rounded-lg text-sm text-red-600 dark:text-red-400 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-500/10"
+                  className="rounded-lg text-sm text-destructive focus:text-destructive focus:bg-destructive/8"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete();
@@ -256,7 +256,7 @@ export const BlockWrapper = React.memo(function BlockWrapper({
 
         {/* Selected accent line */}
         {isSelected && (
-          <div className="absolute inset-y-2 start-0 w-[3px] rounded-e-full bg-gradient-to-b from-indigo-500 to-violet-500" />
+          <div className="absolute inset-y-2 start-0 w-[2.5px] rounded-e-full gradient-vivid" />
         )}
 
         {/* Block content */}

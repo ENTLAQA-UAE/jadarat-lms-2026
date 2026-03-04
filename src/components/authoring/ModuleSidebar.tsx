@@ -132,7 +132,7 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
         onKeyDown={handleKeyDown}
         onClick={(e) => e.stopPropagation()}
         aria-label="Rename"
-        className="h-6 px-1.5 py-0 text-xs border-primary/40 bg-primary/5 focus-visible:ring-primary/20 rounded-md"
+        className="h-6 px-1.5 py-0 text-xs border-primary/30 bg-primary/5 focus-visible:ring-primary/20 rounded-md"
       />
     );
   }
@@ -240,10 +240,10 @@ function SortableModuleRow({
       {/* Module Row */}
       <div
         className={cn(
-          'group/mod flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-sm transition-all duration-200 cursor-pointer',
+          'group/mod flex items-center gap-1.5 rounded-xl px-2.5 py-[7px] text-sm transition-all duration-150 cursor-pointer',
           isModuleSelected
-            ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 shadow-sm ring-1 ring-indigo-200 dark:ring-indigo-500/20'
-            : 'hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 hover:shadow-sm',
+            ? 'bg-primary/[0.06] text-primary dark:text-primary-foreground ring-1 ring-primary/15'
+            : 'hover:bg-black/[0.03] dark:hover:bg-white/[0.04] text-foreground/80',
         )}
         onClick={() => onModuleClick(module.id)}
       >
@@ -253,21 +253,23 @@ function SortableModuleRow({
           {...attributes}
           {...listeners}
           onClick={(e) => e.stopPropagation()}
-          className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground/40 opacity-0 group-hover/mod:opacity-100 hover:text-muted-foreground cursor-grab active:cursor-grabbing transition-opacity"
+          className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground/30 opacity-0 group-hover/mod:opacity-100 hover:text-muted-foreground cursor-grab active:cursor-grabbing transition-opacity"
           aria-label={`Drag to reorder ${module.title}`}
         >
           <GripVertical className="h-3 w-3" />
         </button>
 
         {/* Expand chevron */}
-        <span className={cn('shrink-0', isExpanded ? 'text-primary/60' : 'text-muted-foreground')}>
+        <span className={cn('shrink-0 transition-colors', isExpanded ? 'text-primary/50' : 'text-muted-foreground/40')}>
           {isExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
         </span>
 
         {/* Folder icon */}
         <div className={cn(
-          'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-all duration-200',
-          isModuleSelected || isExpanded ? 'bg-indigo-100 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500',
+          'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg transition-all duration-150',
+          isModuleSelected || isExpanded
+            ? 'bg-primary/10 text-primary'
+            : 'bg-muted/60 text-muted-foreground/60',
         )}>
           {isExpanded ? <FolderOpen className="h-3.5 w-3.5" /> : <Folder className="h-3.5 w-3.5" />}
         </div>
@@ -282,7 +284,9 @@ function SortableModuleRow({
         {/* Lesson count */}
         <span className={cn(
           'shrink-0 flex h-5 min-w-[20px] items-center justify-center rounded-md px-1.5 text-[10px] font-bold tabular-nums',
-          isModuleSelected ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500',
+          isModuleSelected
+            ? 'bg-primary/10 text-primary'
+            : 'bg-muted/60 text-muted-foreground/50',
         )}>
           {lessonCount}
         </span>
@@ -292,7 +296,7 @@ function SortableModuleRow({
           <AlertDialogTrigger asChild>
             <button
               onClick={(e) => e.stopPropagation()}
-              className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-all duration-200 opacity-0 group-hover/mod:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+              className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground/40 transition-all duration-150 opacity-0 group-hover/mod:opacity-100 hover:bg-destructive/8 hover:text-destructive"
               aria-label={`Delete module ${module.title}`}
             >
               <X className="h-3 w-3" />
@@ -318,7 +322,7 @@ function SortableModuleRow({
       {/* Lessons (sortable) */}
       {isExpanded && (
         <div
-          className="ms-5 mt-0.5 border-s-2 border-indigo-200/60 dark:border-indigo-500/15 ps-1.5 space-y-0.5 animate-in slide-in-from-top-1 duration-200"
+          className="ms-[22px] mt-0.5 border-s border-border/40 ps-2 space-y-px animate-in slide-in-from-top-1 duration-200"
           role="group"
           aria-label={`Lessons in ${module.title}`}
         >
@@ -343,7 +347,7 @@ function SortableModuleRow({
           {/* Add Lesson */}
           <button
             onClick={() => onAddLesson(module.id)}
-            className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-slate-400 dark:text-slate-500 transition-all duration-200 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-600 dark:hover:text-indigo-400 border border-dashed border-transparent hover:border-indigo-200 dark:hover:border-indigo-500/20"
+            className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground/50 transition-all duration-150 hover:bg-primary/[0.04] hover:text-primary border border-dashed border-transparent hover:border-primary/15"
             aria-label={`Add lesson to ${module.title}`}
           >
             <Plus className="h-3 w-3" />
@@ -401,10 +405,10 @@ function SortableLessonRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group/lesson flex items-center gap-1 rounded-lg px-2 py-1.5 text-sm transition-all duration-200 cursor-pointer',
+        'group/lesson flex items-center gap-1 rounded-lg px-2 py-[5px] text-sm transition-all duration-150 cursor-pointer',
         isSelected
-          ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 font-medium ring-1 ring-indigo-200 dark:ring-indigo-500/20'
-          : 'hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 border border-transparent',
+          ? 'bg-primary/[0.06] text-primary font-medium ring-1 ring-primary/15'
+          : 'hover:bg-black/[0.02] dark:hover:bg-white/[0.03] text-foreground/65',
         isDragging && 'opacity-50 z-50',
       )}
       onClick={() => onLessonClick(moduleId, lesson.id)}
@@ -418,14 +422,17 @@ function SortableLessonRow({
         {...attributes}
         {...listeners}
         onClick={(e) => e.stopPropagation()}
-        className="shrink-0 flex h-4 w-4 items-center justify-center rounded text-muted-foreground/30 opacity-0 group-hover/lesson:opacity-100 hover:text-muted-foreground cursor-grab active:cursor-grabbing transition-opacity"
+        className="shrink-0 flex h-4 w-4 items-center justify-center rounded text-muted-foreground/20 opacity-0 group-hover/lesson:opacity-100 hover:text-muted-foreground cursor-grab active:cursor-grabbing transition-opacity"
         aria-label={`Drag to reorder ${lesson.title}`}
       >
         <GripVertical className="h-2.5 w-2.5" />
       </button>
 
       {/* Icon */}
-      <div className={cn('flex h-5 w-5 shrink-0 items-center justify-center rounded', isSelected ? 'text-indigo-500 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500')}>
+      <div className={cn(
+        'flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors',
+        isSelected ? 'text-primary' : 'text-muted-foreground/40',
+      )}>
         <FileText className="h-3.5 w-3.5" />
       </div>
 
@@ -438,20 +445,23 @@ function SortableLessonRow({
 
       {/* Block count */}
       {blockCount > 0 && (
-        <span className={cn('shrink-0 text-[10px] tabular-nums font-medium', isSelected ? 'text-indigo-400' : 'text-slate-400 dark:text-slate-600')}>
+        <span className={cn(
+          'shrink-0 text-[10px] tabular-nums font-medium',
+          isSelected ? 'text-primary/60' : 'text-muted-foreground/30',
+        )}>
           {blockCount}
         </span>
       )}
 
       {/* Selected indicator */}
-      {isSelected && <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/30" />}
+      {isSelected && <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />}
 
       {/* Actions (Move + Delete) */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             onClick={(e) => e.stopPropagation()}
-            className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition-all duration-200 opacity-0 group-hover/lesson:opacity-100 hover:bg-muted/80 hover:text-foreground"
+            className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground/30 transition-all duration-150 opacity-0 group-hover/lesson:opacity-100 hover:bg-muted/60 hover:text-foreground"
             aria-label={`Actions for lesson ${lesson.title}`}
           >
             <X className="h-3 w-3" />
@@ -484,7 +494,7 @@ function SortableLessonRow({
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <DropdownMenuItem
-                className="rounded-lg text-xs text-destructive focus:text-destructive focus:bg-destructive/10"
+                className="rounded-lg text-xs text-destructive focus:text-destructive focus:bg-destructive/8"
                 onSelect={(e) => e.preventDefault()}
               >
                 <X className="mr-2 h-3 w-3" />
@@ -609,25 +619,25 @@ export function ModuleSidebar() {
 
   return (
     <div
-      className="flex h-full w-[280px] flex-col border-e border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/50"
+      className="flex h-full w-[272px] flex-col border-e border-border/50 bg-card/80 backdrop-blur-sm"
       role="tree"
       aria-label="Course structure"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 shadow-sm shadow-indigo-500/20">
-            <BookOpen className="h-3.5 w-3.5 text-white" />
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
+        <div className="flex items-center gap-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-md gradient-vivid">
+            <BookOpen className="h-3 w-3 text-white" />
           </div>
-          <h2 className="text-[13px] font-semibold text-slate-800 dark:text-slate-200 tracking-tight">
-            Course Structure
+          <h2 className="text-[13px] font-semibold text-foreground tracking-tight">
+            Structure
           </h2>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleAddModule}
-          className="h-7 gap-1.5 px-2.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-all duration-200"
+          className="h-7 gap-1 px-2 text-xs font-medium text-primary hover:text-primary hover:bg-primary/[0.06] rounded-lg transition-all duration-150"
           aria-label="Add new module"
         >
           <Plus className="h-3.5 w-3.5" />
@@ -637,19 +647,19 @@ export function ModuleSidebar() {
 
       {/* Module Tree */}
       <ScrollArea className="flex-1">
-        <div className="p-2 space-y-0.5">
+        <div className="p-2 space-y-px">
           {modules.length === 0 && (
             <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-100 to-violet-50 dark:from-indigo-500/15 dark:to-violet-500/10 border border-indigo-200/50 dark:border-indigo-500/15">
-                <FolderOpen className="h-6 w-6 text-indigo-400 dark:text-indigo-500" />
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/10">
+                <FolderOpen className="h-5 w-5 text-primary/50" />
               </div>
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">No modules yet</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">Create your first module to start building</p>
+              <p className="text-sm font-medium text-foreground/70 mb-1">No modules yet</p>
+              <p className="text-xs text-muted-foreground mb-4">Create your first module to start building</p>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleAddModule}
-                className="gap-1.5 text-xs rounded-lg border-dashed border-indigo-300 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:border-indigo-400 transition-all duration-200"
+                className="gap-1.5 text-xs rounded-lg border-dashed border-primary/20 text-primary hover:bg-primary/[0.04] hover:border-primary/30 transition-all duration-150"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Create Module
@@ -686,8 +696,8 @@ export function ModuleSidebar() {
 
       {/* Footer stats */}
       {modules.length > 0 && (
-        <div className="border-t border-slate-200 dark:border-slate-800 px-4 py-2.5 bg-white/50 dark:bg-slate-900/50">
-          <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+        <div className="border-t border-border/40 px-4 py-2 bg-muted/20">
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground/60 font-medium">
             <span>{modules.length} {modules.length === 1 ? 'module' : 'modules'}</span>
             <span>{modules.reduce((acc, m) => acc + (m.lessons?.length ?? 0), 0)} lessons</span>
           </div>

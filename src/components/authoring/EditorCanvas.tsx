@@ -217,12 +217,12 @@ export function EditorCanvas() {
   if (!selectedModuleId || !currentModule) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <div className="text-center max-w-md">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100 to-violet-50 dark:from-indigo-500/15 dark:to-violet-500/10 border border-indigo-200/50 dark:border-indigo-500/15 shadow-lg shadow-indigo-500/5">
-            <Sparkles className="h-8 w-8 text-indigo-400" />
+        <div className="text-center max-w-sm">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/10">
+            <Sparkles className="h-6 w-6 text-primary/40" />
           </div>
-          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">Select a module</h3>
-          <p className="text-sm text-slate-400 dark:text-slate-500 leading-relaxed max-w-xs mx-auto mb-8">
+          <h3 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">Select a module</h3>
+          <p className="text-sm text-muted-foreground/60 leading-relaxed max-w-xs mx-auto mb-6">
             Choose a module from the sidebar, or create a new one to start building your course.
           </p>
           <button
@@ -232,9 +232,9 @@ export function EditorCanvas() {
               const sidebarOpen = useEditorStore.getState().sidebarOpen;
               if (!sidebarOpen) toggleSidebar();
             }}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 text-white px-5 py-2.5 text-sm font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-500/20 transition-all"
+            className="inline-flex items-center gap-2 rounded-lg gradient-vivid text-white px-4 py-2 text-sm font-medium shadow-md shadow-primary/15 transition-all hover:shadow-lg hover:shadow-primary/20 hover:brightness-110"
           >
-            <LayoutGrid className="h-4 w-4" />
+            <LayoutGrid className="h-3.5 w-3.5" />
             Open Sidebar
           </button>
         </div>
@@ -245,13 +245,13 @@ export function EditorCanvas() {
   if (!selectedLessonId || !currentLesson) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <div className="text-center max-w-md">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100 to-violet-50 dark:from-indigo-500/15 dark:to-violet-500/10 border border-indigo-200/50 dark:border-indigo-500/15 shadow-lg shadow-indigo-500/5">
-            <Plus className="h-8 w-8 text-indigo-400" />
+        <div className="text-center max-w-sm">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/10">
+            <Plus className="h-6 w-6 text-primary/40" />
           </div>
-          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">Select a lesson</h3>
-          <p className="text-sm text-slate-400 dark:text-slate-500 leading-relaxed max-w-xs mx-auto mb-8">
-            Pick a lesson from <strong className="text-slate-600 dark:text-slate-300">{currentModule.title}</strong> to start adding content blocks.
+          <h3 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">Select a lesson</h3>
+          <p className="text-sm text-muted-foreground/60 leading-relaxed max-w-xs mx-auto mb-6">
+            Pick a lesson from <strong className="text-foreground/70">{currentModule.title}</strong> to start adding content blocks.
           </p>
           <button
             type="button"
@@ -260,9 +260,9 @@ export function EditorCanvas() {
               const sidebarOpen = useEditorStore.getState().sidebarOpen;
               if (!sidebarOpen) toggleSidebar();
             }}
-            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 text-white px-5 py-2.5 text-sm font-semibold hover:bg-indigo-700 shadow-md shadow-indigo-500/20 transition-all"
+            className="inline-flex items-center gap-2 rounded-lg gradient-vivid text-white px-4 py-2 text-sm font-medium shadow-md shadow-primary/15 transition-all hover:shadow-lg hover:shadow-primary/20 hover:brightness-110"
           >
-            <LayoutGrid className="h-4 w-4" />
+            <LayoutGrid className="h-3.5 w-3.5" />
             Open Sidebar
           </button>
         </div>
@@ -278,12 +278,12 @@ export function EditorCanvas() {
       <div className="flex h-full flex-col items-center justify-center p-8">
         <div className="text-center max-w-lg">
           {/* Module > Lesson breadcrumb */}
-          <div className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-6 bg-slate-100 dark:bg-slate-800 rounded-full px-4 py-1.5">
+          <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider mb-5 bg-muted/40 rounded-full px-3 py-1">
             {currentModule.title} / {currentLesson.title}
           </div>
 
-          <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2 tracking-tight">Add your first block</h3>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mb-8 max-w-sm mx-auto leading-relaxed">
+          <h3 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">Add your first block</h3>
+          <p className="text-sm text-muted-foreground/60 mb-6 max-w-sm mx-auto leading-relaxed">
             Use the Block Library or quick-add bar below to start building your lesson content.
           </p>
 
@@ -300,16 +300,16 @@ export function EditorCanvas() {
       aria-label={`Editing lesson: ${currentLesson.title}`}
     >
       {/* Lesson header */}
-      <div className="mb-8 flex items-center gap-3">
+      <div className="mb-6 flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-semibold text-indigo-500/70 dark:text-indigo-400/50 uppercase tracking-wider mb-1">
+          <p className="text-[11px] font-semibold text-primary/40 uppercase tracking-wider mb-0.5">
             {currentModule.title}
           </p>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight truncate">
+          <h2 className="text-lg font-semibold text-foreground/85 tracking-tight truncate">
             {currentLesson.title}
           </h2>
         </div>
-        <div className="shrink-0 flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 rounded-full px-3 py-1.5 border border-slate-200 dark:border-slate-700 font-medium">
+        <div className="shrink-0 flex items-center gap-1.5 text-xs text-muted-foreground/50 bg-muted/30 rounded-full px-3 py-1 border border-border/30 font-medium">
           <span className="tabular-nums">{blocks.length}</span>
           <span>{blocks.length === 1 ? 'block' : 'blocks'}</span>
         </div>
@@ -374,7 +374,7 @@ export function EditorCanvas() {
         </SortableContext>
       </DndContext>
 
-      {/* Bottom quick-add bar (Rise-style) */}
+      {/* Bottom quick-add bar */}
       <div className="pt-6 flex justify-center">
         <QuickAddBar onInsertBlock={handleInsertBlock} />
       </div>
@@ -385,7 +385,7 @@ export function EditorCanvas() {
 }
 
 // ============================================================
-// LAZY BLOCK CONTENT (defers rendering for off-screen blocks)
+// LAZY BLOCK CONTENT
 // ============================================================
 
 function LazyBlockContent({ children }: { children: React.ReactNode }) {
@@ -403,7 +403,7 @@ function LazyBlockContent({ children }: { children: React.ReactNode }) {
           observer.disconnect();
         }
       },
-      { rootMargin: '300px 0px' }, // Pre-render 300px before entering viewport
+      { rootMargin: '300px 0px' },
     );
 
     observer.observe(el);
@@ -422,7 +422,7 @@ function LazyBlockContent({ children }: { children: React.ReactNode }) {
 }
 
 // ============================================================
-// INLINE INSERT BUTTON (Rise-style "+" between blocks)
+// INLINE INSERT BUTTON
 // ============================================================
 
 function InlineInsertButton({
@@ -446,8 +446,8 @@ function InlineInsertButton({
         className={cn(
           'absolute inset-x-0 top-1/2 h-px transition-all duration-300',
           isOpen
-            ? 'bg-gradient-to-r from-transparent via-indigo-400/30 to-transparent'
-            : 'bg-transparent group-hover/insert:bg-gradient-to-r group-hover/insert:from-transparent group-hover/insert:via-slate-300/60 dark:group-hover/insert:via-slate-600/60 group-hover/insert:to-transparent',
+            ? 'bg-gradient-to-r from-transparent via-primary/20 to-transparent'
+            : 'bg-transparent group-hover/insert:bg-gradient-to-r group-hover/insert:from-transparent group-hover/insert:via-border/60 group-hover/insert:to-transparent',
         )}
       />
 
@@ -456,21 +456,21 @@ function InlineInsertButton({
         type="button"
         onClick={onToggle}
         className={cn(
-          'relative z-10 flex h-6 w-6 items-center justify-center rounded-full border transition-all duration-300',
+          'relative z-10 flex h-5 w-5 items-center justify-center rounded-full border transition-all duration-200',
           isOpen
-            ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-500/25 scale-110'
-            : 'bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500 border-slate-200 dark:border-slate-700 opacity-0 group-hover/insert:opacity-100 hover:border-indigo-400 hover:text-indigo-500 hover:shadow-sm hover:scale-110',
+            ? 'gradient-vivid text-white border-transparent shadow-md shadow-primary/20 scale-110'
+            : 'bg-card text-muted-foreground/30 border-border/40 opacity-0 group-hover/insert:opacity-100 hover:border-primary/30 hover:text-primary hover:scale-110',
         )}
       >
         <Plus
           className={cn(
-            'h-3 w-3 transition-transform duration-300',
+            'h-2.5 w-2.5 transition-transform duration-200',
             isOpen && 'rotate-45',
           )}
         />
       </button>
 
-      {/* Rise-style inline quick-add bar */}
+      {/* Inline quick-add bar */}
       {isOpen && (
         <div className="absolute top-full z-30 mt-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
           <QuickAddBar onInsertBlock={onInsert} compact />

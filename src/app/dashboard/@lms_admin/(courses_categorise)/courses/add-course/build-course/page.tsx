@@ -226,18 +226,18 @@ export default function BuildCoursePage() {
 
   if (!courseId) {
     return (
-      <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="flex items-center justify-center h-screen bg-background">
         <div className="text-center max-w-sm">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
-            <AlertTriangle className="h-7 w-7 text-amber-500" />
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-warning/8 border border-warning/15">
+            <AlertTriangle className="h-6 w-6 text-warning" />
           </div>
-          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1.5">No course ID</h2>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mb-6">A valid course ID is required to open the editor.</p>
+          <h2 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">No course ID</h2>
+          <p className="text-sm text-muted-foreground/60 mb-6">A valid course ID is required to open the editor.</p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => router.push('/dashboard/courses')}
-            className="gap-2 rounded-xl border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="gap-2 rounded-lg border-border/50 hover:bg-muted/30"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back to courses
@@ -249,16 +249,16 @@ export default function BuildCoursePage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-slate-50 dark:bg-slate-950 gap-4">
+      <div className="flex flex-col items-center justify-center h-screen bg-background gap-4">
         <div className="relative">
-          <div className="absolute inset-0 rounded-full bg-indigo-500/10 animate-ping" />
-          <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/25">
-            <Loader2 className="h-7 w-7 animate-spin text-white" />
+          <div className="absolute inset-0 rounded-2xl bg-primary/8 animate-ping" />
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl gradient-vivid shadow-lg shadow-primary/20">
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
           </div>
         </div>
         <div className="text-center">
-          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Loading course editor</p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Preparing your workspace...</p>
+          <p className="text-sm font-semibold text-foreground/80">Loading course editor</p>
+          <p className="text-xs text-muted-foreground/50 mt-1">Preparing your workspace...</p>
         </div>
       </div>
     );
@@ -266,19 +266,19 @@ export default function BuildCoursePage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="flex items-center justify-center h-screen bg-background">
         <div className="text-center max-w-sm">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
-            <AlertTriangle className="h-7 w-7 text-red-500" />
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/8 border border-destructive/15">
+            <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
-          <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1.5">Failed to load course</h2>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mb-6">{error}</p>
+          <h2 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">Failed to load course</h2>
+          <p className="text-sm text-muted-foreground/60 mb-6">{error}</p>
           <div className="flex items-center justify-center gap-3">
             <Button
               variant="outline"
               size="sm"
               onClick={() => router.push('/dashboard/courses')}
-              className="gap-2 rounded-xl border-slate-200 dark:border-slate-700"
+              className="gap-2 rounded-lg border-border/50"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Back to courses
@@ -286,7 +286,7 @@ export default function BuildCoursePage() {
             <Button
               size="sm"
               onClick={() => window.location.reload()}
-              className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-500/20"
+              className="rounded-lg gradient-vivid text-white shadow-md shadow-primary/15"
             >
               Try again
             </Button>
@@ -312,17 +312,14 @@ export default function BuildCoursePage() {
     );
   }
 
-  const handleBlockLibraryInsert = useCallback(
-    (type: BlockType) => {
-      if (!store.selectedModuleId || !store.selectedLessonId) return;
-      const block = createDefaultBlock(type);
-      store.addBlock(store.selectedModuleId, store.selectedLessonId, block);
-    },
-    [store],
-  );
+  const handleBlockLibraryInsert = (type: BlockType) => {
+    if (!store.selectedModuleId || !store.selectedLessonId) return;
+    const block = createDefaultBlock(type);
+    store.addBlock(store.selectedModuleId, store.selectedLessonId, block);
+  };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-slate-100 dark:bg-slate-950">
+    <div className="flex flex-col h-screen overflow-hidden bg-background">
       <EditorHeader
         courseTitle={courseTitle}
         onSave={handleSave}
@@ -338,7 +335,7 @@ export default function BuildCoursePage() {
           <BlockLibrarySidebar onInsertBlock={handleBlockLibraryInsert} />
         )}
 
-        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgb(226 232 240 / 0.5) 1px, transparent 0)', backgroundSize: '24px 24px' }}>
+        <main className="flex-1 overflow-y-auto bg-canvas-dots">
           <EditorCanvas />
         </main>
       </div>

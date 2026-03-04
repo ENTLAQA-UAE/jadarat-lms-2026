@@ -37,6 +37,7 @@ import {
   MessageSquare,
   SquareMousePointer,
   ArrowDown,
+  ChevronLeft,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,7 +47,7 @@ import { useEditorStore } from '@/stores/editor.store';
 import { cn } from '@/lib/utils';
 
 // ============================================================
-// BLOCK DEFINITIONS (mirroring Rise 360 style categories)
+// BLOCK DEFINITIONS
 // ============================================================
 
 interface BlockDef {
@@ -213,31 +214,31 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
     : [];
 
   return (
-    <div className="flex h-full w-[280px] flex-col border-e border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+    <div className="flex h-full w-[280px] flex-col border-e border-border/50 bg-card/80 backdrop-blur-sm">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 shadow-sm shadow-indigo-500/20">
-            <LayoutGrid className="h-3.5 w-3.5 text-white" />
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
+        <div className="flex items-center gap-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-md gradient-vivid">
+            <LayoutGrid className="h-3 w-3 text-white" />
           </div>
-          <h2 className="text-[13px] font-semibold text-slate-800 dark:text-slate-200 tracking-tight">
-            Block Library
+          <h2 className="text-[13px] font-semibold text-foreground tracking-tight">
+            Blocks
           </h2>
         </div>
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setBlockLibraryOpen(false)}
-          className="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          className="h-7 w-7 rounded-lg text-muted-foreground/50 hover:text-foreground hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
         >
           <X className="h-4 w-4" />
         </Button>
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2.5 border-b border-slate-100 dark:border-slate-800">
+      <div className="px-3 py-2.5 border-b border-border/30">
         <div className="relative">
-          <Search className="absolute start-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute start-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground/40" />
           <input
             type="text"
             value={search}
@@ -246,7 +247,7 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
               if (e.target.value) setSelectedCategory(null);
             }}
             placeholder="Search blocks..."
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2 ps-8 pe-3 text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 dark:focus:border-indigo-500/30 transition-all"
+            className="w-full rounded-lg border border-border/50 bg-muted/30 py-2 ps-8 pe-3 text-sm placeholder:text-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary/30 transition-all"
           />
         </div>
       </div>
@@ -254,11 +255,11 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
       <ScrollArea className="flex-1">
         {/* Search results */}
         {searchResults !== null ? (
-          <div className="p-2 space-y-0.5">
+          <div className="p-2 space-y-px">
             {searchResults.length === 0 ? (
               <div className="flex flex-col items-center py-10 text-center">
-                <Search className="h-6 w-6 text-muted-foreground/30 mb-2" />
-                <p className="text-xs text-muted-foreground">No blocks found</p>
+                <Search className="h-5 w-5 text-muted-foreground/20 mb-2" />
+                <p className="text-xs text-muted-foreground/50">No blocks found</p>
               </div>
             ) : (
               searchResults.map((block) => {
@@ -268,14 +269,14 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
                     key={block.type}
                     type="button"
                     onClick={() => handleInsert(block.type)}
-                    className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition-all duration-150 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+                    className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition-all duration-150 hover:bg-primary/[0.04]"
                   >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/15 group-hover:border-indigo-200 dark:group-hover:border-indigo-500/20 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 text-slate-500 dark:text-slate-400 transition-all">
-                      <Icon className="h-4 w-4" />
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/50 border border-border/40 group-hover:bg-primary/8 group-hover:border-primary/15 group-hover:text-primary text-muted-foreground/60 transition-all duration-150">
+                      <Icon className="h-3.5 w-3.5" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <span className="text-[13px] font-medium text-slate-700 dark:text-slate-200 block">{block.label}</span>
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500 block truncate">{block.description}</span>
+                      <span className="text-[13px] font-medium text-foreground/80 block">{block.label}</span>
+                      <span className="text-[11px] text-muted-foreground/50 block truncate">{block.description}</span>
                     </div>
                   </button>
                 );
@@ -283,21 +284,21 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
             )}
           </div>
         ) : selectedCategory ? (
-          /* Category detail view - shows block variants */
+          /* Category detail — grid of block cards */
           <div className="p-3">
             <button
               onClick={() => setSelectedCategory(null)}
-              className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 mb-4 transition-colors"
+              className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground/50 hover:text-foreground mb-3 transition-colors"
             >
-              <ChevronDown className="h-3 w-3 rotate-90" />
+              <ChevronLeft className="h-3 w-3" />
               All Blocks
             </button>
 
-            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-3 uppercase tracking-wider">
+            <h3 className="text-[11px] font-bold text-foreground/40 mb-3 uppercase tracking-wider">
               {selectedCategory}
             </h3>
 
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
               {activeCategoryBlocks.map((block) => {
                 const Icon = block.icon;
                 return (
@@ -305,14 +306,13 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
                     key={block.type}
                     type="button"
                     onClick={() => handleInsert(block.type)}
-                    className="group w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4 text-start transition-all duration-200 hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:shadow-md hover:shadow-indigo-500/5"
+                    className="group rounded-xl border border-border/40 bg-card p-3 text-start transition-all duration-200 hover:border-primary/20 hover:shadow-md hover:shadow-primary/5"
                   >
-                    {/* Preview card */}
-                    <div className="mb-3 flex h-16 items-center justify-center rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700/50 border border-slate-200/50 dark:border-slate-700/50">
-                      <Icon className="h-7 w-7 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 transition-colors" />
+                    <div className="mb-2.5 flex h-10 items-center justify-center rounded-lg bg-muted/30 border border-border/30">
+                      <Icon className="h-5 w-5 text-muted-foreground/30 group-hover:text-primary/60 transition-colors" />
                     </div>
-                    <div className="text-[13px] font-semibold text-slate-700 dark:text-slate-200 mb-0.5">{block.label}</div>
-                    <div className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed">{block.description}</div>
+                    <div className="text-[12px] font-semibold text-foreground/70 mb-0.5 leading-tight">{block.label}</div>
+                    <div className="text-[10px] text-muted-foreground/40 leading-snug">{block.description}</div>
                   </button>
                 );
               })}
@@ -320,25 +320,25 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
           </div>
         ) : (
           /* Category list */
-          <div className="py-1.5">
+          <div className="py-1">
             {/* AI Blocks (special) */}
             <button
               type="button"
-              className="group flex w-full items-center gap-3 px-4 py-2.5 text-start transition-all duration-150 hover:bg-violet-50 dark:hover:bg-violet-500/10"
+              className="group flex w-full items-center gap-3 px-4 py-2.5 text-start transition-all duration-150 hover:bg-accent/[0.04]"
               onClick={() => {
                 // AI blocks can trigger the AI wizard
               }}
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-md shadow-violet-500/20">
-                <Sparkles className="h-4 w-4 text-white" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg gradient-vivid shadow-sm shadow-primary/15">
+                <Sparkles className="h-3.5 w-3.5 text-white" />
               </div>
               <div>
-                <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-200 block">AI Blocks</span>
-                <span className="text-[10px] text-violet-500 dark:text-violet-400 font-medium">Generate content</span>
+                <span className="text-[13px] font-semibold text-foreground/80 block">AI Blocks</span>
+                <span className="text-[10px] text-accent/70 font-medium">Generate content</span>
               </div>
             </button>
 
-            <div className="mx-4 my-1.5 h-px bg-slate-100 dark:bg-slate-800" />
+            <div className="mx-4 my-1 h-px bg-border/30" />
 
             {/* Regular categories */}
             {CATEGORIES.map((category) => {
@@ -354,14 +354,14 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
                       setSelectedCategory(category.name);
                     }
                   }}
-                  className="group flex w-full items-center gap-3 px-4 py-2.5 text-start transition-all duration-150 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg mx-1"
+                  className="group flex w-full items-center gap-3 px-3 py-2 mx-1 text-start transition-all duration-150 hover:bg-black/[0.02] dark:hover:bg-white/[0.03] rounded-lg"
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 group-hover:border-indigo-200 dark:group-hover:border-indigo-500/20 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 text-slate-400 dark:text-slate-500 transition-all">
-                    <CatIcon className="h-4 w-4" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted/40 border border-border/30 group-hover:bg-primary/[0.06] group-hover:border-primary/15 group-hover:text-primary text-muted-foreground/50 transition-all duration-150">
+                    <CatIcon className="h-3.5 w-3.5" />
                   </div>
-                  <span className="text-[13px] font-medium text-slate-700 dark:text-slate-300 flex-1">{category.name}</span>
+                  <span className="text-[13px] font-medium text-foreground/70 flex-1">{category.name}</span>
                   {category.blocks.length > 1 && (
-                    <ChevronDown className="h-3.5 w-3.5 -rotate-90 text-slate-300 dark:text-slate-600 group-hover:text-indigo-400 transition-colors" />
+                    <ChevronDown className="h-3.5 w-3.5 -rotate-90 text-muted-foreground/20 group-hover:text-primary/40 transition-colors" />
                   )}
                 </button>
               );
