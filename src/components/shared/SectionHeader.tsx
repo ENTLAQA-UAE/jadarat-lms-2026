@@ -29,7 +29,7 @@ export default function SectionHeader({
       {action && (
         <Link
           href={action.href}
-          className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground/70 hover:text-foreground transition-colors duration-150"
         >
           {action.label}
           <ArrowRight className="h-3 w-3" />

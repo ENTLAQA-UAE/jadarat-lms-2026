@@ -21,29 +21,29 @@ interface StatsCardProps {
 
 const colorMap = {
   primary: {
-    iconBg: "bg-primary/10 text-primary",
-    iconBgHover: "group-hover:bg-primary/15",
-    accentBorder: "from-primary",
+    iconBg: "bg-primary/[0.08] text-primary",
+    iconBgHover: "group-hover:bg-primary/[0.12]",
+    accentBorder: "from-primary via-primary/60",
   },
   sky: {
-    iconBg: "bg-sky/10 text-sky",
-    iconBgHover: "group-hover:bg-sky/15",
-    accentBorder: "from-sky",
+    iconBg: "bg-sky/[0.08] text-sky",
+    iconBgHover: "group-hover:bg-sky/[0.12]",
+    accentBorder: "from-sky via-sky/60",
   },
   accent: {
-    iconBg: "bg-accent/10 text-accent",
-    iconBgHover: "group-hover:bg-accent/15",
-    accentBorder: "from-accent",
+    iconBg: "bg-accent/[0.08] text-accent",
+    iconBgHover: "group-hover:bg-accent/[0.12]",
+    accentBorder: "from-accent via-accent/60",
   },
   golden: {
-    iconBg: "bg-golden/10 text-golden",
-    iconBgHover: "group-hover:bg-golden/15",
-    accentBorder: "from-golden",
+    iconBg: "bg-golden/[0.08] text-golden",
+    iconBgHover: "group-hover:bg-golden/[0.12]",
+    accentBorder: "from-golden via-golden/60",
   },
   success: {
-    iconBg: "bg-success/10 text-success",
-    iconBgHover: "group-hover:bg-success/15",
-    accentBorder: "from-success",
+    iconBg: "bg-success/[0.08] text-success",
+    iconBgHover: "group-hover:bg-success/[0.12]",
+    accentBorder: "from-success via-success/60",
   },
 };
 
@@ -68,14 +68,14 @@ export default function StatsCard({
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden card-hover",
+        "group relative overflow-hidden card-hover transition-all duration-150",
         className
       )}
     >
       {/* Top accent line */}
       <div
         className={cn(
-          "absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r to-transparent",
+          "absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r to-transparent opacity-80",
           colors.accentBorder
         )}
       />
@@ -83,14 +83,14 @@ export default function StatsCard({
       <div className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-2xl font-semibold tracking-tight">
+            <p className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider">{title}</p>
+            <p className="text-2xl font-semibold tracking-tight tabular-nums">
               {typeof value === "number" ? value.toLocaleString() : value}
             </p>
           </div>
           <div
             className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-300",
+              "flex h-10 w-10 items-center justify-center rounded-xl transition-colors duration-150",
               colors.iconBg,
               colors.iconBgHover
             )}
@@ -100,13 +100,13 @@ export default function StatsCard({
         </div>
 
         {trend !== undefined && trend !== null && (
-          <div className="mt-3">
+          <div className="mt-3 pt-3 border-t border-border/30">
             <span
               className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
-                isPositive && "bg-success/10 text-success",
-                isNegative && "bg-destructive/10 text-destructive",
-                !isPositive && !isNegative && "bg-muted text-muted-foreground"
+                "inline-flex items-center gap-1 text-xs font-medium",
+                isPositive && "text-success",
+                isNegative && "text-destructive",
+                !isPositive && !isNegative && "text-muted-foreground"
               )}
             >
               {isPositive ? (
@@ -132,13 +132,13 @@ function StatsCardSkeleton() {
       <div className="p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-3">
-            <Skeleton shimmer className="h-4 w-24" />
+            <Skeleton shimmer className="h-3 w-20" />
             <Skeleton shimmer className="h-8 w-16" />
           </div>
           <Skeleton shimmer className="h-10 w-10 rounded-xl" />
         </div>
-        <div className="mt-3">
-          <Skeleton shimmer className="h-5 w-32 rounded-full" />
+        <div className="mt-3 pt-3 border-t border-border/30">
+          <Skeleton shimmer className="h-3 w-28" />
         </div>
       </div>
     </Card>
