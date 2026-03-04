@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -15,16 +15,16 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Plus, Sparkles } from 'lucide-react';
+import { Plus, Sparkles, LayoutGrid } from 'lucide-react';
 import { useEditorStore } from '@/stores/editor.store';
 import { BlockEditor } from '@/components/authoring/blocks';
 import { BlockWrapper } from './BlockWrapper';
-import { BlockToolbar } from './BlockToolbar';
+import { QuickAddBar } from './QuickAddBar';
 import { BlockType, type Block } from '@/types/authoring';
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/lib/utils';
 
-function createDefaultBlock(type: BlockType): Block {
+export function createDefaultBlock(type: BlockType): Block {
   const now = new Date().toISOString();
   const base = {
     id: uuidv4(),
@@ -129,29 +129,47 @@ export function EditorCanvas() {
   // Track which inline inserter is open
   const [insertAfterIndex, setInsertAfterIndex] = useState<number | null>(null);
 
-  // Undo/Redo keyboard shortcuts (Ctrl+Z / Ctrl+Shift+Z)
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-      if (!isCtrlOrCmd) return;
-
       const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+      const isInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+
+      // Ctrl+Z / Ctrl+Shift+Z — Undo/Redo (skip if inside input)
+      if (isCtrlOrCmd && !isInput) {
+        if (e.key === 'z' && e.shiftKey) {
+          e.preventDefault();
+          redo();
+          return;
+        } else if (e.key === 'z') {
+          e.preventDefault();
+          undo();
+          return;
+        }
+      }
+
+      // Skip remaining shortcuts when editing text
+      if (isInput) return;
+
+      // Escape — deselect block
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        selectBlock(null);
         return;
       }
 
-      if (e.key === 'z' && e.shiftKey) {
+      // Delete / Backspace — delete selected block
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedBlockId && selectedModuleId && selectedLessonId) {
         e.preventDefault();
-        redo();
-      } else if (e.key === 'z') {
-        e.preventDefault();
-        undo();
+        deleteBlock(selectedModuleId, selectedLessonId, selectedBlockId);
+        return;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo]);
+  }, [undo, redo, selectBlock, deleteBlock, selectedBlockId, selectedModuleId, selectedLessonId]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -195,26 +213,60 @@ export function EditorCanvas() {
     [selectedModuleId, selectedLessonId, addBlock],
   );
 
-  // ── Empty states ─────────────────────────────────────────
+  // ── Empty states ────────────────────────────────────────
   if (!selectedModuleId || !currentModule) {
     return (
-      <EmptyState
-        icon={<Sparkles className="h-8 w-8 text-primary/50" />}
-        title="Select a module"
-        description="Choose a module from the sidebar, or create a new one to start building your course."
-        accent="primary"
-      />
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="text-center max-w-sm">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/10">
+            <Sparkles className="h-6 w-6 text-primary/40" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">Select a module</h3>
+          <p className="text-sm text-muted-foreground/60 leading-relaxed max-w-xs mx-auto mb-6">
+            Choose a module from the sidebar, or create a new one to start building your course.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              const toggleSidebar = useEditorStore.getState().toggleSidebar;
+              const sidebarOpen = useEditorStore.getState().sidebarOpen;
+              if (!sidebarOpen) toggleSidebar();
+            }}
+            className="inline-flex items-center gap-2 rounded-lg gradient-vivid text-white px-4 py-2 text-sm font-medium shadow-md shadow-primary/15 transition-all hover:shadow-lg hover:shadow-primary/20 hover:brightness-110"
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+            Open Sidebar
+          </button>
+        </div>
+      </div>
     );
   }
 
   if (!selectedLessonId || !currentLesson) {
     return (
-      <EmptyState
-        icon={<Plus className="h-8 w-8 text-primary/50" />}
-        title="Select a lesson"
-        description="Pick a lesson from the sidebar to start adding content blocks."
-        accent="primary"
-      />
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="text-center max-w-sm">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/[0.06] border border-primary/10">
+            <Plus className="h-6 w-6 text-primary/40" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">Select a lesson</h3>
+          <p className="text-sm text-muted-foreground/60 leading-relaxed max-w-xs mx-auto mb-6">
+            Pick a lesson from <strong className="text-foreground/70">{currentModule.title}</strong> to start adding content blocks.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              const toggleSidebar = useEditorStore.getState().toggleSidebar;
+              const sidebarOpen = useEditorStore.getState().sidebarOpen;
+              if (!sidebarOpen) toggleSidebar();
+            }}
+            className="inline-flex items-center gap-2 rounded-lg gradient-vivid text-white px-4 py-2 text-sm font-medium shadow-md shadow-primary/15 transition-all hover:shadow-lg hover:shadow-primary/20 hover:brightness-110"
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+            Open Sidebar
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -224,38 +276,41 @@ export function EditorCanvas() {
   if (blocks.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center p-8">
-        <div className="text-center max-w-md">
-          {/* Decorative dots background */}
-          <div className="relative mx-auto mb-6">
-            <div className="absolute inset-0 -m-6 rounded-3xl bg-[radial-gradient(circle_at_center,_hsl(var(--primary)/0.03)_1px,_transparent_1px)] bg-[length:16px_16px]" />
-            <div className="relative flex h-20 w-20 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-primary/12 to-primary/5 border border-primary/15 shadow-lg shadow-primary/5">
-              <Plus className="h-8 w-8 text-primary/60" />
-            </div>
+        <div className="text-center max-w-lg">
+          {/* Module > Lesson breadcrumb */}
+          <div className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground/50 uppercase tracking-wider mb-5 bg-muted/40 rounded-full px-3 py-1">
+            {currentModule.title} / {currentLesson.title}
           </div>
-          <h3 className="text-lg font-semibold text-foreground mb-1.5">Start building your lesson</h3>
-          <p className="text-sm text-muted-foreground mb-8 max-w-xs mx-auto leading-relaxed">
-            Add content blocks like text, images, videos, quizzes, and interactive elements.
+
+          <h3 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">Add your first block</h3>
+          <p className="text-sm text-muted-foreground/60 mb-6 max-w-sm mx-auto leading-relaxed">
+            Use the Block Library or quick-add bar below to start building your lesson content.
           </p>
-          <BlockToolbar onInsertBlock={handleInsertBlock} />
+
+          <QuickAddBar onInsertBlock={handleInsertBlock} />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-1 px-6 py-8">
-      {/* Lesson header breadcrumb */}
-      <div className="mb-8 flex items-center gap-3">
+    <div
+      className="mx-auto w-full max-w-3xl space-y-2 px-6 py-8"
+      role="region"
+      aria-label={`Editing lesson: ${currentLesson.title}`}
+    >
+      {/* Lesson header */}
+      <div className="mb-6 flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+          <p className="text-[11px] font-semibold text-primary/40 uppercase tracking-wider mb-0.5">
             {currentModule.title}
           </p>
-          <h2 className="text-xl font-semibold text-foreground tracking-tight truncate">
+          <h2 className="text-lg font-semibold text-foreground/85 tracking-tight truncate">
             {currentLesson.title}
           </h2>
         </div>
-        <div className="shrink-0 flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/40 rounded-full px-3 py-1.5 border border-border/30">
-          <span className="font-medium tabular-nums">{blocks.length}</span>
+        <div className="shrink-0 flex items-center gap-1.5 text-xs text-muted-foreground/50 bg-muted/30 rounded-full px-3 py-1 border border-border/30 font-medium">
+          <span className="tabular-nums">{blocks.length}</span>
           <span>{blocks.length === 1 ? 'block' : 'blocks'}</span>
         </div>
       </div>
@@ -305,62 +360,69 @@ export function EditorCanvas() {
                     : undefined
                 }
               >
-                <BlockEditor
-                  block={block}
-                  onChange={(data) =>
-                    updateBlock(selectedModuleId, selectedLessonId, block.id, data)
-                  }
-                />
+                <LazyBlockContent>
+                  <BlockEditor
+                    block={block}
+                    onChange={(data) =>
+                      updateBlock(selectedModuleId, selectedLessonId, block.id, data)
+                    }
+                  />
+                </LazyBlockContent>
               </BlockWrapper>
             </React.Fragment>
           ))}
         </SortableContext>
       </DndContext>
 
-      {/* Bottom "Add Block" area */}
-      <div className="pt-4 flex justify-center">
-        <BlockToolbar onInsertBlock={handleInsertBlock} />
+      {/* Bottom quick-add bar */}
+      <div className="pt-6 flex justify-center">
+        <QuickAddBar onInsertBlock={handleInsertBlock} />
       </div>
 
-      <div className="h-32" />
+      <div className="h-20" />
     </div>
   );
 }
 
 // ============================================================
-// EMPTY STATE COMPONENT
+// LAZY BLOCK CONTENT
 // ============================================================
 
-function EmptyState({
-  icon,
-  title,
-  description,
-  accent = 'primary',
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  accent?: string;
-}) {
+function LazyBlockContent({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHasBeenVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '300px 0px' },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="flex h-full items-center justify-center p-8">
-      <div className="text-center max-w-sm">
-        {/* Subtle decorative background */}
-        <div className="relative mx-auto mb-6">
-          <div className="absolute inset-0 -m-8 rounded-full bg-gradient-to-br from-primary/5 to-transparent blur-2xl" />
-          <div className="relative flex h-20 w-20 mx-auto items-center justify-center rounded-2xl bg-gradient-to-br from-primary/12 to-primary/5 border border-primary/15 shadow-lg shadow-primary/5">
-            {icon}
-          </div>
-        </div>
-        <h3 className="text-lg font-semibold text-foreground mb-1.5">{title}</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{description}</p>
-      </div>
+    <div ref={ref}>
+      {hasBeenVisible ? (
+        children
+      ) : (
+        <div className="h-20 rounded-lg bg-muted/20 animate-pulse" />
+      )}
     </div>
   );
 }
 
 // ============================================================
-// INLINE INSERT BUTTON (Notion-style "+" between blocks)
+// INLINE INSERT BUTTON
 // ============================================================
 
 function InlineInsertButton({
@@ -384,7 +446,7 @@ function InlineInsertButton({
         className={cn(
           'absolute inset-x-0 top-1/2 h-px transition-all duration-300',
           isOpen
-            ? 'bg-gradient-to-r from-transparent via-primary/30 to-transparent'
+            ? 'bg-gradient-to-r from-transparent via-primary/20 to-transparent'
             : 'bg-transparent group-hover/insert:bg-gradient-to-r group-hover/insert:from-transparent group-hover/insert:via-border/60 group-hover/insert:to-transparent',
         )}
       />
@@ -394,24 +456,24 @@ function InlineInsertButton({
         type="button"
         onClick={onToggle}
         className={cn(
-          'relative z-10 flex h-6 w-6 items-center justify-center rounded-full border transition-all duration-300',
+          'relative z-10 flex h-5 w-5 items-center justify-center rounded-full border transition-all duration-200',
           isOpen
-            ? 'bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-110'
-            : 'bg-background text-muted-foreground/60 border-border/40 opacity-0 group-hover/insert:opacity-100 hover:border-primary/50 hover:text-primary hover:shadow-sm hover:scale-110',
+            ? 'gradient-vivid text-white border-transparent shadow-md shadow-primary/20 scale-110'
+            : 'bg-card text-muted-foreground/30 border-border/40 opacity-0 group-hover/insert:opacity-100 hover:border-primary/30 hover:text-primary hover:scale-110',
         )}
       >
         <Plus
           className={cn(
-            'h-3 w-3 transition-transform duration-300',
+            'h-2.5 w-2.5 transition-transform duration-200',
             isOpen && 'rotate-45',
           )}
         />
       </button>
 
-      {/* Popover-style insert menu */}
+      {/* Inline quick-add bar */}
       {isOpen && (
         <div className="absolute top-full z-30 mt-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
-          <BlockToolbar onInsertBlock={onInsert} />
+          <QuickAddBar onInsertBlock={onInsert} compact />
         </div>
       )}
     </div>

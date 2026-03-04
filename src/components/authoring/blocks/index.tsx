@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import {
   type Block,
   BlockType,
@@ -127,7 +128,7 @@ function normalizeBlock(block: Block): Block {
 }
 
 // Unified BlockEditor that switches on block.type
-export function BlockEditor({
+export const BlockEditor = React.memo(function BlockEditor({
   block: rawBlock,
   onChange,
 }: {
@@ -220,4 +221,4 @@ export function BlockEditor({
         </div>
       );
   }
-}
+});

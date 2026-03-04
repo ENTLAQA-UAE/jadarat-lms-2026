@@ -148,7 +148,7 @@ export function MultipleChoiceBlockEditor({
                     size="icon"
                     onClick={() => removeOption(option.id)}
                     className="mt-1 h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
-                    disabled={data.options.length <= 2}
+                    disabled={data.options.length < 2}
                     title="Remove option"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

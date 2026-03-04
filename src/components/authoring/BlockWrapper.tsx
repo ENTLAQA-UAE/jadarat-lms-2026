@@ -41,7 +41,7 @@ interface BlockWrapperProps {
   children: React.ReactNode;
 }
 
-export function BlockWrapper({
+export const BlockWrapper = React.memo(function BlockWrapper({
   id,
   isSelected,
   blockType,
@@ -82,50 +82,50 @@ export function BlockWrapper({
         ref={setNodeRef}
         style={style}
         className={cn(
-          'group/block relative rounded-xl border bg-card transition-all duration-200',
+          'group/block relative rounded-xl transition-all duration-200',
           isSelected
-            ? 'border-primary/40 shadow-md shadow-primary/5 ring-2 ring-primary/8'
-            : 'border-border/40 hover:border-border/70 hover:shadow-sm',
-          isDragging && 'opacity-50 shadow-2xl scale-[1.01] ring-2 ring-primary/20',
+            ? 'bg-card border border-primary/20 shadow-elevation-2 ring-1 ring-primary/8'
+            : 'bg-card border border-border/40 hover:border-border/70 hover:shadow-elevation-1',
+          isDragging && 'opacity-40 shadow-elevation-3 scale-[1.005] ring-2 ring-primary/15',
         )}
         onClick={(e) => {
           if ((e.target as HTMLElement).closest('[data-block-action]')) return;
           onSelect();
         }}
       >
-        {/* Block type label - shows on hover or when selected */}
+        {/* Block type label — only visible on selection or hover */}
         {blockType && (
           <div
             className={cn(
-              'absolute -top-2.5 start-3 z-10 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider transition-all duration-200',
+              'absolute -top-2.5 start-3 z-10 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider transition-all duration-150',
               isSelected
-                ? 'opacity-100 bg-primary/10 text-primary border border-primary/20 backdrop-blur-sm'
-                : 'opacity-0 group-hover/block:opacity-100 bg-muted/90 text-muted-foreground border border-border/50 backdrop-blur-sm',
+                ? 'opacity-100 bg-primary/8 text-primary/70 border border-primary/12'
+                : 'opacity-0 group-hover/block:opacity-100 bg-card text-muted-foreground/50 border border-border/50 shadow-xs',
             )}
           >
             {blockType.replace(/_/g, ' ')}
           </div>
         )}
 
-        {/* Drag handle - left side */}
+        {/* Drag handle */}
         <div
           ref={setActivatorNodeRef}
           {...attributes}
           {...listeners}
           className={cn(
-            'absolute -start-3 top-1/2 -translate-y-1/2 flex h-10 w-6 cursor-grab items-center justify-center rounded-lg border bg-background/95 backdrop-blur-sm text-muted-foreground shadow-sm transition-all duration-200 hover:shadow-md hover:text-foreground hover:border-primary/30 active:cursor-grabbing active:scale-90',
+            'absolute -start-2.5 top-1/2 -translate-y-1/2 flex h-9 w-5 cursor-grab items-center justify-center rounded-md border bg-card text-muted-foreground/25 transition-all duration-150 hover:text-primary hover:border-primary/20 hover:shadow-sm active:cursor-grabbing active:scale-90',
             isSelected || isDragging
-              ? 'opacity-100 border-primary/15'
-              : 'opacity-0 group-hover/block:opacity-100 border-border/50',
+              ? 'opacity-100 border-primary/12'
+              : 'opacity-0 group-hover/block:opacity-100 border-border/40',
           )}
           aria-label="Drag to reorder block"
         >
-          <GripVertical className="h-3.5 w-3.5" />
+          <GripVertical className="h-3 w-3" />
         </div>
 
-        {/* Floating action toolbar - shown when selected */}
+        {/* Floating action toolbar */}
         {isSelected && (
-          <div className="absolute -top-4 end-3 z-20 flex items-center gap-0.5 rounded-xl border border-border/50 bg-background/95 backdrop-blur-xl px-1 py-0.5 shadow-lg shadow-black/5 animate-in fade-in slide-in-from-bottom-1 duration-200">
+          <div className="absolute -top-3.5 end-3 z-20 flex items-center gap-px rounded-lg border border-border/50 bg-card px-0.5 py-0.5 shadow-elevation-2 animate-in fade-in slide-in-from-bottom-1 duration-200">
             {/* Move Up */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -133,7 +133,7 @@ export function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 transition-all duration-150"
                   onClick={(e) => {
                     e.stopPropagation();
                     onMoveUp?.();
@@ -155,7 +155,7 @@ export function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 transition-all duration-150"
                   onClick={(e) => {
                     e.stopPropagation();
                     onMoveDown?.();
@@ -170,8 +170,7 @@ export function BlockWrapper({
               </TooltipContent>
             </Tooltip>
 
-            {/* Divider */}
-            <div className="mx-0.5 h-4 w-px bg-border/50" />
+            <div className="mx-px h-4 w-px bg-border/40" />
 
             {/* Duplicate */}
             <Tooltip>
@@ -180,7 +179,7 @@ export function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-primary hover:bg-primary/[0.06] transition-all duration-150"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDuplicate();
@@ -201,7 +200,7 @@ export function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-destructive/60 hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-destructive hover:bg-destructive/8 transition-all duration-150"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete();
@@ -222,7 +221,7 @@ export function BlockWrapper({
                   data-block-action
                   variant="ghost"
                   size="sm"
-                  className="h-7 w-7 p-0 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-all duration-200"
+                  className="h-7 w-7 p-0 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted/50 transition-all duration-150"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <MoreHorizontal className="h-3.5 w-3.5" />
@@ -241,7 +240,7 @@ export function BlockWrapper({
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="rounded-lg text-sm text-destructive focus:text-destructive focus:bg-destructive/10"
+                  className="rounded-lg text-sm text-destructive focus:text-destructive focus:bg-destructive/8"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete();
@@ -257,12 +256,12 @@ export function BlockWrapper({
 
         {/* Selected accent line */}
         {isSelected && (
-          <div className="absolute inset-y-2 start-0 w-[3px] rounded-e-full bg-gradient-to-b from-primary to-primary/60" />
+          <div className="absolute inset-y-2 start-0 w-[2.5px] rounded-e-full gradient-vivid" />
         )}
 
         {/* Block content */}
-        <div className={cn('p-4', isSelected && 'ps-5')}>{children}</div>
+        <div className={cn('p-5', isSelected && 'ps-6')}>{children}</div>
       </div>
     </TooltipProvider>
   );
-}
+});

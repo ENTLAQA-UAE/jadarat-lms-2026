@@ -90,7 +90,7 @@ export function MatchingBlockEditor({
                     size="icon"
                     onClick={() => removePair(pair.id)}
                     className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    disabled={data.pairs.length <= 2}
+                    disabled={data.pairs.length < 2}
                     title="Remove pair"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { Loader2, AlertTriangle, ArrowLeft, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,10 @@ import { useEditorStore } from '@/stores/editor.store';
 import { saveContent, publishContent, loadCourseWithContent } from '@/action/authoring/content';
 import { EditorHeader } from '@/components/authoring/EditorHeader';
 import { ModuleSidebar } from '@/components/authoring/ModuleSidebar';
-import { EditorCanvas } from '@/components/authoring/EditorCanvas';
+import { EditorCanvas, createDefaultBlock } from '@/components/authoring/EditorCanvas';
+import { BlockLibrarySidebar } from '@/components/authoring/BlockLibrarySidebar';
 import { AICourseWizard } from '@/components/authoring/ai/AICourseWizard';
+import { BlockType } from '@/types/authoring';
 
 export default function BuildCoursePage() {
   const searchParams = useSearchParams();
@@ -107,8 +109,63 @@ export default function BuildCoursePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSave = useCallback(async () => {
-    if (!courseId) return;
+  // ── Warn before closing with unsaved changes ──────────────
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (useEditorStore.getState().isDirty) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, []);
+
+  // ── Auto-save (debounced, every 30 seconds while dirty) ───
+  const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDirty = store.isDirty;
+
+  useEffect(() => {
+    if (!isDirty || !courseId) return;
+
+    // Clear any existing timer
+    if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
+
+    autoSaveRef.current = setTimeout(async () => {
+      const state = useEditorStore.getState();
+      if (!state.isDirty || state.isSaving) return;
+
+      state.setSaving(true);
+      const { error: saveError } = await saveContent(parseInt(courseId), state.content);
+      state.setSaving(false);
+
+      if (!saveError) {
+        state.setDirty(false);
+      }
+    }, 30_000); // 30 second debounce
+
+    return () => {
+      if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
+    };
+  }, [isDirty, courseId]);
+
+  // ── Keyboard shortcuts (Ctrl+S to save) ───────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const isCtrl = e.ctrlKey || e.metaKey;
+      if (isCtrl && e.key === 's') {
+        e.preventDefault();
+        handleSaveRef.current?.();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  // Ref to avoid stale closure in keyboard handler
+  const handleSaveRef = useRef<(() => Promise<string | null>) | null>(null);
+
+  const handleSave = useCallback(async (): Promise<string | null> => {
+    if (!courseId) return null;
     store.setSaving(true);
 
     const { contentId, error: saveError } = await saveContent(
@@ -120,28 +177,40 @@ export default function BuildCoursePage() {
 
     if (saveError) {
       toast.error('Save failed', { description: saveError });
-      return;
+      return null;
     }
 
     store.setDirty(false);
     toast.success('Saved', { description: 'Course content saved successfully.' });
+    return contentId ?? null;
   }, [courseId, store]);
 
+  // Keep ref in sync for keyboard shortcut handler
+  handleSaveRef.current = handleSave;
+
   const handlePublish = useCallback(async () => {
-    if (!courseId || !store.contentId) {
-      // Save first if no contentId
-      await handleSave();
-      if (!store.contentId) {
+    if (!courseId) return;
+
+    // If no contentId yet, save first and use the returned value
+    let activeContentId = store.contentId;
+    if (!activeContentId) {
+      activeContentId = await handleSave();
+      if (!activeContentId) {
         toast.error('Error', { description: 'Please save the course first.' });
         return;
       }
+    } else if (store.isDirty) {
+      // Auto-save before publish if there are unsaved changes
+      const savedId = await handleSave();
+      if (!savedId) return; // save failed
+      activeContentId = savedId;
     }
 
     store.setPublishing(true);
 
     const { error: publishError } = await publishContent(
-      parseInt(courseId!),
-      store.contentId!
+      parseInt(courseId),
+      activeContentId
     );
 
     store.setPublishing(false);
@@ -159,16 +228,16 @@ export default function BuildCoursePage() {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
         <div className="text-center max-w-sm">
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/15">
-            <AlertTriangle className="h-6 w-6 text-amber-500" />
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-warning/8 border border-warning/15">
+            <AlertTriangle className="h-6 w-6 text-warning" />
           </div>
-          <h2 className="text-lg font-semibold text-foreground mb-1.5">No course ID</h2>
-          <p className="text-sm text-muted-foreground mb-6">A valid course ID is required to open the editor.</p>
+          <h2 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">No course ID</h2>
+          <p className="text-sm text-muted-foreground/60 mb-6">A valid course ID is required to open the editor.</p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => router.push('/dashboard/courses')}
-            className="gap-2 rounded-lg"
+            className="gap-2 rounded-lg border-border/50 hover:bg-muted/30"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back to courses
@@ -182,14 +251,14 @@ export default function BuildCoursePage() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-background gap-4">
         <div className="relative">
-          <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping" />
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <div className="absolute inset-0 rounded-2xl bg-primary/8 animate-ping" />
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-2xl gradient-vivid shadow-lg shadow-primary/20">
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
           </div>
         </div>
         <div className="text-center">
-          <p className="text-sm font-medium text-foreground">Loading course editor</p>
-          <p className="text-xs text-muted-foreground mt-1">Preparing your workspace...</p>
+          <p className="text-sm font-semibold text-foreground/80">Loading course editor</p>
+          <p className="text-xs text-muted-foreground/50 mt-1">Preparing your workspace...</p>
         </div>
       </div>
     );
@@ -199,17 +268,17 @@ export default function BuildCoursePage() {
     return (
       <div className="flex items-center justify-center h-screen bg-background">
         <div className="text-center max-w-sm">
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/10 border border-destructive/15">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/8 border border-destructive/15">
             <AlertTriangle className="h-6 w-6 text-destructive" />
           </div>
-          <h2 className="text-lg font-semibold text-foreground mb-1.5">Failed to load course</h2>
-          <p className="text-sm text-muted-foreground mb-6">{error}</p>
+          <h2 className="text-lg font-semibold text-foreground/80 mb-1.5 tracking-tight">Failed to load course</h2>
+          <p className="text-sm text-muted-foreground/60 mb-6">{error}</p>
           <div className="flex items-center justify-center gap-3">
             <Button
               variant="outline"
               size="sm"
               onClick={() => router.push('/dashboard/courses')}
-              className="gap-2 rounded-lg"
+              className="gap-2 rounded-lg border-border/50"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Back to courses
@@ -217,7 +286,7 @@ export default function BuildCoursePage() {
             <Button
               size="sm"
               onClick={() => window.location.reload()}
-              className="rounded-lg"
+              className="rounded-lg gradient-vivid text-white shadow-md shadow-primary/15"
             >
               Try again
             </Button>
@@ -243,6 +312,12 @@ export default function BuildCoursePage() {
     );
   }
 
+  const handleBlockLibraryInsert = (type: BlockType) => {
+    if (!store.selectedModuleId || !store.selectedLessonId) return;
+    const block = createDefaultBlock(type);
+    store.addBlock(store.selectedModuleId, store.selectedLessonId, block);
+  };
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">
       <EditorHeader
@@ -252,9 +327,15 @@ export default function BuildCoursePage() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        {store.sidebarOpen && <ModuleSidebar />}
+        {/* Structure sidebar */}
+        {store.sidebarOpen && !store.blockLibraryOpen && <ModuleSidebar />}
 
-        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-muted/20 to-muted/40">
+        {/* Block Library sidebar */}
+        {store.blockLibraryOpen && (
+          <BlockLibrarySidebar onInsertBlock={handleBlockLibraryInsert} />
+        )}
+
+        <main className="flex-1 overflow-y-auto bg-canvas-dots">
           <EditorCanvas />
         </main>
       </div>

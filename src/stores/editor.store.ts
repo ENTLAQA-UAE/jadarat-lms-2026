@@ -70,6 +70,7 @@ export interface EditorState {
   isPublishing: boolean;
   previewMode: boolean;
   sidebarOpen: boolean;
+  blockLibraryOpen: boolean;
   undoStack: CourseContent[];
   redoStack: CourseContent[];
 }
@@ -103,6 +104,7 @@ export interface EditorActions {
   ) => void;
   deleteLesson: (moduleId: string, lessonId: string) => void;
   reorderLessons: (moduleId: string, fromIndex: number, toIndex: number) => void;
+  moveLessonToModule: (fromModuleId: string, lessonId: string, toModuleId: string) => void;
 
   // Block CRUD
   addBlock: (moduleId: string, lessonId: string, block: Block, atIndex?: number) => void;
@@ -136,6 +138,8 @@ export interface EditorActions {
   setPublishing: (publishing: boolean) => void;
   togglePreview: () => void;
   toggleSidebar: () => void;
+  toggleBlockLibrary: () => void;
+  setBlockLibraryOpen: (open: boolean) => void;
 
   // Computed getters
   getCurrentModule: () => Module | null;
@@ -178,6 +182,7 @@ const initialState: EditorState = {
   isPublishing: false,
   previewMode: false,
   sidebarOpen: true,
+  blockLibraryOpen: false,
   undoStack: [],
   redoStack: [],
 };
@@ -240,12 +245,15 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   // Module CRUD
   // --------------------------------------------------------
   addModule: (title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) return; // Prevent empty titles
+
     const state = get();
     state.pushSnapshot();
 
     const newModule: Module = {
       id: uuidv4(),
-      title,
+      title: trimmed,
       order: state.content.modules.length,
       lessons: [],
       is_locked: false,
@@ -281,6 +289,14 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
     const state = get();
     state.pushSnapshot();
 
+    // Check if the selected lesson/block belongs to this module
+    const deletedModule = state.content.modules.find((m) => m.id === moduleId);
+    const lessonBelongsToDeleted = deletedModule?.lessons.some(
+      (l) => l.id === state.selectedLessonId,
+    );
+    const shouldClearSelection =
+      state.selectedModuleId === moduleId || lessonBelongsToDeleted;
+
     const filteredModules = recalculateOrder(
       state.content.modules.filter((m) => m.id !== moduleId),
     );
@@ -290,12 +306,9 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
         ...state.content,
         modules: filteredModules,
       },
-      selectedModuleId:
-        state.selectedModuleId === moduleId ? null : state.selectedModuleId,
-      selectedLessonId:
-        state.selectedModuleId === moduleId ? null : state.selectedLessonId,
-      selectedBlockId:
-        state.selectedModuleId === moduleId ? null : state.selectedBlockId,
+      selectedModuleId: shouldClearSelection ? null : state.selectedModuleId,
+      selectedLessonId: shouldClearSelection ? null : state.selectedLessonId,
+      selectedBlockId: shouldClearSelection ? null : state.selectedBlockId,
       isDirty: true,
       redoStack: [],
     });
@@ -333,6 +346,9 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   // Lesson CRUD
   // --------------------------------------------------------
   addLesson: (moduleId: string, title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) return; // Prevent empty titles
+
     const state = get();
     const moduleIndex = state.content.modules.findIndex((m) => m.id === moduleId);
     if (moduleIndex === -1) return;
@@ -342,7 +358,7 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
     const targetModule = state.content.modules[moduleIndex];
     const newLesson: Lesson = {
       id: uuidv4(),
-      title,
+      title: trimmed,
       order: targetModule.lessons.length,
       blocks: [],
       is_locked: false,
@@ -397,6 +413,15 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
     const state = get();
     state.pushSnapshot();
 
+    // Check if the selected block belongs to this lesson
+    const deletedLesson = state.content.modules
+      .find((m) => m.id === moduleId)
+      ?.lessons.find((l) => l.id === lessonId);
+    const blockBelongsToDeleted = deletedLesson?.blocks.some(
+      (b) => b.id === state.selectedBlockId,
+    );
+    const shouldClearLesson = state.selectedLessonId === lessonId;
+
     const updatedModules = state.content.modules.map((m) =>
       m.id === moduleId
         ? {
@@ -411,10 +436,9 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
         ...state.content,
         modules: updatedModules,
       },
-      selectedLessonId:
-        state.selectedLessonId === lessonId ? null : state.selectedLessonId,
+      selectedLessonId: shouldClearLesson ? null : state.selectedLessonId,
       selectedBlockId:
-        state.selectedLessonId === lessonId ? null : state.selectedBlockId,
+        shouldClearLesson || blockBelongsToDeleted ? null : state.selectedBlockId,
       isDirty: true,
       redoStack: [],
     });
@@ -450,6 +474,46 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
         ...state.content,
         modules: updatedModules,
       },
+      isDirty: true,
+      redoStack: [],
+    });
+  },
+
+  moveLessonToModule: (fromModuleId: string, lessonId: string, toModuleId: string) => {
+    if (fromModuleId === toModuleId) return;
+    const state = get();
+
+    const sourceModule = state.content.modules.find((m) => m.id === fromModuleId);
+    if (!sourceModule) return;
+    const lesson = sourceModule.lessons.find((l) => l.id === lessonId);
+    if (!lesson) return;
+
+    state.pushSnapshot();
+
+    const updatedModules = state.content.modules.map((m) => {
+      if (m.id === fromModuleId) {
+        return {
+          ...m,
+          lessons: recalculateOrder(m.lessons.filter((l) => l.id !== lessonId)),
+        };
+      }
+      if (m.id === toModuleId) {
+        return {
+          ...m,
+          lessons: recalculateOrder([...m.lessons, { ...lesson }]),
+        };
+      }
+      return m;
+    });
+
+    set({
+      content: {
+        ...state.content,
+        modules: updatedModules,
+      },
+      // Update selection to follow the moved lesson
+      selectedModuleId: toModuleId,
+      selectedLessonId: lessonId,
       isDirty: true,
       redoStack: [],
     });
@@ -782,6 +846,10 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   togglePreview: () => set((state) => ({ previewMode: !state.previewMode })),
 
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+
+  toggleBlockLibrary: () => set((state) => ({ blockLibraryOpen: !state.blockLibraryOpen })),
+
+  setBlockLibraryOpen: (open: boolean) => set({ blockLibraryOpen: open }),
 
   // --------------------------------------------------------
   // Computed getters
