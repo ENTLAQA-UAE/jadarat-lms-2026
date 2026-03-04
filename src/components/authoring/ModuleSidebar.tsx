@@ -15,6 +15,17 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useEditorStore } from '@/stores/editor.store';
 import { cn } from '@/lib/utils';
 
@@ -170,17 +181,24 @@ export function ModuleSidebar() {
     [updateLesson],
   );
 
-  const handleDeleteModule = useCallback(
-    (e: React.MouseEvent, moduleId: string) => {
-      e.stopPropagation();
+  const handleModuleClick = useCallback(
+    (moduleId: string) => {
+      // Select module AND toggle expand (Rise-style: click selects + toggles)
+      selectModule(moduleId);
+      toggleModuleExpanded(moduleId);
+    },
+    [selectModule, toggleModuleExpanded],
+  );
+
+  const confirmDeleteModule = useCallback(
+    (moduleId: string) => {
       deleteModule(moduleId);
     },
     [deleteModule],
   );
 
-  const handleDeleteLesson = useCallback(
-    (e: React.MouseEvent, moduleId: string, lessonId: string) => {
-      e.stopPropagation();
+  const confirmDeleteLesson = useCallback(
+    (moduleId: string, lessonId: string) => {
       deleteLesson(moduleId, lessonId);
     },
     [deleteLesson],
@@ -251,7 +269,7 @@ export function ModuleSidebar() {
                       ? 'bg-primary/8 text-primary shadow-sm shadow-primary/5 border border-primary/15'
                       : 'hover:bg-muted/60 text-foreground border border-transparent',
                   )}
-                  onClick={() => toggleModuleExpanded(module.id)}
+                  onClick={() => handleModuleClick(module.id)}
                 >
                   {/* Expand chevron */}
                   <span className={cn(
@@ -300,14 +318,35 @@ export function ModuleSidebar() {
                     {lessonCount}
                   </span>
 
-                  {/* Delete button */}
-                  <button
-                    onClick={(e) => handleDeleteModule(e, module.id)}
-                    className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-all duration-200 opacity-0 group-hover/mod:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-                    title="Delete module"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
+                  {/* Delete button with confirmation */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="shrink-0 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-all duration-200 opacity-0 group-hover/mod:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                        title="Delete module"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete module?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete <strong>{module.title}</strong> and its {lessonCount} {lessonCount === 1 ? 'lesson' : 'lessons'}. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => confirmDeleteModule(module.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
 
                 {/* Lessons */}
@@ -370,16 +409,35 @@ export function ModuleSidebar() {
                             <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-sm shadow-primary/30" />
                           )}
 
-                          {/* Delete */}
-                          <button
-                            onClick={(e) =>
-                              handleDeleteLesson(e, module.id, lesson.id)
-                            }
-                            className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition-all duration-200 opacity-0 group-hover/lesson:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-                            title="Delete lesson"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
+                          {/* Delete with confirmation */}
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <button
+                                onClick={(e) => e.stopPropagation()}
+                                className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition-all duration-200 opacity-0 group-hover/lesson:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                                title="Delete lesson"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete lesson?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This will permanently delete <strong>{lesson.title}</strong> and all its {blockCount} {blockCount === 1 ? 'block' : 'blocks'}. This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => confirmDeleteLesson(module.id, lesson.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       );
                     })}

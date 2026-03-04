@@ -244,12 +244,15 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   // Module CRUD
   // --------------------------------------------------------
   addModule: (title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) return; // Prevent empty titles
+
     const state = get();
     state.pushSnapshot();
 
     const newModule: Module = {
       id: uuidv4(),
-      title,
+      title: trimmed,
       order: state.content.modules.length,
       lessons: [],
       is_locked: false,
@@ -285,6 +288,14 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
     const state = get();
     state.pushSnapshot();
 
+    // Check if the selected lesson/block belongs to this module
+    const deletedModule = state.content.modules.find((m) => m.id === moduleId);
+    const lessonBelongsToDeleted = deletedModule?.lessons.some(
+      (l) => l.id === state.selectedLessonId,
+    );
+    const shouldClearSelection =
+      state.selectedModuleId === moduleId || lessonBelongsToDeleted;
+
     const filteredModules = recalculateOrder(
       state.content.modules.filter((m) => m.id !== moduleId),
     );
@@ -294,12 +305,9 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
         ...state.content,
         modules: filteredModules,
       },
-      selectedModuleId:
-        state.selectedModuleId === moduleId ? null : state.selectedModuleId,
-      selectedLessonId:
-        state.selectedModuleId === moduleId ? null : state.selectedLessonId,
-      selectedBlockId:
-        state.selectedModuleId === moduleId ? null : state.selectedBlockId,
+      selectedModuleId: shouldClearSelection ? null : state.selectedModuleId,
+      selectedLessonId: shouldClearSelection ? null : state.selectedLessonId,
+      selectedBlockId: shouldClearSelection ? null : state.selectedBlockId,
       isDirty: true,
       redoStack: [],
     });
@@ -337,6 +345,9 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   // Lesson CRUD
   // --------------------------------------------------------
   addLesson: (moduleId: string, title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) return; // Prevent empty titles
+
     const state = get();
     const moduleIndex = state.content.modules.findIndex((m) => m.id === moduleId);
     if (moduleIndex === -1) return;
@@ -346,7 +357,7 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
     const targetModule = state.content.modules[moduleIndex];
     const newLesson: Lesson = {
       id: uuidv4(),
-      title,
+      title: trimmed,
       order: targetModule.lessons.length,
       blocks: [],
       is_locked: false,
@@ -401,6 +412,15 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
     const state = get();
     state.pushSnapshot();
 
+    // Check if the selected block belongs to this lesson
+    const deletedLesson = state.content.modules
+      .find((m) => m.id === moduleId)
+      ?.lessons.find((l) => l.id === lessonId);
+    const blockBelongsToDeleted = deletedLesson?.blocks.some(
+      (b) => b.id === state.selectedBlockId,
+    );
+    const shouldClearLesson = state.selectedLessonId === lessonId;
+
     const updatedModules = state.content.modules.map((m) =>
       m.id === moduleId
         ? {
@@ -415,10 +435,9 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
         ...state.content,
         modules: updatedModules,
       },
-      selectedLessonId:
-        state.selectedLessonId === lessonId ? null : state.selectedLessonId,
+      selectedLessonId: shouldClearLesson ? null : state.selectedLessonId,
       selectedBlockId:
-        state.selectedLessonId === lessonId ? null : state.selectedBlockId,
+        shouldClearLesson || blockBelongsToDeleted ? null : state.selectedBlockId,
       isDirty: true,
       redoStack: [],
     });

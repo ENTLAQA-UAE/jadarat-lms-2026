@@ -24,7 +24,7 @@ import { BlockType, type Block } from '@/types/authoring';
 import { v4 as uuidv4 } from 'uuid';
 import { cn } from '@/lib/utils';
 
-function createDefaultBlock(type: BlockType): Block {
+export function createDefaultBlock(type: BlockType): Block {
   const now = new Date().toISOString();
   const base = {
     id: uuidv4(),

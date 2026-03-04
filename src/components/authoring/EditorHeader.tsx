@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils';
 
 interface EditorHeaderProps {
   courseTitle: string;
-  onSave: () => Promise<void>;
+  onSave: () => Promise<string | null | void>;
   onPublish: () => Promise<void>;
 }
 
@@ -293,7 +293,7 @@ export function EditorHeader({
           <Button
             size="sm"
             onClick={handlePublish}
-            disabled={publishingInProgress || !isDirty || savingInProgress}
+            disabled={publishingInProgress || savingInProgress}
             className="gap-1.5 h-8 rounded-lg text-xs font-medium bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white shadow-sm shadow-emerald-600/20 transition-all duration-200 disabled:from-muted disabled:to-muted disabled:text-muted-foreground disabled:shadow-none"
           >
             {publishingInProgress ? (

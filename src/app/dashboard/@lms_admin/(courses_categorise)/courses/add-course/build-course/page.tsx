@@ -9,11 +9,10 @@ import { useEditorStore } from '@/stores/editor.store';
 import { saveContent, publishContent, loadCourseWithContent } from '@/action/authoring/content';
 import { EditorHeader } from '@/components/authoring/EditorHeader';
 import { ModuleSidebar } from '@/components/authoring/ModuleSidebar';
-import { EditorCanvas } from '@/components/authoring/EditorCanvas';
+import { EditorCanvas, createDefaultBlock } from '@/components/authoring/EditorCanvas';
 import { BlockLibrarySidebar } from '@/components/authoring/BlockLibrarySidebar';
 import { AICourseWizard } from '@/components/authoring/ai/AICourseWizard';
-import { BlockType, type Block } from '@/types/authoring';
-import { v4 as uuidv4 } from 'uuid';
+import { BlockType } from '@/types/authoring';
 
 export default function BuildCoursePage() {
   const searchParams = useSearchParams();
@@ -110,8 +109,8 @@ export default function BuildCoursePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSave = useCallback(async () => {
-    if (!courseId) return;
+  const handleSave = useCallback(async (): Promise<string | null> => {
+    if (!courseId) return null;
     store.setSaving(true);
 
     const { contentId, error: saveError } = await saveContent(
@@ -123,28 +122,37 @@ export default function BuildCoursePage() {
 
     if (saveError) {
       toast.error('Save failed', { description: saveError });
-      return;
+      return null;
     }
 
     store.setDirty(false);
     toast.success('Saved', { description: 'Course content saved successfully.' });
+    return contentId ?? null;
   }, [courseId, store]);
 
   const handlePublish = useCallback(async () => {
-    if (!courseId || !store.contentId) {
-      // Save first if no contentId
-      await handleSave();
-      if (!store.contentId) {
+    if (!courseId) return;
+
+    // If no contentId yet, save first and use the returned value
+    let activeContentId = store.contentId;
+    if (!activeContentId) {
+      activeContentId = await handleSave();
+      if (!activeContentId) {
         toast.error('Error', { description: 'Please save the course first.' });
         return;
       }
+    } else if (store.isDirty) {
+      // Auto-save before publish if there are unsaved changes
+      const savedId = await handleSave();
+      if (!savedId) return; // save failed
+      activeContentId = savedId;
     }
 
     store.setPublishing(true);
 
     const { error: publishError } = await publishContent(
-      parseInt(courseId!),
-      store.contentId!
+      parseInt(courseId),
+      activeContentId
     );
 
     store.setPublishing(false);
@@ -249,31 +257,7 @@ export default function BuildCoursePage() {
   const handleBlockLibraryInsert = useCallback(
     (type: BlockType) => {
       if (!store.selectedModuleId || !store.selectedLessonId) return;
-
-      const now = new Date().toISOString();
-      const base = {
-        id: uuidv4(),
-        order: 0,
-        visible: true,
-        locked: false,
-        metadata: { created_at: now, updated_at: now, created_by: 'human' as const },
-      };
-
-      // Simple default data for each type - the store handles ordering
-      let block: Block;
-      switch (type) {
-        case BlockType.TEXT:
-          block = { ...base, type, data: { content: '', alignment: 'start', direction: 'auto' } } as Block;
-          break;
-        case BlockType.DIVIDER:
-          block = { ...base, type, data: { style: 'line', spacing: 'medium' } } as Block;
-          break;
-        default:
-          // Use a minimal fallback — the BlockEditor normalizer will fill arrays
-          block = { ...base, type, data: {} } as Block;
-          break;
-      }
-
+      const block = createDefaultBlock(type);
       store.addBlock(store.selectedModuleId, store.selectedLessonId, block);
     },
     [store],

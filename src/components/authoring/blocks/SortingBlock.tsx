@@ -127,7 +127,7 @@ export function SortingBlockEditor({
                     size="icon"
                     onClick={() => removeCategory(category.id)}
                     className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    disabled={data.categories.length <= 2}
+                    disabled={data.categories.length < 2}
                     title="Remove category"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -183,7 +183,7 @@ export function SortingBlockEditor({
                     size="icon"
                     onClick={() => removeItem(item.id)}
                     className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    disabled={data.items.length <= 2}
+                    disabled={data.items.length < 2}
                     title="Remove item"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
