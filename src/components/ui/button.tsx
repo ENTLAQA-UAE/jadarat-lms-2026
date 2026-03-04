@@ -5,26 +5,26 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 active:scale-[0.97]",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 hover:shadow-md",
+        default: "bg-primary text-primary-foreground shadow-sm shadow-primary/15 hover:bg-primary/90 hover:shadow-md hover:shadow-primary/20",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 hover:shadow-md",
+          "bg-destructive text-destructive-foreground shadow-sm shadow-destructive/15 hover:bg-destructive/90 hover:shadow-md",
         outline:
-          "border border-border bg-background shadow-xs hover:bg-muted hover:border-border/80 text-foreground",
+          "border border-border/60 bg-card shadow-elevation-1 hover:bg-muted/50 hover:border-border text-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         success:
-          "bg-success text-success-foreground shadow-sm hover:bg-success/90 hover:shadow-md",
+          "bg-success text-success-foreground shadow-sm shadow-success/15 hover:bg-success/90 hover:shadow-md",
         info:
-          "bg-info text-info-foreground shadow-sm hover:bg-info/90 hover:shadow-md",
+          "bg-info text-info-foreground shadow-sm shadow-info/15 hover:bg-info/90 hover:shadow-md",
         warning:
-          "bg-warning text-warning-foreground shadow-sm hover:bg-warning/90 hover:shadow-md",
-        ghost: "hover:bg-muted text-muted-foreground hover:text-foreground",
+          "bg-warning text-warning-foreground shadow-sm shadow-warning/15 hover:bg-warning/90 hover:shadow-md",
+        ghost: "hover:bg-black/[0.04] dark:hover:bg-white/[0.06] text-muted-foreground hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline p-0 h-auto",
-        gradient: "bg-gradient-to-r from-primary to-primary-600 text-primary-foreground shadow-md hover:shadow-lg hover:brightness-105",
+        gradient: "gradient-vivid text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 hover:brightness-110",
       },
       size: {
         default: "h-9 px-4 py-2",

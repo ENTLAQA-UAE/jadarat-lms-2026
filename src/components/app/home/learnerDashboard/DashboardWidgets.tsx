@@ -58,13 +58,13 @@ export default function DashboardWidgets() {
       <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
           <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/[0.08]">
               <Target className="h-4 w-4 text-accent" />
             </div>
             {isRTL ? "التحديات النشطة" : "Active Challenges"}
           </CardTitle>
           <Link href="/dashboard/achievements">
-            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-foreground h-7">
+            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground/70 hover:text-foreground h-7">
               {isRTL ? "عرض الكل" : "View All"}
               <ArrowRight className="h-3 w-3" />
             </Button>
@@ -81,13 +81,13 @@ export default function DashboardWidgets() {
       <Card className="overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-2 pt-5 px-5">
           <CardTitle className="flex items-center gap-2.5 text-sm font-semibold">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-golden/10">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-golden/[0.08]">
               <Trophy className="h-4 w-4 text-golden" />
             </div>
             {isRTL ? "لوحة المتصدرين" : "Leaderboard"}
           </CardTitle>
           <Link href="/dashboard/leaderboard">
-            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground hover:text-foreground h-7">
+            <Button variant="ghost" size="sm" className="gap-1 text-xs text-muted-foreground/70 hover:text-foreground h-7">
               {isRTL ? "عرض الكل" : "View All"}
               <ArrowRight className="h-3 w-3" />
             </Button>

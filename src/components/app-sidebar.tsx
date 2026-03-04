@@ -368,8 +368,8 @@ export default function AppSidebar() {
                       className={cn(
                         "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] text-[13px] font-medium transition-all duration-150",
                         isActive
-                          ? "bg-white/[0.08] text-white"
-                          : "text-white/50 hover:bg-white/[0.04] hover:text-white/80",
+                          ? "bg-white/[0.07] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+                          : "text-white/45 hover:bg-white/[0.04] hover:text-white/75",
                         isCollapsed && !isMobile && "justify-center px-2"
                       )}
                     >
@@ -377,17 +377,18 @@ export default function AppSidebar() {
                       {isActive && (
                         <span
                           className={cn(
-                            "absolute top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full bg-primary-400",
+                            "absolute top-1/2 -translate-y-1/2 h-4 w-[2px] rounded-full",
                             isRTL ? "right-0" : "left-0"
                           )}
+                          style={{ background: "linear-gradient(180deg, hsl(245 82% 63%), hsl(280 80% 60%))" }}
                         />
                       )}
                       <Icon
                         className={cn(
                           "h-4 w-4 shrink-0 transition-colors",
                           isActive
-                            ? "text-primary-400"
-                            : "text-white/40 group-hover:text-white/60"
+                            ? "text-[hsl(245,88%,73%)]"
+                            : "text-white/35 group-hover:text-white/55"
                         )}
                       />
                       {(!isCollapsed || isMobile) && (
@@ -484,7 +485,7 @@ export default function AppSidebar() {
       {!isMobile && (
         <aside
           className={cn(
-            "fixed inset-y-0 start-0 z-40 flex flex-col gradient-sidebar border-e border-white/[0.06] transition-[width] duration-200 ease-smooth",
+            "fixed inset-y-0 start-0 z-40 flex flex-col border-e border-white/[0.04] transition-[width] duration-200 ease-smooth bg-[hsl(240,22%,6%)]",
             isCollapsed ? "w-sidebar-collapsed" : "w-sidebar"
           )}
         >
@@ -494,7 +495,7 @@ export default function AppSidebar() {
 
       {/* ── Mobile Header ── */}
       {isMobile && (
-        <header className="sticky top-0 z-50 flex h-12 items-center gap-3 border-b border-border/60 bg-background/80 backdrop-blur-xl px-4">
+        <header className="sticky top-0 z-50 flex h-12 items-center gap-3 border-b border-border/40 glass-toolbar px-4">
           <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle sidebar">
             <PanelLeft className="h-5 w-5" />
           </Button>
@@ -517,7 +518,7 @@ export default function AppSidebar() {
         <Sheet open={isOpen} onOpenChange={setOpen}>
           <SheetContent
             side={isRTL ? "right" : "left"}
-            className="w-sidebar gradient-sidebar border-0 p-0"
+            className="w-sidebar border-0 p-0 bg-[hsl(240,22%,6%)]"
           >
             {sidebarContent}
           </SheetContent>

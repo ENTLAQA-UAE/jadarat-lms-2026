@@ -26,21 +26,21 @@ export default function EmptyState({
   return (
     <Card
       className={cn(
-        "flex flex-col items-center justify-center py-14 px-6 text-center border-dashed border-border/40",
+        "flex flex-col items-center justify-center py-16 px-6 text-center border-dashed border-border/30 bg-card/50",
         className
       )}
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted mb-4">
-        {icon || <Inbox className="h-5 w-5 text-muted-foreground" />}
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/[0.06] mb-4">
+        {icon || <Inbox className="h-5 w-5 text-muted-foreground/60" />}
       </div>
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       {description && (
-        <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+        <p className="mt-1.5 max-w-sm text-sm text-muted-foreground/70">
           {description}
         </p>
       )}
       {action && (
-        <Button onClick={action.onClick} className="mt-5">
+        <Button onClick={action.onClick} className="mt-6" variant="default">
           {action.label}
         </Button>
       )}

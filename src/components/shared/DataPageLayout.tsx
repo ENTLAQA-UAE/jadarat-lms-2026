@@ -17,7 +17,7 @@ export default function DataPageLayout({
   className,
 }: DataPageLayoutProps) {
   return (
-    <div className={cn("p-4 sm:p-6 space-y-6", className)}>
+    <div className={cn("p-4 sm:p-6 lg:p-8 space-y-6", className)}>
       <PageHeader title={title} description={description}>
         {actions}
       </PageHeader>

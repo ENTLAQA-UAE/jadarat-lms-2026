@@ -30,14 +30,14 @@ const formSchema = z.object({
 })
 
 function LoginForm({ domain, registerationEnabled }: { domain: string, registerationEnabled : boolean}) {
- const [errorMessage, dispatch] = useFormState(loginAuth, undefined) 
+ const [errorMessage, dispatch] = useFormState(loginAuth, undefined)
 
  const isBrowser = typeof window !== 'undefined'; // Check if running in the browser
 
  let registerLink = ""; // Initialize with a default value
  if (isBrowser) {
   registerLink = `${window.location.protocol}//${domain}/register`
- } 
+ }
 
  const form = useForm<z.infer<typeof formSchema>>({
   resolver: zodResolver(formSchema),
@@ -49,11 +49,11 @@ function LoginForm({ domain, registerationEnabled }: { domain: string, registera
 
  const RegistrationLink = useMemo(() => (
   registerationEnabled && (
-   <div className="mt-4 text-center text-sm">
+   <div className="mt-4 text-center text-sm text-muted-foreground">
     Not have an account?{" "}
     <Link
      href={registerLink}
-     className="underline"
+     className="font-medium text-primary hover:text-primary/80 transition-colors"
     >
      Sign up your account
     </Link>
@@ -63,13 +63,13 @@ function LoginForm({ domain, registerationEnabled }: { domain: string, registera
 
  return (
   <Form {...form}>
-   <form action={dispatch} className="space-y-6">
+   <form action={dispatch} className="space-y-5">
     <FormField
      control={form.control}
      name="email"
      render={({ field }) => (
       <FormItem>
-       <Label htmlFor="email">Email</Label>
+       <Label htmlFor="email" className="text-sm font-medium text-foreground/80">Email</Label>
        <FormControl>
         <Input placeholder="m@example.com" {...field} />
        </FormControl>
@@ -83,12 +83,12 @@ function LoginForm({ domain, registerationEnabled }: { domain: string, registera
      render={({ field }) => (
       <FormItem>
        <div className="flex items-center justify-between">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="text-sm font-medium text-foreground/80">Password</Label>
         <Link
-         className="text-sm text-primary hover:underline"
+         className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
          href="/reset-password"
         >
-         Forgot your password?
+         Forgot password?
         </Link>
        </div>
        <FormControl>
@@ -99,7 +99,11 @@ function LoginForm({ domain, registerationEnabled }: { domain: string, registera
      )}
     />
     <LoginButton />
-    {errorMessage && <div role="alert" className="text-sm text-destructive">{errorMessage}</div>}
+    {errorMessage && (
+     <div role="alert" className="text-sm text-destructive bg-destructive/8 rounded-lg px-3 py-2.5 border border-destructive/15">
+      {errorMessage}
+     </div>
+    )}
    </form>
    {RegistrationLink}
   </Form>
@@ -119,11 +123,11 @@ function LoginButton() {
 
 
  return (
-  <Button className="w-full bg-primary hover:bg-primary-700" disabled={pending} aria-disabled={pending} type="submit" onClick={handleClick}>
+  <Button className="w-full h-10 gradient-vivid text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25 hover:brightness-110" disabled={pending} aria-disabled={pending} type="submit" onClick={handleClick}>
    {pending ? (
     <span className='flex items-center justify-center gap-2'>
      <span>Please wait</span>
-     <Loader2 className="animate-spin" />
+     <Loader2 className="h-4 w-4 animate-spin" />
     </span>
    ) : (
     "Login"
