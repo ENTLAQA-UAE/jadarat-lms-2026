@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { Loader2, AlertTriangle, ArrowLeft, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -109,6 +109,61 @@ export default function BuildCoursePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ── Warn before closing with unsaved changes ──────────────
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (useEditorStore.getState().isDirty) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, []);
+
+  // ── Auto-save (debounced, every 30 seconds while dirty) ───
+  const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDirty = store.isDirty;
+
+  useEffect(() => {
+    if (!isDirty || !courseId) return;
+
+    // Clear any existing timer
+    if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
+
+    autoSaveRef.current = setTimeout(async () => {
+      const state = useEditorStore.getState();
+      if (!state.isDirty || state.isSaving) return;
+
+      state.setSaving(true);
+      const { error: saveError } = await saveContent(parseInt(courseId), state.content);
+      state.setSaving(false);
+
+      if (!saveError) {
+        state.setDirty(false);
+      }
+    }, 30_000); // 30 second debounce
+
+    return () => {
+      if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
+    };
+  }, [isDirty, courseId]);
+
+  // ── Keyboard shortcuts (Ctrl+S to save) ───────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const isCtrl = e.ctrlKey || e.metaKey;
+      if (isCtrl && e.key === 's') {
+        e.preventDefault();
+        handleSaveRef.current?.();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  // Ref to avoid stale closure in keyboard handler
+  const handleSaveRef = useRef<(() => Promise<string | null>) | null>(null);
+
   const handleSave = useCallback(async (): Promise<string | null> => {
     if (!courseId) return null;
     store.setSaving(true);
@@ -129,6 +184,9 @@ export default function BuildCoursePage() {
     toast.success('Saved', { description: 'Course content saved successfully.' });
     return contentId ?? null;
   }, [courseId, store]);
+
+  // Keep ref in sync for keyboard shortcut handler
+  handleSaveRef.current = handleSave;
 
   const handlePublish = useCallback(async () => {
     if (!courseId) return;
