@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-import { getPlatformAIModel, logUsage, GatewayError } from '@/lib/ai/gateway';
+import { getPlatformAIModel, checkRateLimit, logUsage, GatewayError, withRetry } from '@/lib/ai/gateway';
 import { generateText } from 'ai';
 import { QUIZ_SYSTEM_PROMPT, QUIZ_USER_PROMPT } from '@/lib/ai/prompts';
 import { z } from 'zod';
@@ -37,6 +37,16 @@ export async function POST(req: NextRequest) {
 
     const params = parsed.data;
 
+    // Rate limiting
+    const rateLimit = await checkRateLimit(supabase, user.id, 'generate_quiz');
+    if (!rateLimit.allowed) {
+      const isMinuteLimit = rateLimit.requests_minute >= rateLimit.limit_minute;
+      const detail = isMinuteLimit
+        ? `Rate limit exceeded: ${rateLimit.requests_minute}/${rateLimit.limit_minute} requests per minute`
+        : `Daily limit exceeded: ${rateLimit.requests_day}/${rateLimit.limit_day} requests per day`;
+      return NextResponse.json({ error: detail }, { status: 429 });
+    }
+
     // Use platform-level AI key (not tenant's per-org config)
     let platform;
     try {
@@ -50,18 +60,20 @@ export async function POST(req: NextRequest) {
 
     const startTime = Date.now();
 
-    const result = await generateText({
-      model: platform.model,
-      system: QUIZ_SYSTEM_PROMPT,
-      prompt: QUIZ_USER_PROMPT({
-        moduleTitle: params.module_title,
-        lessonContents: params.lesson_contents,
-        language: params.language,
-        questionCount: params.question_count,
-      }),
-      temperature: 0.7,
-      maxOutputTokens: 4000,
-    });
+    const result = await withRetry(() =>
+      generateText({
+        model: platform.model,
+        system: QUIZ_SYSTEM_PROMPT,
+        prompt: QUIZ_USER_PROMPT({
+          moduleTitle: params.module_title,
+          lessonContents: params.lesson_contents,
+          language: params.language,
+          questionCount: params.question_count,
+        }),
+        temperature: 0.7,
+        maxOutputTokens: 4000,
+      })
+    );
 
     const durationMs = Date.now() - startTime;
 

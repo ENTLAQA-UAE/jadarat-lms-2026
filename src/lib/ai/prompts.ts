@@ -282,7 +282,7 @@ For "divider" blocks:
 { "style": "solid", "color": "#e5e7eb", "spacing": "medium" }
 
 For "flashcard" blocks:
-{ "cards": [{"id": "card-1", "front_text": "Term or concept", "back_text": "Definition or explanation", "front_image": "", "back_image": ""}], "shuffle": false, "show_progress": true }
+{ "cards": [{"id": "card-1", "front": "Term or concept", "back": "Definition or explanation", "image_front": "", "image_back": ""}], "shuffle": false }
 
 For "process" blocks:
 { "steps": [{"id": "step-1", "title": "Step 1", "description": "<p>Description</p>", "icon": ""}], "layout": "vertical", "numbered": true }

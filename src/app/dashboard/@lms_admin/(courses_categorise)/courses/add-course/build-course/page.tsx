@@ -13,6 +13,7 @@ import { EditorCanvas, createDefaultBlock } from '@/components/authoring/EditorC
 import { BlockLibrarySidebar } from '@/components/authoring/BlockLibrarySidebar';
 import { AICourseWizard } from '@/components/authoring/ai/AICourseWizard';
 import { BlockType } from '@/types/authoring';
+import { CoursePlayer } from '@/components/player/CoursePlayer';
 
 export default function BuildCoursePage() {
   const searchParams = useSearchParams();
@@ -317,6 +318,45 @@ export default function BuildCoursePage() {
     const block = createDefaultBlock(type);
     store.addBlock(store.selectedModuleId, store.selectedLessonId, block);
   };
+
+  // Preview mode: render the course player with current editor content
+  if (store.previewMode) {
+    const previewContent = store.content;
+    const hasContent = previewContent.modules && previewContent.modules.length > 0 &&
+      previewContent.modules.some(m => m.lessons && m.lessons.length > 0);
+
+    return (
+      <div className="flex flex-col h-screen overflow-hidden bg-background">
+        <EditorHeader
+          courseTitle={courseTitle}
+          onSave={handleSave}
+          onPublish={handlePublish}
+        />
+        {hasContent ? (
+          <div className="flex-1 overflow-hidden">
+            <CoursePlayer
+              courseId={parseInt(courseId)}
+              content={previewContent}
+              userId="preview"
+              userName="Preview User"
+              courseName={courseTitle}
+              initialProgress={[]}
+            />
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center space-y-3">
+              <p className="text-sm font-medium text-foreground/70">No content to preview</p>
+              <p className="text-xs text-muted-foreground/50">Add modules and lessons first, then preview.</p>
+              <Button variant="outline" size="sm" onClick={store.togglePreview}>
+                Exit Preview
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background">

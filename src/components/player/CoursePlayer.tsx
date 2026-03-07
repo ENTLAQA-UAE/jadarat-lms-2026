@@ -205,6 +205,7 @@ export function CoursePlayer({
         overallProgress={overallProgress}
         direction={content.settings.direction}
         onClose={handleClose}
+        logoUrl={content.settings.theme.logo_url}
       />
 
       {/* Body: sidebar + content */}
@@ -234,6 +235,7 @@ export function CoursePlayer({
             <LessonRenderer
               lesson={currentLesson}
               moduleId={currentModule.id}
+              moduleTitle={currentModule.title}
               blockProgress={blockProgress}
               onBlockComplete={(block, score, responseData) =>
                 handleBlockComplete(

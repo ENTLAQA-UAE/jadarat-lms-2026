@@ -10,6 +10,10 @@ import {
   ChevronUp,
   ChevronDown,
   MoreHorizontal,
+  Eye,
+  EyeOff,
+  Lock,
+  Unlock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,11 +37,15 @@ interface BlockWrapperProps {
   blockType?: string;
   blockIndex?: number;
   totalBlocks?: number;
+  isVisible?: boolean;
+  isLocked?: boolean;
   onSelect: () => void;
   onDelete: () => void;
   onDuplicate: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  onToggleVisibility?: () => void;
+  onToggleLock?: () => void;
   children: React.ReactNode;
 }
 
@@ -47,11 +55,15 @@ export const BlockWrapper = React.memo(function BlockWrapper({
   blockType,
   blockIndex,
   totalBlocks,
+  isVisible = true,
+  isLocked = false,
   onSelect,
   onDelete,
   onDuplicate,
   onMoveUp,
   onMoveDown,
+  onToggleVisibility,
+  onToggleLock,
   children,
 }: BlockWrapperProps) {
   const {
@@ -239,6 +251,49 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                   Duplicate Block
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                {onToggleVisibility && (
+                  <DropdownMenuItem
+                    className="rounded-lg text-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleVisibility();
+                    }}
+                  >
+                    {isVisible ? (
+                      <>
+                        <EyeOff className="mr-2 h-3.5 w-3.5" />
+                        Hide Block
+                      </>
+                    ) : (
+                      <>
+                        <Eye className="mr-2 h-3.5 w-3.5" />
+                        Show Block
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                )}
+                {onToggleLock && (
+                  <DropdownMenuItem
+                    className="rounded-lg text-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleLock();
+                    }}
+                  >
+                    {isLocked ? (
+                      <>
+                        <Unlock className="mr-2 h-3.5 w-3.5" />
+                        Unlock Block
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="mr-2 h-3.5 w-3.5" />
+                        Lock Block
+                      </>
+                    )}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="rounded-lg text-sm text-destructive focus:text-destructive focus:bg-destructive/8"
                   onClick={(e) => {
@@ -259,8 +314,26 @@ export const BlockWrapper = React.memo(function BlockWrapper({
           <div className="absolute inset-y-2 start-0 w-[2.5px] rounded-e-full gradient-vivid" />
         )}
 
+        {/* Hidden/Locked indicators */}
+        {(!isVisible || isLocked) && (
+          <div className="absolute top-2 end-2 z-10 flex items-center gap-1">
+            {!isVisible && (
+              <span className="flex items-center gap-1 rounded-md bg-muted/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground/60 border border-border/30">
+                <EyeOff className="h-3 w-3" />
+                Hidden
+              </span>
+            )}
+            {isLocked && (
+              <span className="flex items-center gap-1 rounded-md bg-amber-500/8 px-1.5 py-0.5 text-[10px] font-medium text-amber-600/70 border border-amber-500/15">
+                <Lock className="h-3 w-3" />
+                Locked
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Block content */}
-        <div className={cn('p-5', isSelected && 'ps-6')}>{children}</div>
+        <div className={cn('p-5', isSelected && 'ps-6', !isVisible && 'opacity-40')}>{children}</div>
       </div>
     </TooltipProvider>
   );

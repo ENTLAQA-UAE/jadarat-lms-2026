@@ -108,22 +108,25 @@ export function PlayerSidebar({
       {/* Header with course name */}
       <div className="p-4 border-b">
         <h2
-          className="text-sm font-semibold truncate"
+          className="text-sm font-semibold truncate leading-tight"
           style={{ color: 'var(--player-text)' }}
         >
           {courseName}
         </h2>
         <div className="flex items-center gap-2 mt-3">
-          <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+          <div className="flex-1 h-1.5 rounded-full bg-muted/60 overflow-hidden">
             <div
-              className="h-full rounded-full transition-all duration-500 ease-out"
+              className="h-full rounded-full transition-all duration-700 ease-out"
               style={{
                 width: `${overallProgress}%`,
                 backgroundColor: 'var(--player-primary)',
               }}
             />
           </div>
-          <span className="text-xs font-medium text-muted-foreground">
+          <span
+            className="text-xs font-semibold tabular-nums"
+            style={{ color: overallProgress === 100 ? 'var(--player-primary)' : undefined }}
+          >
             {overallProgress}%
           </span>
         </div>

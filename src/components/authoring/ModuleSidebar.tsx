@@ -131,6 +131,7 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
         aria-label="Rename"
         className="h-6 px-1.5 py-0 text-xs border-primary/30 bg-primary/5 focus-visible:ring-primary/20 rounded-md"
       />
@@ -141,9 +142,17 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
     <span
       onDoubleClick={(e) => {
         e.stopPropagation();
+        e.preventDefault();
         setIsEditing(true);
       }}
-      className={cn('cursor-default truncate select-none', className)}
+      onMouseDown={(e) => {
+        // Prevent the parent row's click handler from firing on double-click
+        if (e.detail >= 2) {
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }}
+      className={cn('cursor-text truncate', className)}
       title={`${value} — Double-click to rename`}
     >
       {value}

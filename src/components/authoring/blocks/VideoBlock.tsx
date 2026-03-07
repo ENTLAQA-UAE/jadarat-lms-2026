@@ -4,7 +4,6 @@ import { type VideoBlock } from '@/types/authoring';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -14,7 +13,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Video, Upload } from 'lucide-react';
+import { Video } from 'lucide-react';
+import { VideoUploader } from '@/components/authoring/VideoUploader';
 
 interface VideoBlockEditorProps {
   block: VideoBlock;
@@ -61,16 +61,16 @@ export function VideoBlockEditor({ block, onChange }: VideoBlockEditorProps) {
               </div>
             </div>
           ) : (
-            <div className="flex aspect-video w-full flex-col items-center justify-center gap-3 bg-muted/30">
-              <Video className="h-12 w-12 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">No video uploaded yet</p>
-              <Button variant="outline" size="sm" disabled>
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Video
-              </Button>
-              <p className="text-xs text-muted-foreground">
-                Video upload integration coming soon
-              </p>
+            <div className="p-4 bg-muted/30 rounded-lg">
+              <VideoUploader
+                onUploadComplete={(videoData) => {
+                  onChange({
+                    bunny_video_id: videoData.bunny_video_id,
+                    bunny_library_id: videoData.bunny_library_id,
+                    title: data.title || videoData.title,
+                  });
+                }}
+              />
             </div>
           )}
         </div>

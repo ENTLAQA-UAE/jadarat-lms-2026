@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@/utils/supabase/server';
+import { BunnyStream } from '@/lib/bunny/stream';
 
 /**
  * Bunny Stream video status codes:
@@ -102,12 +103,51 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    const statusLabel = Status === BUNNY_STATUS_FINISHED ? 'finished' : 'error';
+    const statusLabel = Status === BUNNY_STATUS_FINISHED ? 'ready' : 'failed';
+
+    // Fetch full video metadata from Bunny when encoding is finished
+    let duration: number | null = null;
+    let resolutions: string[] | null = null;
+    let thumbnailUrl: string | null = null;
+    let width: number | null = null;
+    let height: number | null = null;
+    let fileSize: number | null = null;
+
+    if (Status === BUNNY_STATUS_FINISHED) {
+      try {
+        const bunny = new BunnyStream();
+        const video = await bunny.getVideo(VideoGuid);
+
+        duration = video.length || null;
+        width = video.width || null;
+        height = video.height || null;
+        fileSize = video.storageSize || null;
+        thumbnailUrl = bunny.getThumbnailUrl(VideoGuid);
+
+        if (video.availableResolutions) {
+          resolutions = video.availableResolutions
+            .split(',')
+            .map((r) => r.trim())
+            .filter(Boolean);
+        }
+      } catch (metaErr) {
+        console.error(
+          '[Bunny Webhook] Failed to fetch video metadata:',
+          metaErr instanceof Error ? metaErr.message : metaErr
+        );
+        // Continue with status update even if metadata fetch fails
+      }
+    }
 
     const { error: rpcError } = await supabase.rpc('update_bunny_video_status', {
       p_bunny_video_id: VideoGuid,
-      p_bunny_library_id: String(VideoLibraryId),
       p_status: statusLabel,
+      p_duration: duration,
+      p_resolutions: resolutions,
+      p_thumbnail_url: thumbnailUrl,
+      p_width: width,
+      p_height: height,
+      p_file_size: fileSize,
     });
 
     if (rpcError) {
@@ -119,7 +159,8 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(
-      `[Bunny Webhook] Updated video ${VideoGuid} status to "${statusLabel}"`
+      `[Bunny Webhook] Updated video ${VideoGuid} status to "${statusLabel}"` +
+        (duration ? ` (duration: ${duration}s)` : '')
     );
 
     return NextResponse.json({

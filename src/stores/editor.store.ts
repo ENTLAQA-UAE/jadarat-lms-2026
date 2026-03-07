@@ -117,6 +117,8 @@ export interface EditorActions {
   deleteBlock: (moduleId: string, lessonId: string, blockId: string) => void;
   duplicateBlock: (moduleId: string, lessonId: string, blockId: string) => void;
   reorderBlocks: (moduleId: string, lessonId: string, fromIndex: number, toIndex: number) => void;
+  toggleBlockVisibility: (moduleId: string, lessonId: string, blockId: string) => void;
+  toggleBlockLock: (moduleId: string, lessonId: string, blockId: string) => void;
 
   // Selection
   selectModule: (id: string | null) => void;
@@ -710,6 +712,64 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
         ...state.content,
         modules: updatedModules,
       },
+      isDirty: true,
+      redoStack: [],
+    });
+  },
+
+  toggleBlockVisibility: (moduleId: string, lessonId: string, blockId: string) => {
+    const state = get();
+    state.pushSnapshot();
+
+    const updatedModules = state.content.modules.map((m) =>
+      m.id === moduleId
+        ? {
+            ...m,
+            lessons: m.lessons.map((l) =>
+              l.id === lessonId
+                ? {
+                    ...l,
+                    blocks: l.blocks.map((b) =>
+                      b.id === blockId ? { ...b, visible: !b.visible } : b,
+                    ) as Block[],
+                  }
+                : l,
+            ),
+          }
+        : m,
+    );
+
+    set({
+      content: { ...state.content, modules: updatedModules },
+      isDirty: true,
+      redoStack: [],
+    });
+  },
+
+  toggleBlockLock: (moduleId: string, lessonId: string, blockId: string) => {
+    const state = get();
+    state.pushSnapshot();
+
+    const updatedModules = state.content.modules.map((m) =>
+      m.id === moduleId
+        ? {
+            ...m,
+            lessons: m.lessons.map((l) =>
+              l.id === lessonId
+                ? {
+                    ...l,
+                    blocks: l.blocks.map((b) =>
+                      b.id === blockId ? { ...b, locked: !b.locked } : b,
+                    ) as Block[],
+                  }
+                : l,
+            ),
+          }
+        : m,
+    );
+
+    set({
+      content: { ...state.content, modules: updatedModules },
       isDirty: true,
       redoStack: [],
     });
