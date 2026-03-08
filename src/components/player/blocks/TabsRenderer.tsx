@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { TabsBlock, CourseTheme } from '@/types/authoring';
 import type { BlockProgress } from '../CoursePlayer';
+import { SafeHTML } from '@/components/shared/SafeHTML';
 
 interface TabsRendererProps {
   block: TabsBlock;
@@ -124,9 +125,12 @@ export function TabsRenderer({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2, ease: 'easeInOut' }}
-              className="prose prose-sm max-w-none dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: activeContent.content }}
-            />
+            >
+              <SafeHTML
+                html={activeContent.content}
+                className="prose prose-sm max-w-none dark:prose-invert"
+              />
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

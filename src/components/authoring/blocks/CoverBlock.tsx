@@ -292,6 +292,28 @@ export function CoverBlockEditor({ block, onChange }: CoverBlockEditorProps) {
           </div>
         </div>
 
+        {/* Layout */}
+        <div className="space-y-2">
+          <Label>Layout</Label>
+          <Select
+            value={data.layout || 'centered'}
+            onValueChange={(value: string) => onChange({ layout: value as CoverBlock['data']['layout'] })}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="centered">Centered</SelectItem>
+              <SelectItem value="left_aligned">Left Aligned</SelectItem>
+              <SelectItem value="split">Split (Image + Text)</SelectItem>
+              <SelectItem value="minimal">Minimal</SelectItem>
+              <SelectItem value="gradient_overlay">Gradient Overlay</SelectItem>
+              <SelectItem value="full_bleed">Full Bleed</SelectItem>
+              <SelectItem value="pattern">Pattern Background</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Text alignment and Height */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">

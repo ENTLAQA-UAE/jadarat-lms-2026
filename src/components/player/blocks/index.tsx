@@ -47,6 +47,9 @@ import { ChartRenderer } from './ChartRenderer';
 import { TableRenderer } from './TableRenderer';
 import { CodeRenderer } from './CodeRenderer';
 
+// Rise parity -- Attachment
+import { AttachmentRenderer } from './AttachmentRenderer';
+
 interface BlockRendererProps {
   block: Block;
   progress?: BlockProgress;
@@ -387,6 +390,16 @@ export function BlockRenderer({
           onComplete={() => onComplete()}
           theme={theme}
           isUnlocked={isContinueUnlocked ?? true}
+        />
+      );
+
+    case BlockType.ATTACHMENT:
+      return (
+        <AttachmentRenderer
+          block={block}
+          progress={progress}
+          onComplete={() => onComplete()}
+          theme={theme}
         />
       );
 

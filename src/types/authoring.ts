@@ -10,7 +10,7 @@ export interface LocalizedString {
 }
 
 // ============================================================
-// BLOCK TYPE ENUM -- all 27 block types
+// BLOCK TYPE ENUM -- all block types
 // ============================================================
 
 export enum BlockType {
@@ -31,6 +31,7 @@ export enum BlockType {
   CALLOUT = 'callout',
   STATEMENT = 'statement',
   BUTTON = 'button',
+  ATTACHMENT = 'attachment',
 
   // Interactive blocks
   ACCORDION = 'accordion',
@@ -53,6 +54,19 @@ export enum BlockType {
 }
 
 // ============================================================
+// BLOCK STYLE -- per-block visual customization
+// ============================================================
+
+export interface BlockStyle {
+  background_color?: string;
+  padding?: 'none' | 'small' | 'medium' | 'large';
+  card_mode?: boolean;
+  full_width?: boolean;
+  margin_top?: 'none' | 'small' | 'medium' | 'large';
+  margin_bottom?: 'none' | 'small' | 'medium' | 'large';
+}
+
+// ============================================================
 // BASE BLOCK -- shared fields for all blocks
 // ============================================================
 
@@ -62,6 +76,7 @@ export interface BaseBlock {
   order: number;                       // Position within lesson (0-indexed)
   visible: boolean;                    // Can be hidden without deleting
   locked: boolean;                     // Prevent editing (AI-generated lock)
+  style?: BlockStyle;                  // Per-block visual customization
   metadata: {
     created_at: string;                // ISO 8601
     updated_at: string;                // ISO 8601
@@ -139,6 +154,9 @@ export interface QuoteBlock extends BaseBlock {
     text: string;
     attribution: string;
     style: 'default' | 'large' | 'highlight';
+    // Carousel mode: multiple quotes
+    quotes?: { id: string; text: string; attribution: string }[];
+    carousel?: boolean;
   };
 }
 
@@ -146,7 +164,7 @@ export interface ListBlock extends BaseBlock {
   type: BlockType.LIST;
   data: {
     items: { id: string; text: string; icon?: string }[];
-    style: 'bullet' | 'numbered' | 'icon';
+    style: 'bullet' | 'numbered' | 'icon' | 'checkbox';
     columns: 1 | 2 | 3;
   };
 }
@@ -189,6 +207,7 @@ export interface CoverBlock extends BaseBlock {
     overlay_color: string;             // hex with alpha, e.g., '#000000AA'
     text_alignment: 'start' | 'center' | 'end';
     height: 'small' | 'medium' | 'large';  // 200px, 400px, 600px
+    layout: 'centered' | 'left_aligned' | 'split' | 'minimal' | 'gradient_overlay' | 'full_bleed' | 'pattern' | 'video_bg';
   };
 }
 
@@ -233,6 +252,7 @@ export interface AccordionBlock extends BaseBlock {
       title: string;
       content: string;                 // Tiptap JSON string
       icon?: string;
+      audio_url?: string;             // Optional narration audio
     }[];
     allow_multiple_open: boolean;
     start_expanded: boolean;
@@ -247,6 +267,7 @@ export interface TabsBlock extends BaseBlock {
       label: string;
       content: string;                 // Tiptap JSON string
       icon?: string;
+      audio_url?: string;             // Optional narration audio
     }[];
     style: 'horizontal' | 'vertical';
   };
@@ -261,6 +282,7 @@ export interface FlashcardBlock extends BaseBlock {
       back: string;
       image_front?: string;
       image_back?: string;
+      audio_url?: string;             // Optional narration audio
     }[];
     shuffle: boolean;
   };
@@ -290,6 +312,7 @@ export interface ProcessBlock extends BaseBlock {
       description: string;
       icon?: string;
       image?: string;
+      audio_url?: string;             // Optional narration audio
     }[];
     layout: 'vertical' | 'horizontal';
     numbered: boolean;
@@ -305,6 +328,7 @@ export interface TimelineBlock extends BaseBlock {
       title: string;
       description: string;
       image?: string;
+      audio_url?: string;             // Optional narration audio
     }[];
     direction: 'vertical' | 'horizontal';
   };
@@ -495,6 +519,18 @@ export interface ContinueBlock extends BaseBlock {
   };
 }
 
+export interface AttachmentBlock extends BaseBlock {
+  type: BlockType.ATTACHMENT;
+  data: {
+    file_url: string;                  // Supabase Storage URL
+    file_name: string;
+    file_size: number;                 // bytes
+    file_type: string;                 // MIME type e.g. 'application/pdf'
+    title: string;
+    description?: string;
+  };
+}
+
 // ============================================================
 // DISCRIMINATED UNION -- the master Block type
 // ============================================================
@@ -530,7 +566,8 @@ export type Block =
   | CalloutBlock
   | StatementBlock
   | ButtonBlock
-  | ContinueBlock;
+  | ContinueBlock
+  | AttachmentBlock;
 
 // ============================================================
 // COURSE STRUCTURE
@@ -544,6 +581,18 @@ export interface Lesson {
   blocks: Block[];
   duration_minutes?: number;           // Estimated completion time
   is_locked: boolean;                  // Require previous lesson completion
+  lesson_type?: 'content' | 'quiz';   // Content = regular blocks, Quiz = graded assessment (defaults to 'content')
+  quiz_settings?: QuizLessonSettings; // Only used when lesson_type = 'quiz'
+}
+
+export interface QuizLessonSettings {
+  passing_score: number;               // 0-100 percentage required to pass
+  max_attempts: number;                // 0 = unlimited
+  time_limit_minutes: number;          // 0 = no time limit
+  randomize_questions: boolean;
+  show_results: boolean;               // Show results screen after submission
+  show_correct_answers: boolean;       // Reveal correct answers in results
+  question_pool_size: number;          // 0 = use all questions, >0 = draw N random questions
 }
 
 export interface Module {
@@ -590,14 +639,21 @@ export interface CourseTheme {
   secondary_color: string;
   background_color: string;
   text_color: string;
-  font_family: string;                 // 'cairo' | 'inter' | 'tajawal' | 'system'
+  font_family: string;                 // 'cairo' | 'inter' | 'tajawal' | 'system' | custom name
   border_radius: 'none' | 'small' | 'medium' | 'large';
   cover_style: 'gradient' | 'image' | 'solid';
-  navigation_style: 'sidebar' | 'top_bar' | 'hidden';
+  navigation_style: 'sidebar' | 'top_bar' | 'compact' | 'overlay' | 'hidden';
   lesson_header_style: 'full_width_banner' | 'compact' | 'none';
   dark_mode: boolean;
   cover_image_url?: string;
   logo_url?: string;                   // Course logo overlay on cover/header
+  custom_fonts?: CustomFont[];         // User-uploaded brand fonts
+}
+
+export interface CustomFont {
+  name: string;
+  url: string;                         // Supabase Storage URL
+  format: 'woff2' | 'woff' | 'ttf' | 'otf';
 }
 
 // ============================================================

@@ -5,6 +5,7 @@ import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { AccordionBlock, CourseTheme } from '@/types/authoring';
 import type { BlockProgress } from '../CoursePlayer';
+import { SafeHTML } from '@/components/shared/SafeHTML';
 
 interface AccordionRendererProps {
   block: AccordionBlock;
@@ -100,9 +101,9 @@ export function AccordionRenderer({
                   transition={{ duration: 0.25, ease: 'easeInOut' }}
                   className="overflow-hidden"
                 >
-                  <div
+                  <SafeHTML
+                    html={item.content}
                     className="p-4 pt-0 prose prose-sm max-w-none dark:prose-invert"
-                    dangerouslySetInnerHTML={{ __html: item.content }}
                   />
                 </motion.div>
               )}

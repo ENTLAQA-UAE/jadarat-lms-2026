@@ -5,8 +5,8 @@ import { type TabsBlock } from '@/types/authoring';
 import { v4 as uuidv4 } from 'uuid';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { TiptapEditor } from './TiptapEditor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
@@ -105,17 +105,12 @@ export function TabsBlockEditor({ block, onChange }: TabsBlockEditorProps) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor={`tab-content-${tab.id}`} className="text-xs">
-                    Content
-                  </Label>
-                  <Textarea
-                    id={`tab-content-${tab.id}`}
-                    value={tab.content}
-                    onChange={(e) =>
-                      updateTab(tab.id, 'content', e.target.value)
-                    }
-                    placeholder="Tab content"
-                    className="min-h-[80px]"
+                  <Label className="text-xs">Content</Label>
+                  <TiptapEditor
+                    content={tab.content}
+                    onChange={(html) => updateTab(tab.id, 'content', html)}
+                    placeholder="Write tab content..."
+                    className="min-h-[100px]"
                   />
                 </div>
               </div>

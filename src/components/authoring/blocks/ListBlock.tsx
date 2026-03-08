@@ -144,7 +144,7 @@ export function ListBlockEditor({ block, onChange }: ListBlockEditorProps) {
               value={data.style}
               onChange={(e) =>
                 onChange({
-                  style: e.target.value as 'bullet' | 'numbered' | 'icon',
+                  style: e.target.value as 'bullet' | 'numbered' | 'icon' | 'checkbox',
                 })
               }
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -152,6 +152,7 @@ export function ListBlockEditor({ block, onChange }: ListBlockEditorProps) {
               <option value="bullet">Bullet</option>
               <option value="numbered">Numbered</option>
               <option value="icon">Icon</option>
+              <option value="checkbox">Checkbox</option>
             </select>
           </div>
           <div className="space-y-2">

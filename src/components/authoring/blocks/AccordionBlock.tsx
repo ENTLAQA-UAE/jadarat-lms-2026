@@ -4,8 +4,8 @@ import { type AccordionBlock } from '@/types/authoring';
 import { v4 as uuidv4 } from 'uuid';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { TiptapEditor } from './TiptapEditor';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -176,20 +176,12 @@ export function AccordionBlockEditor({
                 </div>
 
                 <div className="space-y-1">
-                  <Label
-                    htmlFor={`accordion-content-${item.id}`}
-                    className="text-xs"
-                  >
-                    Content
-                  </Label>
-                  <Textarea
-                    id={`accordion-content-${item.id}`}
-                    value={item.content}
-                    onChange={(e) =>
-                      updateItem(item.id, 'content', e.target.value)
-                    }
-                    placeholder="Accordion item content (HTML supported)"
-                    className="min-h-[80px]"
+                  <Label className="text-xs">Content</Label>
+                  <TiptapEditor
+                    content={item.content}
+                    onChange={(html) => updateItem(item.id, 'content', html)}
+                    placeholder="Write accordion item content..."
+                    className="min-h-[100px]"
                   />
                 </div>
               </div>
