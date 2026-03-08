@@ -65,7 +65,7 @@ export function createDefaultBlock(type: BlockType): Block {
     case BlockType.CONTINUE:
       return { ...base, type, data: { label: 'Continue', completion_type: 'none' } };
     case BlockType.COVER:
-      return { ...base, type, data: { background_image: '', title: '', overlay_color: '#000000AA', text_alignment: 'center', height: 'medium' } };
+      return { ...base, type, data: { background_image: '', title: '', overlay_color: '#000000AA', text_alignment: 'center', height: 'medium', layout: 'centered' } };
     case BlockType.MULTIPLE_CHOICE:
       return { ...base, type, data: { question: '', options: [{ id: uuidv4(), text: '', is_correct: false }], explanation: '', allow_retry: true, shuffle_options: false, points: 1 } };
     case BlockType.TRUE_FALSE:
@@ -102,6 +102,8 @@ export function createDefaultBlock(type: BlockType): Block {
       return { ...base, type, data: { instruction: '', pairs: [{ id: uuidv4(), left: '', right: '' }], shuffle: true, explanation: '', points: 1 } };
     case BlockType.SORTING:
       return { ...base, type, data: { instruction: '', categories: [{ id: uuidv4(), name: 'Category 1' }], items: [{ id: uuidv4(), text: '', correct_category_id: '' }], explanation: '', points: 1 } };
+    case BlockType.ATTACHMENT:
+      return { ...base, type, data: { file_url: '', file_name: '', file_size: 0, file_type: '', title: '', description: '' } };
     default:
       return { ...base, data: {} } as Block;
   }

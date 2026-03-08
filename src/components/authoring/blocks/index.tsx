@@ -51,6 +51,9 @@ import { ChartBlockEditor } from './ChartBlock';
 import { TableBlockEditor } from './TableBlock';
 import { CodeBlockEditor } from './CodeBlock';
 
+// Rise parity -- Attachment
+import { AttachmentBlockEditor } from './AttachmentBlock';
+
 // Re-export all individual block editors
 export {
   TextBlockEditor,
@@ -84,6 +87,7 @@ export {
   StatementBlockEditor,
   ButtonBlockEditor,
   ContinueBlockEditor,
+  AttachmentBlockEditor,
 };
 
 // Default array values per block type to prevent .map() on undefined
@@ -213,6 +217,8 @@ export const BlockEditor = React.memo(function BlockEditor({
       return <ButtonBlockEditor block={block} onChange={onChange} />;
     case BlockType.CONTINUE:
       return <ContinueBlockEditor block={block} onChange={onChange} />;
+    case BlockType.ATTACHMENT:
+      return <AttachmentBlockEditor block={block} onChange={onChange} />;
 
     default:
       return (

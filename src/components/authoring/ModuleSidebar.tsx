@@ -28,6 +28,7 @@ import {
   GripVertical,
   BookOpen,
   ArrowRightLeft,
+  ClipboardCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -165,7 +166,7 @@ function InlineEdit({ value, onSave, className }: InlineEditProps) {
 // ============================================================
 
 interface SortableModuleProps {
-  module: { id: string; title: string; lessons: { id: string; title: string; blocks?: unknown[] }[]; is_locked?: boolean };
+  module: { id: string; title: string; lessons: { id: string; title: string; blocks?: unknown[]; lesson_type?: string }[]; is_locked?: boolean };
   isExpanded: boolean;
   isModuleSelected: boolean;
   selectedModuleId: string | null;
@@ -178,6 +179,7 @@ interface SortableModuleProps {
   onLessonRename: (moduleId: string, lessonId: string, title: string) => void;
   onLessonDelete: (moduleId: string, lessonId: string) => void;
   onAddLesson: (moduleId: string) => void;
+  onAddQuizLesson: (moduleId: string) => void;
   onReorderLessons: (moduleId: string, from: number, to: number) => void;
   onMoveLessonToModule: (fromModuleId: string, lessonId: string, toModuleId: string) => void;
 }
@@ -196,6 +198,7 @@ function SortableModuleRow({
   onLessonRename,
   onLessonDelete,
   onAddLesson,
+  onAddQuizLesson,
   onReorderLessons,
   onMoveLessonToModule,
 }: SortableModuleProps) {
@@ -353,15 +356,25 @@ function SortableModuleRow({
             </SortableContext>
           </DndContext>
 
-          {/* Add Lesson */}
-          <button
-            onClick={() => onAddLesson(module.id)}
-            className="mt-0.5 flex w-full items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground/50 transition-all duration-150 hover:bg-primary/[0.04] hover:text-primary border border-dashed border-transparent hover:border-primary/15"
-            aria-label={`Add lesson to ${module.title}`}
-          >
-            <Plus className="h-3 w-3" />
-            Add Lesson
-          </button>
+          {/* Add Lesson / Quiz */}
+          <div className="mt-0.5 flex gap-1">
+            <button
+              onClick={() => onAddLesson(module.id)}
+              className="flex flex-1 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground/50 transition-all duration-150 hover:bg-primary/[0.04] hover:text-primary border border-dashed border-transparent hover:border-primary/15"
+              aria-label={`Add lesson to ${module.title}`}
+            >
+              <Plus className="h-3 w-3" />
+              Lesson
+            </button>
+            <button
+              onClick={() => onAddQuizLesson(module.id)}
+              className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs text-muted-foreground/50 transition-all duration-150 hover:bg-amber-500/[0.04] hover:text-amber-600 border border-dashed border-transparent hover:border-amber-500/15"
+              aria-label={`Add quiz to ${module.title}`}
+            >
+              <ClipboardCheck className="h-3 w-3" />
+              Quiz
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -373,7 +386,7 @@ function SortableModuleRow({
 // ============================================================
 
 interface SortableLessonProps {
-  lesson: { id: string; title: string; blocks?: unknown[] };
+  lesson: { id: string; title: string; blocks?: unknown[]; lesson_type?: string; };
   moduleId: string;
   isSelected: boolean;
   otherModules: { id: string; title: string }[];
@@ -442,7 +455,11 @@ function SortableLessonRow({
         'flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors',
         isSelected ? 'text-primary' : 'text-muted-foreground/40',
       )}>
-        <FileText className="h-3.5 w-3.5" />
+        {lesson.lesson_type === 'quiz' ? (
+          <ClipboardCheck className="h-3.5 w-3.5" />
+        ) : (
+          <FileText className="h-3.5 w-3.5" />
+        )}
       </div>
 
       {/* Title */}
@@ -550,6 +567,7 @@ export function ModuleSidebar() {
   const reorderModules = useEditorStore((s) => s.reorderModules);
   const reorderLessons = useEditorStore((s) => s.reorderLessons);
   const moveLessonToModule = useEditorStore((s) => s.moveLessonToModule);
+  const addQuizLesson = useEditorStore((s) => s.addQuizLesson);
 
   // Persisted expand/collapse state
   const [expandedModules, setExpandedModules] = useState<Set<string>>(() => {
@@ -621,6 +639,7 @@ export function ModuleSidebar() {
 
   const handleAddModule = useCallback(() => addModule('New Module'), [addModule]);
   const handleAddLesson = useCallback((moduleId: string) => addLesson(moduleId, 'New Lesson'), [addLesson]);
+  const handleAddQuizLesson = useCallback((moduleId: string) => addQuizLesson(moduleId, 'New Quiz'), [addQuizLesson]);
   const handleModuleRename = useCallback((moduleId: string, title: string) => updateModule(moduleId, { title }), [updateModule]);
   const handleLessonRename = useCallback((moduleId: string, lessonId: string, title: string) => updateLesson(moduleId, lessonId, { title }), [updateLesson]);
 
@@ -694,6 +713,7 @@ export function ModuleSidebar() {
                   onLessonRename={handleLessonRename}
                   onLessonDelete={deleteLesson}
                   onAddLesson={handleAddLesson}
+                  onAddQuizLesson={handleAddQuizLesson}
                   onReorderLessons={reorderLessons}
                   onMoveLessonToModule={moveLessonToModule}
                 />

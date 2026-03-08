@@ -38,6 +38,7 @@ import {
   SquareMousePointer,
   ArrowDown,
   ChevronLeft,
+  Paperclip,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -116,6 +117,7 @@ const CATEGORIES: Category[] = [
       { type: BlockType.VIDEO, label: 'Video', description: 'Embed a video lesson', icon: Video, keywords: ['media', 'stream'] },
       { type: BlockType.AUDIO, label: 'Audio', description: 'Audio clip or podcast', icon: Headphones, keywords: ['music', 'podcast'] },
       { type: BlockType.EMBED, label: 'Embed', description: 'External content via iframe', icon: ExternalLink, keywords: ['iframe', 'external'] },
+      { type: BlockType.ATTACHMENT, label: 'Attachment', description: 'Downloadable file (PDF, DOCX, etc.)', icon: Paperclip, keywords: ['file', 'download', 'pdf', 'document'] },
     ],
   },
   {

@@ -7,6 +7,7 @@ import type {
   CourseTheme,
   Lesson,
   Module,
+  QuizLessonSettings,
 } from '@/types/authoring';
 
 // ============================================================
@@ -97,6 +98,7 @@ export interface EditorActions {
 
   // Lesson CRUD
   addLesson: (moduleId: string, title: string) => void;
+  addQuizLesson: (moduleId: string, title: string) => void;
   updateLesson: (
     moduleId: string,
     lessonId: string,
@@ -364,6 +366,51 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
       order: targetModule.lessons.length,
       blocks: [],
       is_locked: false,
+    };
+
+    const updatedModules = state.content.modules.map((m) =>
+      m.id === moduleId
+        ? { ...m, lessons: [...m.lessons, newLesson] }
+        : m,
+    );
+
+    set({
+      content: {
+        ...state.content,
+        modules: updatedModules,
+      },
+      isDirty: true,
+      redoStack: [],
+    });
+  },
+
+  addQuizLesson: (moduleId: string, title: string) => {
+    const trimmed = title.trim();
+    if (!trimmed) return;
+
+    const state = get();
+    const moduleIndex = state.content.modules.findIndex((m) => m.id === moduleId);
+    if (moduleIndex === -1) return;
+
+    state.pushSnapshot();
+
+    const targetModule = state.content.modules[moduleIndex];
+    const newLesson: Lesson = {
+      id: uuidv4(),
+      title: trimmed,
+      order: targetModule.lessons.length,
+      blocks: [],
+      is_locked: false,
+      lesson_type: 'quiz',
+      quiz_settings: {
+        passing_score: 80,
+        max_attempts: 3,
+        time_limit_minutes: 0,
+        randomize_questions: false,
+        show_results: true,
+        show_correct_answers: true,
+        question_pool_size: 0,
+      },
     };
 
     const updatedModules = state.content.modules.map((m) =>

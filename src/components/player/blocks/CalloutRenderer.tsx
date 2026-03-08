@@ -5,6 +5,7 @@ import { Info, AlertTriangle, CheckCircle2, XCircle, ChevronDown } from 'lucide-
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { CalloutBlock, CourseTheme } from '@/types/authoring';
+import { SafeHTML } from '@/components/shared/SafeHTML';
 
 interface CalloutRendererProps {
   block: CalloutBlock;
@@ -95,9 +96,9 @@ export function CalloutRenderer({ block, theme }: CalloutRendererProps) {
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div
+            <SafeHTML
+              html={block.data.content}
               className="px-4 pb-4 pl-12 prose prose-sm max-w-none dark:prose-invert opacity-90"
-              dangerouslySetInnerHTML={{ __html: block.data.content }}
             />
           </motion.div>
         )}

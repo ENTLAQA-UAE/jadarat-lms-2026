@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import type { TextBlock, CourseTheme } from '@/types/authoring';
 import type { BlockProgress } from '../CoursePlayer';
+import { SafeHTML } from '@/components/shared/SafeHTML';
 
 interface TextRendererProps {
   block: TextBlock;
@@ -30,14 +31,17 @@ export function TextRenderer({
 
   return (
     <div
-      className="prose prose-sm sm:prose max-w-none dark:prose-invert"
       dir={textDirection}
       style={{
         textAlign: block.data.alignment,
         fontFamily: 'var(--player-font)',
         color: 'var(--player-text)',
       }}
-      dangerouslySetInnerHTML={{ __html: block.data.content }}
-    />
+    >
+      <SafeHTML
+        html={block.data.content}
+        className="prose prose-sm sm:prose max-w-none dark:prose-invert"
+      />
+    </div>
   );
 }
