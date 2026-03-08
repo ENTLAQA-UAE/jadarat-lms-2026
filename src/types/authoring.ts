@@ -593,6 +593,16 @@ export interface QuizLessonSettings {
   show_results: boolean;               // Show results screen after submission
   show_correct_answers: boolean;       // Reveal correct answers in results
   question_pool_size: number;          // 0 = use all questions, >0 = draw N random questions
+  question_bank_refs?: QuestionBankRef[]; // References to external question banks
+}
+
+/** Lightweight reference to a question bank for drawing questions into a quiz */
+export interface QuestionBankRef {
+  bank_id: string;
+  bank_name: string;                   // Denormalized for display
+  draw_count: number;                  // Number of random questions to draw
+  block_type_filter?: string;          // Optional: limit to a specific assessment type
+  difficulty_filter?: 'easy' | 'medium' | 'hard';
 }
 
 export interface Module {

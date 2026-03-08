@@ -83,6 +83,10 @@ const lmsAdminRoutes = [
     href: "/dashboard/ai-config",
   },
   {
+    name: "Question Banks",
+    href: "/dashboard/question-banks",
+  },
+  {
     name: "Certificate Settings",
     href: "/dashboard/certificate-settings",
   },

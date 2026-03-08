@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,6 +11,7 @@ import {
   RotateCcw,
   Trophy,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Block, QuizLessonSettings, CourseTheme } from '@/types/authoring';
@@ -32,6 +34,11 @@ interface QuestionResult {
   responseData: Record<string, unknown>;
 }
 
+const ASSESSMENT_TYPES = new Set([
+  'multiple_choice', 'true_false', 'multiple_response',
+  'fill_in_blank', 'matching', 'sorting',
+]);
+
 export function QuizPlayer({
   blocks,
   settings,
@@ -40,16 +47,79 @@ export function QuizPlayer({
   onQuizComplete,
   previousAttempts = 0,
 }: QuizPlayerProps) {
-  // Filter only assessment blocks
-  const assessmentTypes = new Set([
-    'multiple_choice', 'true_false', 'multiple_response',
-    'fill_in_blank', 'matching', 'sorting',
-  ]);
+  const [bankQuestions, setBankQuestions] = useState<Block[]>([]);
+  const [bankLoading, setBankLoading] = useState(false);
+  const [bankError, setBankError] = useState<string | null>(null);
 
-  const allQuestions = useMemo(
-    () => blocks.filter((b) => assessmentTypes.has(b.type)),
-    [blocks]
-  );
+  // Fetch questions from linked question banks
+  useEffect(() => {
+    const bankRefs = settings.question_bank_refs;
+    if (!bankRefs || bankRefs.length === 0) {
+      setBankQuestions([]);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function fetchBankQuestions() {
+      setBankLoading(true);
+      setBankError(null);
+      try {
+        const res = await fetch('/api/question-banks/draw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            bank_refs: bankRefs!.map((ref) => ({
+              bank_id: ref.bank_id,
+              draw_count: ref.draw_count,
+              block_type_filter: ref.block_type_filter || undefined,
+              difficulty_filter: ref.difficulty_filter || undefined,
+            })),
+          }),
+        });
+
+        if (!res.ok) throw new Error('Failed to draw questions');
+
+        const data = await res.json();
+        if (cancelled) return;
+
+        // Convert bank items to Block format
+        const drawnBlocks: Block[] = (data.questions ?? []).map(
+          (q: { id: string; block_type: string; block_data: Record<string, unknown>; points: number }) => ({
+            id: uuidv4(), // Fresh ID to avoid conflicts with inline blocks
+            type: q.block_type,
+            order: 0,
+            visible: true,
+            locked: false,
+            data: { ...q.block_data, points: q.points },
+            metadata: {
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              created_by: 'ai' as const,
+              source_bank_item_id: q.id,
+            },
+          } as Block)
+        );
+
+        setBankQuestions(drawnBlocks);
+      } catch (err) {
+        if (!cancelled) {
+          setBankError('Could not load bank questions. Using inline questions only.');
+        }
+      } finally {
+        if (!cancelled) setBankLoading(false);
+      }
+    }
+
+    fetchBankQuestions();
+    return () => { cancelled = true; };
+  }, [settings.question_bank_refs]);
+
+  // Combine inline assessment blocks + bank-drawn questions
+  const allQuestions = useMemo(() => {
+    const inlineQuestions = blocks.filter((b) => ASSESSMENT_TYPES.has(b.type));
+    return [...inlineQuestions, ...bankQuestions];
+  }, [blocks, bankQuestions]);
 
   // Apply question pool + randomization
   const questions = useMemo(() => {
@@ -138,6 +208,16 @@ export function QuizPlayer({
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
+  // Loading state for bank questions
+  if (bankLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-3" />
+        <p className="text-sm text-muted-foreground">Loading quiz questions...</p>
+      </div>
+    );
+  }
+
   if (questions.length === 0) {
     return (
       <div className="border rounded-lg p-8 text-center text-muted-foreground">
@@ -218,6 +298,13 @@ export function QuizPlayer({
           </div>
         )}
 
+        {/* Bank questions notice */}
+        {bankQuestions.length > 0 && (
+          <p className="text-xs text-muted-foreground text-center">
+            This quiz included {bankQuestions.length} question{bankQuestions.length !== 1 ? 's' : ''} drawn from question banks.
+          </p>
+        )}
+
         {/* Retry button */}
         {canRetry && (
           <div className="text-center">
@@ -246,6 +333,11 @@ export function QuizPlayer({
   // Quiz in progress
   return (
     <div className="space-y-6">
+      {/* Bank error notice */}
+      {bankError && (
+        <p className="text-xs text-amber-600 dark:text-amber-400">{bankError}</p>
+      )}
+
       {/* Quiz header with timer + progress */}
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium text-muted-foreground">
