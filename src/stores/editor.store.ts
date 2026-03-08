@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import type {
   Block,
+  BlockStyle,
   CourseContent,
   CourseSettings,
   CourseTheme,
@@ -121,6 +122,7 @@ export interface EditorActions {
   reorderBlocks: (moduleId: string, lessonId: string, fromIndex: number, toIndex: number) => void;
   toggleBlockVisibility: (moduleId: string, lessonId: string, blockId: string) => void;
   toggleBlockLock: (moduleId: string, lessonId: string, blockId: string) => void;
+  updateBlockStyle: (moduleId: string, lessonId: string, blockId: string, style: BlockStyle) => void;
 
   // Selection
   selectModule: (id: string | null) => void;
@@ -632,6 +634,54 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
                         ? {
                             ...b,
                             data: { ...b.data, ...data },
+                            metadata: {
+                              ...b.metadata,
+                              updated_at: now,
+                            },
+                          }
+                        : b,
+                    ) as Block[],
+                  }
+                : l,
+            ),
+          }
+        : m,
+    );
+
+    set({
+      content: {
+        ...state.content,
+        modules: updatedModules,
+      },
+      isDirty: true,
+      redoStack: [],
+    });
+  },
+
+  updateBlockStyle: (
+    moduleId: string,
+    lessonId: string,
+    blockId: string,
+    style: BlockStyle,
+  ) => {
+    const state = get();
+    state.pushSnapshot();
+
+    const now = new Date().toISOString();
+
+    const updatedModules = state.content.modules.map((m) =>
+      m.id === moduleId
+        ? {
+            ...m,
+            lessons: m.lessons.map((l) =>
+              l.id === lessonId
+                ? {
+                    ...l,
+                    blocks: l.blocks.map((b) =>
+                      b.id === blockId
+                        ? {
+                            ...b,
+                            style,
                             metadata: {
                               ...b.metadata,
                               updated_at: now,

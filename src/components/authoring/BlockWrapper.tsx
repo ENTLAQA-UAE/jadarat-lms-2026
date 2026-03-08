@@ -14,8 +14,11 @@ import {
   EyeOff,
   Lock,
   Unlock,
+  Paintbrush,
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,12 +27,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import type { BlockStyle } from '@/types/authoring';
 
 interface BlockWrapperProps {
   id: string;
@@ -46,6 +57,8 @@ interface BlockWrapperProps {
   onMoveDown?: () => void;
   onToggleVisibility?: () => void;
   onToggleLock?: () => void;
+  blockStyle?: BlockStyle;
+  onStyleChange?: (style: BlockStyle) => void;
   children: React.ReactNode;
 }
 
@@ -64,6 +77,8 @@ export const BlockWrapper = React.memo(function BlockWrapper({
   onMoveDown,
   onToggleVisibility,
   onToggleLock,
+  blockStyle,
+  onStyleChange,
   children,
 }: BlockWrapperProps) {
   const {
@@ -204,6 +219,108 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                 Duplicate
               </TooltipContent>
             </Tooltip>
+
+            {/* Design */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  data-block-action
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "h-7 w-7 p-0 rounded-md transition-all duration-150",
+                    blockStyle?.background_color || blockStyle?.card_mode
+                      ? "text-primary bg-primary/[0.06]"
+                      : "text-muted-foreground/50 hover:text-foreground hover:bg-muted/50"
+                  )}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Paintbrush className="h-3.5 w-3.5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-72 p-4 space-y-4" onClick={(e) => e.stopPropagation()}>
+                <h4 className="text-xs font-semibold text-foreground/70 uppercase tracking-wider">Block Design</h4>
+
+                {/* Background color */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Background Color</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={blockStyle?.background_color || '#ffffff'}
+                      onChange={(e) => onStyleChange?.({ ...blockStyle, background_color: e.target.value })}
+                      className="h-8 w-8 shrink-0 cursor-pointer rounded border border-border bg-transparent p-0.5"
+                    />
+                    <Input
+                      type="text"
+                      value={blockStyle?.background_color || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+                          onStyleChange?.({ ...blockStyle, background_color: val });
+                        }
+                      }}
+                      placeholder="None"
+                      className="h-8 flex-1 font-mono text-xs"
+                      maxLength={7}
+                    />
+                    {blockStyle?.background_color && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 shrink-0"
+                        onClick={() => {
+                          const { background_color, ...rest } = blockStyle || {};
+                          onStyleChange?.(rest);
+                        }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Padding */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Padding</Label>
+                  <div className="flex gap-1">
+                    {(['none', 'small', 'medium', 'large'] as const).map((p) => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => onStyleChange?.({ ...blockStyle, padding: p })}
+                        className={cn(
+                          'flex-1 rounded-md border px-2 py-1 text-[10px] font-medium transition-colors capitalize',
+                          (blockStyle?.padding || 'medium') === p
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border text-muted-foreground hover:bg-muted'
+                        )}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card mode */}
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs text-muted-foreground">Card Style</Label>
+                  <Switch
+                    checked={blockStyle?.card_mode ?? false}
+                    onCheckedChange={(checked) => onStyleChange?.({ ...blockStyle, card_mode: checked })}
+                  />
+                </div>
+
+                {/* Full width */}
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs text-muted-foreground">Full Width</Label>
+                  <Switch
+                    checked={blockStyle?.full_width ?? false}
+                    onCheckedChange={(checked) => onStyleChange?.({ ...blockStyle, full_width: checked })}
+                  />
+                </div>
+              </PopoverContent>
+            </Popover>
 
             {/* Delete */}
             <Tooltip>

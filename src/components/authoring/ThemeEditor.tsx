@@ -1,17 +1,20 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Check,
   Image as ImageIcon,
+  Menu,
   Monitor,
   Moon,
   Palette,
   PanelLeft,
+  PanelLeftClose,
   PanelTop,
   Smartphone,
   Sun,
   Tablet,
+  Type,
   Upload,
   X,
   EyeOff,
@@ -27,7 +30,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useEditorStore } from '@/stores/editor.store';
-import type { CourseTheme, CourseSettings } from '@/types/authoring';
+import type { CourseTheme, CourseSettings, CustomFont } from '@/types/authoring';
 import { THEME_PRESETS } from '@/lib/theme-presets';
 import { cn } from '@/lib/utils';
 
@@ -58,6 +61,8 @@ const COVER_STYLE_OPTIONS: { value: CourseTheme['cover_style']; label: string }[
 const NAV_STYLE_OPTIONS: { value: CourseTheme['navigation_style']; label: string; icon: React.ReactNode }[] = [
   { value: 'sidebar', label: 'Sidebar', icon: <PanelLeft className="h-4 w-4" /> },
   { value: 'top_bar', label: 'Top Bar', icon: <PanelTop className="h-4 w-4" /> },
+  { value: 'compact', label: 'Compact', icon: <PanelLeftClose className="h-4 w-4" /> },
+  { value: 'overlay', label: 'Overlay', icon: <Menu className="h-4 w-4" /> },
   { value: 'hidden', label: 'Hidden', icon: <EyeOff className="h-4 w-4" /> },
 ];
 
@@ -151,6 +156,7 @@ export function ThemeEditor() {
   const [previewViewport, setPreviewViewport] = useState<PreviewViewport>('desktop');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const fontInputRef = useRef<HTMLInputElement>(null);
 
   const handleColorChange = useCallback(
     (field: keyof Pick<CourseTheme, 'primary_color' | 'secondary_color' | 'background_color' | 'text_color'>) =>
@@ -226,6 +232,44 @@ export function ThemeEditor() {
     updateTheme({ logo_url: undefined });
     if (logoInputRef.current) logoInputRef.current.value = '';
   }, [updateTheme]);
+
+  const allFontOptions = useMemo(() => {
+    const base = [...FONT_OPTIONS];
+    (theme.custom_fonts ?? []).forEach((f) => {
+      base.push({ value: f.name, label: f.name });
+    });
+    return base;
+  }, [theme.custom_fonts]);
+
+  const handleFontUpload = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const ext = file.name.split('.').pop()?.toLowerCase() as CustomFont['format'];
+      if (!['woff2', 'woff', 'ttf', 'otf'].includes(ext)) return;
+      const fontName = file.name.replace(/\.(woff2|woff|ttf|otf)$/i, '');
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result as string;
+        const newFont: CustomFont = { name: fontName, url: dataUrl, format: ext };
+        const existing = theme.custom_fonts ?? [];
+        updateTheme({ custom_fonts: [...existing, newFont] });
+      };
+      reader.readAsDataURL(file);
+    },
+    [theme.custom_fonts, updateTheme],
+  );
+
+  const handleRemoveFont = useCallback(
+    (fontName: string) => {
+      updateTheme({
+        custom_fonts: (theme.custom_fonts ?? []).filter(f => f.name !== fontName),
+        // Reset font_family if it was using the removed font
+        ...(theme.font_family === fontName ? { font_family: 'cairo' } : {}),
+      });
+    },
+    [theme.custom_fonts, theme.font_family, updateTheme],
+  );
 
   const isPresetActive = (presetTheme: CourseTheme) => {
     return (
@@ -353,7 +397,7 @@ export function ThemeEditor() {
               onChange={handleFontChange}
               className="h-8 flex-1 rounded-lg border border-border bg-background px-2 text-sm transition-colors focus-visible:outline-none focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20"
             >
-              {FONT_OPTIONS.map((opt) => (
+              {allFontOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
@@ -373,6 +417,53 @@ export function ThemeEditor() {
               هذا نص تجريبي لمعاينة الخط المختار
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* -------------------------------------------------------- */}
+      {/* Custom Fonts Section                                     */}
+      {/* -------------------------------------------------------- */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Custom Fonts</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">
+            Upload .woff2, .woff, .ttf, or .otf font files for your brand.
+          </p>
+          {/* List of uploaded fonts */}
+          {(theme.custom_fonts ?? []).map((font) => (
+            <div key={font.name} className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2">
+              <div className="flex items-center gap-2">
+                <Type className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-sm font-medium">{font.name}</span>
+                <span className="text-[10px] text-muted-foreground uppercase">{font.format}</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                onClick={() => handleRemoveFont(font.name)}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => fontInputRef.current?.click()}
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted/30 text-muted-foreground transition-colors hover:border-primary/30 hover:bg-muted/50"
+          >
+            <Upload className="h-4 w-4" />
+            <span className="text-xs font-medium">Upload Font File</span>
+          </button>
+          <input
+            ref={fontInputRef}
+            type="file"
+            accept=".woff2,.woff,.ttf,.otf"
+            className="hidden"
+            onChange={handleFontUpload}
+          />
         </CardContent>
       </Card>
 
@@ -542,7 +633,7 @@ export function ThemeEditor() {
                 type="button"
                 onClick={() => updateTheme({ navigation_style: opt.value })}
                 className={cn(
-                  'flex flex-1 items-center justify-center gap-1.5 rounded-md border px-3 py-2 text-xs font-medium transition-colors',
+                  'flex flex-1 items-center justify-center gap-1.5 rounded-md border px-3 py-2 text-[10px] font-medium transition-colors',
                   theme.navigation_style === opt.value
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-border bg-background text-muted-foreground hover:bg-muted',
