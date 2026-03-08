@@ -70,6 +70,28 @@ export function FlashcardRenderer({
     setCurrentIndex((prev) => Math.min(cards.length - 1, prev + 1));
   };
 
+  // Keyboard navigation for stack mode
+  const handleStackKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          setCurrentIndex((prev) => Math.max(0, prev - 1));
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          setCurrentIndex((prev) => Math.min(cards.length - 1, prev + 1));
+          break;
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          if (currentCard) toggleFlip(currentCard.id);
+          break;
+      }
+    },
+    [cards.length, currentCard]
+  );
+
   // Auto-complete when all cards have been flipped/viewed
   useEffect(() => {
     if (
@@ -106,6 +128,7 @@ export function FlashcardRenderer({
             style={layoutMode === 'stack' ? { backgroundColor: 'var(--player-primary)' } : undefined}
             onClick={() => setLayoutMode('stack')}
             aria-label="Stack view"
+            aria-pressed={layoutMode === 'stack'}
           >
             <Layers className="h-3.5 w-3.5" />
           </Button>
@@ -116,6 +139,7 @@ export function FlashcardRenderer({
             style={layoutMode === 'grid' ? { backgroundColor: 'var(--player-primary)' } : undefined}
             onClick={() => setLayoutMode('grid')}
             aria-label="Grid view"
+            aria-pressed={layoutMode === 'grid'}
           >
             <LayoutGrid className="h-3.5 w-3.5" />
           </Button>
@@ -123,23 +147,22 @@ export function FlashcardRenderer({
       )}
 
       {layoutMode === 'stack' ? (
-        /* ── STACK MODE ─────────────────────────────────── */
+        /* -- STACK MODE -- */
         <>
           {/* Card container with flip animation */}
           <div
             className="relative mx-auto w-full max-w-lg cursor-pointer"
             style={{ perspective: '1200px' }}
             onClick={() => currentCard && toggleFlip(currentCard.id)}
-            role="button"
+            role="group"
+            aria-roledescription="carousel"
+            aria-label={`Flashcard ${currentIndex + 1} of ${cards.length}`}
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                if (currentCard) toggleFlip(currentCard.id);
-              }
-            }}
-            aria-label={`Flashcard ${currentIndex + 1} of ${cards.length}. ${flippedCards.has(currentCard?.id ?? '') ? 'Showing back' : 'Showing front'}. Press to flip.`}
+            onKeyDown={handleStackKeyDown}
           >
+            <div aria-live="polite" aria-atomic="true" className="sr-only">
+              {`Card ${currentIndex + 1} of ${cards.length}. ${flippedCards.has(currentCard?.id ?? '') ? 'Showing back side.' : 'Showing front side.'}`}
+            </div>
             <motion.div
               className="relative w-full min-h-[260px]"
               style={{
@@ -162,6 +185,7 @@ export function FlashcardRenderer({
                   borderRadius: 'var(--player-radius)',
                   borderColor: 'color-mix(in srgb, var(--player-primary) 20%, transparent)',
                 }}
+                aria-hidden={flippedCards.has(currentCard?.id ?? '')}
               >
                 {currentCard?.image_front && (
                   <img
@@ -174,7 +198,7 @@ export function FlashcardRenderer({
                   {currentCard?.front}
                 </p>
                 <p className="mt-4 text-xs text-muted-foreground/60">
-                  Click to flip
+                  Click or press Space to flip
                 </p>
               </div>
 
@@ -188,6 +212,7 @@ export function FlashcardRenderer({
                   backgroundColor: 'color-mix(in srgb, var(--player-primary) 5%, var(--player-bg, white))',
                   borderColor: 'var(--player-primary)',
                 }}
+                aria-hidden={!flippedCards.has(currentCard?.id ?? '')}
               >
                 {currentCard?.image_back && (
                   <img
@@ -200,7 +225,7 @@ export function FlashcardRenderer({
                   {currentCard?.back}
                 </p>
                 <p className="mt-4 text-xs text-muted-foreground/60">
-                  Click to flip back
+                  Click or press Space to flip back
                 </p>
               </div>
             </motion.div>
@@ -213,9 +238,10 @@ export function FlashcardRenderer({
               size="icon"
               onClick={(e) => { e.stopPropagation(); handlePrevious(); }}
               disabled={currentIndex === 0}
+              aria-label="Previous card"
               style={{ borderRadius: 'var(--player-radius)' }}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
             </Button>
 
             <span className="text-sm font-medium text-muted-foreground tabular-nums">
@@ -227,17 +253,21 @@ export function FlashcardRenderer({
               size="icon"
               onClick={(e) => { e.stopPropagation(); handleNext(); }}
               disabled={currentIndex === cards.length - 1}
+              aria-label="Next card"
               style={{ borderRadius: 'var(--player-radius)' }}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4 rtl:rotate-180" />
             </Button>
           </div>
 
           {/* Progress dots */}
-          <div className="flex justify-center gap-1.5">
+          <div className="flex justify-center gap-1.5" role="tablist" aria-label="Flashcard navigation">
             {cards.map((card, index) => (
               <button
                 key={card.id}
+                role="tab"
+                aria-selected={index === currentIndex}
+                aria-label={`Go to card ${index + 1}${viewedCards.has(card.id) ? ' (viewed)' : ''}`}
                 className="h-2 rounded-full transition-all duration-300"
                 style={{
                   width: index === currentIndex ? '20px' : '8px',
@@ -249,29 +279,33 @@ export function FlashcardRenderer({
                         : 'hsl(var(--muted-foreground) / 0.15)',
                 }}
                 onClick={() => setCurrentIndex(index)}
-                aria-label={`Go to card ${index + 1}`}
               />
             ))}
           </div>
         </>
       ) : (
-        /* ── GRID MODE ─────────────────────────────────── */
-        <div className={cn(
-          'grid gap-4',
-          cards.length === 1 && 'grid-cols-1 max-w-sm mx-auto',
-          cards.length === 2 && 'grid-cols-2',
-          cards.length >= 3 && 'grid-cols-2 md:grid-cols-3',
-        )}>
+        /* -- GRID MODE -- */
+        <div
+          className={cn(
+            'grid gap-4',
+            cards.length === 1 && 'grid-cols-1 max-w-sm mx-auto',
+            cards.length === 2 && 'grid-cols-2',
+            cards.length >= 3 && 'grid-cols-2 md:grid-cols-3',
+          )}
+          role="list"
+          aria-label="Flashcards grid"
+        >
           {cards.map((card) => {
             const isFlipped = flippedCards.has(card.id);
             return (
               <div
                 key={card.id}
+                role="listitem"
                 className="cursor-pointer"
                 style={{ perspective: '1200px' }}
                 onClick={() => toggleFlip(card.id)}
-                role="button"
                 tabIndex={0}
+                aria-label={`Flashcard: ${isFlipped ? card.back : card.front}. Press to flip.`}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();

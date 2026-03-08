@@ -42,6 +42,37 @@ import type {
 } from '@/types/authoring';
 
 // ---------------------------------------------------------------------------
+// SCORM Player Localization
+// ---------------------------------------------------------------------------
+
+const SCORM_PLAYER_STRINGS = {
+  en: {
+    submit: 'Submit',
+    tryAgain: 'Try Again',
+    correct: 'Correct!',
+    incorrect: 'Incorrect',
+    score: 'Score',
+    complete: 'Complete',
+    nextLesson: 'Next Lesson',
+    prevLesson: 'Previous Lesson',
+    progress: 'Progress',
+    courseComplete: 'Course Complete!',
+  },
+  ar: {
+    submit: 'إرسال',
+    tryAgain: 'حاول مرة أخرى',
+    correct: 'صحيح!',
+    incorrect: 'غير صحيح',
+    score: 'النتيجة',
+    complete: 'مكتمل',
+    nextLesson: 'الدرس التالي',
+    prevLesson: 'الدرس السابق',
+    progress: 'التقدم',
+    courseComplete: 'تم إكمال الدورة!',
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Public types
 // ---------------------------------------------------------------------------
 

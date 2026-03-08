@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { getPlatformAIModel, logUsage, GatewayError } from '@/lib/ai/gateway';
 import { generateText } from 'ai';
-import { COURSE_DETAILS_SYSTEM_PROMPT, COURSE_DETAILS_USER_PROMPT } from '@/lib/ai/prompts';
+import { COURSE_DETAILS_SYSTEM_PROMPT, COURSE_DETAILS_USER_PROMPT, sanitizeUserInput } from '@/lib/ai/prompts';
 import { z } from 'zod';
+import { repairJSON } from '@/lib/ai/json-repair';
 import type { CourseDetails } from '@/types/authoring';
 
 export const maxDuration = 60;
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     const params = parsed.data;
+    params.description = sanitizeUserInput(params.description);
 
     let platform;
     try {
@@ -66,17 +68,23 @@ export async function POST(req: NextRequest) {
     const durationMs = Date.now() - startTime;
 
     let details: CourseDetails;
+    const rawText = result.text;
     try {
-      let text = result.text.trim();
+      let text = rawText.trim();
       if (text.startsWith('```json')) text = text.slice(7);
       if (text.startsWith('```')) text = text.slice(3);
       if (text.endsWith('```')) text = text.slice(0, -3);
       details = JSON.parse(text.trim());
     } catch {
-      return NextResponse.json(
-        { error: 'AI returned invalid JSON. Please try again.' },
-        { status: 502 }
-      );
+      // Attempt repair before giving up
+      try {
+        details = JSON.parse(repairJSON(rawText));
+      } catch {
+        return NextResponse.json(
+          { error: 'AI returned invalid JSON. Please try again.' },
+          { status: 502 }
+        );
+      }
     }
 
     const inputTokens = result.usage?.inputTokens || 0;

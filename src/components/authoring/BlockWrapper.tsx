@@ -7,6 +7,8 @@ import {
   GripVertical,
   Trash2,
   Copy,
+  Scissors,
+  Clipboard,
   ChevronUp,
   ChevronDown,
   MoreHorizontal,
@@ -17,6 +19,7 @@ import {
   Paintbrush,
   X,
 } from 'lucide-react';
+import { useEditorStore } from '@/stores/editor.store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -357,6 +360,38 @@ export const BlockWrapper = React.memo(function BlockWrapper({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44 rounded-xl">
+                <DropdownMenuItem
+                  className="rounded-lg text-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    useEditorStore.getState().copyBlocks([id]);
+                  }}
+                >
+                  <Copy className="mr-2 h-3.5 w-3.5" />
+                  Copy Block
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="rounded-lg text-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    useEditorStore.getState().cutBlocks([id]);
+                  }}
+                >
+                  <Scissors className="mr-2 h-3.5 w-3.5" />
+                  Cut Block
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="rounded-lg text-sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    useEditorStore.getState().pasteBlocks();
+                  }}
+                  disabled={!useEditorStore.getState().clipboard}
+                >
+                  <Clipboard className="mr-2 h-3.5 w-3.5" />
+                  Paste Block
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="rounded-lg text-sm"
                   onClick={(e) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ImageIcon } from 'lucide-react';
 import type { ImageBlock, CourseTheme } from '@/types/authoring';
 import type { BlockProgress } from '../CoursePlayer';
@@ -24,6 +24,8 @@ export function ImageRenderer({
   progress,
   onComplete,
 }: ImageRendererProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   // Images are auto-completed on render
   useEffect(() => {
     if (!progress?.completed) {
@@ -59,7 +61,12 @@ export function ImageRenderer({
         src={block.data.src}
         alt={block.data.alt}
         className="w-full rounded-lg object-cover"
+        style={{
+          opacity: imageLoaded ? 1 : 0,
+          transition: 'opacity 300ms ease-in-out',
+        }}
         loading="lazy"
+        onLoad={() => setImageLoaded(true)}
       />
       {block.data.caption && (
         <figcaption className="text-sm text-muted-foreground mt-2 text-center">

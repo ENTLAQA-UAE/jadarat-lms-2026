@@ -50,6 +50,27 @@ export function GalleryRenderer({
     );
   }, [images.length]);
 
+  // Keyboard navigation for lightbox
+  const handleLightboxKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          lightboxPrev();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          lightboxNext();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          closeLightbox();
+          break;
+      }
+    },
+    [lightboxPrev, lightboxNext, closeLightbox]
+  );
+
   if (images.length === 0) {
     return (
       <div className="rounded-lg border p-6 text-center text-muted-foreground">
@@ -63,6 +84,15 @@ export function GalleryRenderer({
       key={image.id}
       className="cursor-pointer overflow-hidden rounded-lg"
       onClick={() => openLightbox(index)}
+      role="button"
+      tabIndex={0}
+      aria-label={`View image${image.alt ? `: ${image.alt}` : ''} in lightbox`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(index);
+        }
+      }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -90,6 +120,8 @@ export function GalleryRenderer({
             columns === 3 && 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3',
             columns === 4 && 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
           )}
+          role="list"
+          aria-label="Image gallery"
         >
           {images.map((image, index) => renderImage(image, index))}
         </div>
@@ -97,7 +129,7 @@ export function GalleryRenderer({
 
       {/* Carousel layout */}
       {layout === 'carousel' && (
-        <div className="space-y-4">
+        <div className="space-y-4" role="region" aria-roledescription="carousel" aria-label="Image gallery carousel">
           <div className="relative overflow-hidden rounded-lg">
             <div
               className="flex transition-transform duration-300 ease-in-out"
@@ -107,6 +139,9 @@ export function GalleryRenderer({
                 <div
                   key={image.id}
                   className="w-full flex-shrink-0 cursor-pointer"
+                  role="group"
+                  aria-roledescription="slide"
+                  aria-label={`Image ${index + 1} of ${images.length}`}
                   onClick={() => openLightbox(index)}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -131,18 +166,20 @@ export function GalleryRenderer({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm"
+                  aria-label="Previous image"
+                  className="absolute start-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm"
                   onClick={() =>
                     setCarouselIndex((prev) => Math.max(0, prev - 1))
                   }
                   disabled={carouselIndex === 0}
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm"
+                  aria-label="Next image"
+                  className="absolute end-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm"
                   onClick={() =>
                     setCarouselIndex((prev) =>
                       Math.min(images.length - 1, prev + 1)
@@ -150,7 +187,7 @@ export function GalleryRenderer({
                   }
                   disabled={carouselIndex === images.length - 1}
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 rtl:rotate-180" />
                 </Button>
               </>
             )}
@@ -158,11 +195,14 @@ export function GalleryRenderer({
 
           {/* Dot indicators */}
           {images.length > 1 && (
-            <div className="flex justify-center gap-1.5">
+            <div className="flex justify-center gap-1.5" role="tablist" aria-label="Gallery navigation">
               {images.map((image, index) => (
                 <button
                   key={image.id}
                   type="button"
+                  role="tab"
+                  aria-selected={index === carouselIndex}
+                  aria-label={`Go to image ${index + 1}`}
                   onClick={() => setCarouselIndex(index)}
                   className={cn(
                     'h-2 w-2 rounded-full transition-colors',
@@ -200,7 +240,12 @@ export function GalleryRenderer({
       {lightboxIndex !== null && images[lightboxIndex] && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Image lightbox: ${images[lightboxIndex].alt || `Image ${lightboxIndex + 1}`}`}
           onClick={closeLightbox}
+          onKeyDown={handleLightboxKeyDown}
+          tabIndex={0}
         >
           <div
             className="relative max-h-[90vh] max-w-[90vw]"
@@ -210,6 +255,7 @@ export function GalleryRenderer({
             <Button
               variant="outline"
               size="icon"
+              aria-label="Close lightbox"
               className="absolute -right-2 -top-2 z-10 bg-background"
               onClick={closeLightbox}
             >
@@ -235,18 +281,20 @@ export function GalleryRenderer({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80"
+                  aria-label="Previous image"
+                  className="absolute start-2 top-1/2 -translate-y-1/2 bg-background/80"
                   onClick={lightboxPrev}
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
                 </Button>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80"
+                  aria-label="Next image"
+                  className="absolute end-2 top-1/2 -translate-y-1/2 bg-background/80"
                   onClick={lightboxNext}
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 rtl:rotate-180" />
                 </Button>
               </>
             )}

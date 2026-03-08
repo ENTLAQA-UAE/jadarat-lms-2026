@@ -67,6 +67,10 @@ export interface EditorState {
   selectedModuleId: string | null;
   selectedLessonId: string | null;
   selectedBlockId: string | null;
+  selectedBlockIds: Set<string>;
+  clipboard: { blocks: Block[]; operation: 'copy' | 'cut' } | null;
+  lastSavedAt: string | null;
+  commandPaletteOpen: boolean;
   isDirty: boolean;
   isSaving: boolean;
   isPublishing: boolean;
@@ -128,6 +132,14 @@ export interface EditorActions {
   selectModule: (id: string | null) => void;
   selectLesson: (id: string | null) => void;
   selectBlock: (id: string | null) => void;
+  toggleBlockSelection: (blockId: string) => void;
+  selectAllBlocks: () => void;
+  clearBlockSelection: () => void;
+
+  // Clipboard
+  copyBlocks: (blockIds?: string[]) => void;
+  cutBlocks: (blockIds?: string[]) => void;
+  pasteBlocks: (atIndex?: number) => void;
 
   // Theme & Settings
   updateTheme: (theme: Partial<CourseTheme>) => void;
@@ -142,10 +154,12 @@ export interface EditorActions {
   setDirty: (dirty: boolean) => void;
   setSaving: (saving: boolean) => void;
   setPublishing: (publishing: boolean) => void;
+  setLastSavedAt: (timestamp: string) => void;
   togglePreview: () => void;
   toggleSidebar: () => void;
   toggleBlockLibrary: () => void;
   setBlockLibraryOpen: (open: boolean) => void;
+  setCommandPaletteOpen: (open: boolean) => void;
 
   // Computed getters
   getCurrentModule: () => Module | null;
@@ -183,6 +197,10 @@ const initialState: EditorState = {
   selectedModuleId: null,
   selectedLessonId: null,
   selectedBlockId: null,
+  selectedBlockIds: new Set(),
+  clipboard: null,
+  lastSavedAt: null,
+  commandPaletteOpen: false,
   isDirty: false,
   isSaving: false,
   isPublishing: false,
@@ -234,6 +252,10 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
       selectedModuleId: null,
       selectedLessonId: null,
       selectedBlockId: null,
+      selectedBlockIds: new Set(),
+      clipboard: null,
+      lastSavedAt: null,
+      commandPaletteOpen: false,
       isDirty: false,
       isSaving: false,
       isPublishing: false,
@@ -891,7 +913,101 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   },
 
   selectBlock: (id: string | null) => {
-    set({ selectedBlockId: id });
+    set({ selectedBlockId: id, selectedBlockIds: id ? new Set([id]) : new Set() });
+  },
+
+  toggleBlockSelection: (blockId: string) => {
+    const state = get();
+    const next = new Set(state.selectedBlockIds);
+    if (next.has(blockId)) {
+      next.delete(blockId);
+    } else {
+      next.add(blockId);
+    }
+    set({
+      selectedBlockIds: next,
+      selectedBlockId: next.size === 1 ? Array.from(next)[0] : next.size > 1 ? state.selectedBlockId : null,
+    });
+  },
+
+  selectAllBlocks: () => {
+    const state = get();
+    const lesson = state.getCurrentLesson();
+    if (!lesson) return;
+    const allIds = new Set(lesson.blocks.map((b) => b.id));
+    set({ selectedBlockIds: allIds, selectedBlockId: lesson.blocks[0]?.id ?? null });
+  },
+
+  clearBlockSelection: () => {
+    set({ selectedBlockIds: new Set(), selectedBlockId: null });
+  },
+
+  // Clipboard operations
+  copyBlocks: (blockIds?: string[]) => {
+    const state = get();
+    const lesson = state.getCurrentLesson();
+    if (!lesson) return;
+    const ids = blockIds ?? (state.selectedBlockIds.size > 0 ? Array.from(state.selectedBlockIds) : state.selectedBlockId ? [state.selectedBlockId] : []);
+    if (ids.length === 0) return;
+    const blocks = lesson.blocks.filter((b) => ids.includes(b.id)).map((b) => deepClone(b));
+    set({ clipboard: { blocks, operation: 'copy' } });
+  },
+
+  cutBlocks: (blockIds?: string[]) => {
+    const state = get();
+    const lesson = state.getCurrentLesson();
+    if (!lesson || !state.selectedModuleId || !state.selectedLessonId) return;
+    const ids = blockIds ?? (state.selectedBlockIds.size > 0 ? Array.from(state.selectedBlockIds) : state.selectedBlockId ? [state.selectedBlockId] : []);
+    if (ids.length === 0) return;
+    const blocks = lesson.blocks.filter((b) => ids.includes(b.id)).map((b) => deepClone(b));
+    set({ clipboard: { blocks, operation: 'cut' } });
+    // Delete the cut blocks
+    state.pushSnapshot();
+    const updatedModules = state.content.modules.map((m) =>
+      m.id === state.selectedModuleId
+        ? {
+            ...m,
+            lessons: m.lessons.map((l) =>
+              l.id === state.selectedLessonId
+                ? { ...l, blocks: recalculateOrder(l.blocks.filter((b) => !ids.includes(b.id))) as Block[] }
+                : l,
+            ),
+          }
+        : m,
+    );
+    set({ content: { ...state.content, modules: updatedModules }, isDirty: true, redoStack: [], selectedBlockId: null, selectedBlockIds: new Set() });
+  },
+
+  pasteBlocks: (atIndex?: number) => {
+    const state = get();
+    if (!state.clipboard || !state.selectedModuleId || !state.selectedLessonId) return;
+    const lesson = state.getCurrentLesson();
+    if (!lesson) return;
+    state.pushSnapshot();
+    const now = new Date().toISOString();
+    const newBlocks = state.clipboard.blocks.map((b) => ({
+      ...deepClone(b),
+      id: uuidv4(),
+      metadata: { ...b.metadata, created_at: now, updated_at: now },
+    })) as Block[];
+
+    const insertAt = atIndex ?? lesson.blocks.length;
+    const updatedBlocks = [...lesson.blocks];
+    updatedBlocks.splice(insertAt, 0, ...newBlocks);
+
+    const updatedModules = state.content.modules.map((m) =>
+      m.id === state.selectedModuleId
+        ? {
+            ...m,
+            lessons: m.lessons.map((l) =>
+              l.id === state.selectedLessonId
+                ? { ...l, blocks: recalculateOrder(updatedBlocks) as Block[] }
+                : l,
+            ),
+          }
+        : m,
+    );
+    set({ content: { ...state.content, modules: updatedModules }, isDirty: true, redoStack: [] });
   },
 
   // --------------------------------------------------------
@@ -1000,6 +1116,8 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
 
   setPublishing: (publishing: boolean) => set({ isPublishing: publishing }),
 
+  setLastSavedAt: (timestamp: string) => set({ lastSavedAt: timestamp }),
+
   togglePreview: () => set((state) => ({ previewMode: !state.previewMode })),
 
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
@@ -1007,6 +1125,8 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   toggleBlockLibrary: () => set((state) => ({ blockLibraryOpen: !state.blockLibraryOpen })),
 
   setBlockLibraryOpen: (open: boolean) => set({ blockLibraryOpen: open }),
+
+  setCommandPaletteOpen: (open: boolean) => set({ commandPaletteOpen: open }),
 
   // --------------------------------------------------------
   // Computed getters

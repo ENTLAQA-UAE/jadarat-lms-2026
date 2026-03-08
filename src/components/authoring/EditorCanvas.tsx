@@ -127,6 +127,12 @@ export function EditorCanvas() {
 
   const undo = useEditorStore((s) => s.undo);
   const redo = useEditorStore((s) => s.redo);
+  const copyBlocks = useEditorStore((s) => s.copyBlocks);
+  const cutBlocks = useEditorStore((s) => s.cutBlocks);
+  const pasteBlocks = useEditorStore((s) => s.pasteBlocks);
+  const selectAllBlocks = useEditorStore((s) => s.selectAllBlocks);
+  const toggleBlockSelection = useEditorStore((s) => s.toggleBlockSelection);
+  const setCommandPaletteOpen = useEditorStore((s) => s.setCommandPaletteOpen);
 
   const currentModule = getCurrentModule();
   const currentLesson = getCurrentLesson();
@@ -154,8 +160,70 @@ export function EditorCanvas() {
         }
       }
 
+      // Ctrl+K — Command palette (works even in inputs)
+      if (isCtrlOrCmd && e.key === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(true);
+        return;
+      }
+
+      // Ctrl+C — Copy selected block(s)
+      if (isCtrlOrCmd && e.key === 'c' && !isInput && selectedBlockId) {
+        e.preventDefault();
+        copyBlocks();
+        return;
+      }
+
+      // Ctrl+X — Cut selected block(s)
+      if (isCtrlOrCmd && e.key === 'x' && !isInput && selectedBlockId) {
+        e.preventDefault();
+        cutBlocks();
+        return;
+      }
+
+      // Ctrl+V — Paste block(s)
+      if (isCtrlOrCmd && e.key === 'v' && !isInput) {
+        e.preventDefault();
+        pasteBlocks();
+        return;
+      }
+
+      // Ctrl+A — Select all blocks
+      if (isCtrlOrCmd && e.key === 'a' && !isInput) {
+        e.preventDefault();
+        selectAllBlocks();
+        return;
+      }
+
+      // Ctrl+D — Duplicate selected block
+      if (isCtrlOrCmd && e.key === 'd' && !isInput && selectedBlockId && selectedModuleId && selectedLessonId) {
+        e.preventDefault();
+        duplicateBlock(selectedModuleId, selectedLessonId, selectedBlockId);
+        return;
+      }
+
       // Skip remaining shortcuts when editing text
       if (isInput) return;
+
+      // Alt+Up — Move block up
+      if (e.altKey && e.key === 'ArrowUp' && selectedBlockId && currentLesson) {
+        e.preventDefault();
+        const index = currentLesson.blocks.findIndex((b) => b.id === selectedBlockId);
+        if (index > 0 && selectedModuleId && selectedLessonId) {
+          reorderBlocks(selectedModuleId, selectedLessonId, index, index - 1);
+        }
+        return;
+      }
+
+      // Alt+Down — Move block down
+      if (e.altKey && e.key === 'ArrowDown' && selectedBlockId && currentLesson) {
+        e.preventDefault();
+        const index = currentLesson.blocks.findIndex((b) => b.id === selectedBlockId);
+        if (index < currentLesson.blocks.length - 1 && selectedModuleId && selectedLessonId) {
+          reorderBlocks(selectedModuleId, selectedLessonId, index, index + 1);
+        }
+        return;
+      }
 
       // Escape — deselect block
       if (e.key === 'Escape') {
@@ -170,11 +238,30 @@ export function EditorCanvas() {
         deleteBlock(selectedModuleId, selectedLessonId, selectedBlockId);
         return;
       }
+
+      // Tab / Shift+Tab — Navigate between blocks
+      if (e.key === 'Tab' && currentLesson && currentLesson.blocks.length > 0) {
+        e.preventDefault();
+        const blocks = currentLesson.blocks;
+        if (!selectedBlockId) {
+          selectBlock(blocks[0].id);
+        } else {
+          const currentIndex = blocks.findIndex((b) => b.id === selectedBlockId);
+          if (e.shiftKey) {
+            const prevIndex = Math.max(0, currentIndex - 1);
+            selectBlock(blocks[prevIndex].id);
+          } else {
+            const nextIndex = Math.min(blocks.length - 1, currentIndex + 1);
+            selectBlock(blocks[nextIndex].id);
+          }
+        }
+        return;
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo, selectBlock, deleteBlock, selectedBlockId, selectedModuleId, selectedLessonId]);
+  }, [undo, redo, selectBlock, deleteBlock, duplicateBlock, copyBlocks, cutBlocks, pasteBlocks, selectAllBlocks, reorderBlocks, setCommandPaletteOpen, selectedBlockId, selectedModuleId, selectedLessonId, currentLesson]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

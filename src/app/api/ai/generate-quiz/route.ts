@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { getPlatformAIModel, checkRateLimit, logUsage, GatewayError, withRetry } from '@/lib/ai/gateway';
 import { generateText } from 'ai';
 import { QUIZ_SYSTEM_PROMPT, QUIZ_USER_PROMPT } from '@/lib/ai/prompts';
+import { repairJSON } from '@/lib/ai/json-repair';
 import { z } from 'zod';
 
 export const maxDuration = 120;
@@ -12,6 +13,7 @@ const requestSchema = z.object({
   lesson_contents: z.string().min(1),
   language: z.enum(['ar', 'en']),
   question_count: z.number().int().min(3).max(20).default(5),
+  source_chunks: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -69,6 +71,7 @@ export async function POST(req: NextRequest) {
           lessonContents: params.lesson_contents,
           language: params.language,
           questionCount: params.question_count,
+          sourceChunks: params.source_chunks,
         }),
         temperature: 0.7,
         maxOutputTokens: 4000,
@@ -79,17 +82,23 @@ export async function POST(req: NextRequest) {
 
     // Parse AI response
     let questions;
+    const rawText = result.text;
     try {
-      let text = result.text.trim();
+      let text = rawText.trim();
       if (text.startsWith('```json')) text = text.slice(7);
       if (text.startsWith('```')) text = text.slice(3);
       if (text.endsWith('```')) text = text.slice(0, -3);
       questions = JSON.parse(text.trim());
     } catch {
-      return NextResponse.json(
-        { error: 'AI returned invalid JSON. Please try again.' },
-        { status: 502 }
-      );
+      // Attempt repair before giving up
+      try {
+        questions = JSON.parse(repairJSON(rawText));
+      } catch {
+        return NextResponse.json(
+          { error: 'AI returned invalid JSON. Please try again.' },
+          { status: 502 }
+        );
+      }
     }
 
     const inputTokens = result.usage?.inputTokens || 0;

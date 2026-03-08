@@ -18,6 +18,7 @@ const requestSchema = z.object({
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
   audience: z.string(),
   previous_context: z.string().optional(),
+  source_chunks: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -79,6 +80,7 @@ export async function POST(req: NextRequest) {
         difficulty: params.difficulty,
         audience: params.audience,
         previousLessonsContext: params.previous_context,
+        sourceChunks: params.source_chunks,
       }),
       temperature: 0.7,
       maxOutputTokens: 8000,

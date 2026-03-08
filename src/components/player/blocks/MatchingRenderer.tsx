@@ -373,7 +373,7 @@ export function MatchingRenderer({
 
       {!submitted && (
         <p className="text-sm text-muted-foreground">
-          Drag items from the left to their matching pair on the right.
+          Drag items from the left to their matching pair on the right, or use the select buttons for keyboard access.
         </p>
       )}
 
@@ -536,6 +536,56 @@ export function MatchingRenderer({
           </div>
           {block.data.explanation && <p>{block.data.explanation}</p>}
         </motion.div>
+      )}
+
+      {/* Keyboard-accessible matching (alternative to drag) */}
+      {!submitted && (
+        <div className="space-y-2 border rounded-lg p-4 bg-muted/30">
+          <p className="text-xs font-medium text-muted-foreground">Keyboard matching</p>
+          {pairs.map((pair) => {
+            const currentMatch = matches.get(pair.id);
+            return (
+              <div key={pair.id} className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-medium min-w-[120px]">{pair.left}</span>
+                <select
+                  aria-label={`Match for: ${pair.left}`}
+                  className="text-sm border rounded px-2 py-1 bg-background"
+                  value={currentMatch ?? ''}
+                  onChange={(e) => {
+                    const rightPairId = e.target.value;
+                    if (!rightPairId) {
+                      setMatches((prev) => {
+                        const next = new Map(prev);
+                        next.delete(pair.id);
+                        return next;
+                      });
+                    } else {
+                      setMatches((prev) => {
+                        const next = new Map(prev);
+                        // Remove any existing match to this right item
+                        for (const [key, val] of Array.from(next.entries())) {
+                          if (val === rightPairId) {
+                            next.delete(key);
+                            break;
+                          }
+                        }
+                        next.set(pair.id, rightPairId);
+                        return next;
+                      });
+                    }
+                  }}
+                >
+                  <option value="">-- Select match --</option>
+                  {shuffledRightItems.map((item) => (
+                    <option key={item.pairId} value={item.pairId}>
+                      {item.text}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {/* Actions */}

@@ -217,7 +217,7 @@ export function SortingRenderer({
         {unsortedItems.length > 0 && (
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">
-              {submitted ? 'Items' : 'Drag items to a category below'}
+              {submitted ? 'Items' : 'Drag items to a category below, or use the select dropdowns for keyboard access'}
             </p>
             <div className="flex flex-wrap gap-2">
               <AnimatePresence>
@@ -321,6 +321,42 @@ export function SortingRenderer({
           )}
         </DragOverlay>
       </DndContext>
+
+      {/* Keyboard-accessible sorting (alternative to drag) */}
+      {!submitted && unsortedItems.length > 0 && (
+        <div className="space-y-2 border rounded-lg p-4 bg-muted/30">
+          <p className="text-xs font-medium text-muted-foreground">Keyboard sorting</p>
+          {block.data.items.map((item) => (
+            <div key={item.id} className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-medium min-w-[120px]">{item.text}</span>
+              <select
+                aria-label={`Category for: ${item.text}`}
+                className="text-sm border rounded px-2 py-1 bg-background"
+                value={assignments.get(item.id) ?? ''}
+                onChange={(e) => {
+                  const categoryId = e.target.value;
+                  setAssignments((prev) => {
+                    const next = new Map(prev);
+                    if (!categoryId) {
+                      next.delete(item.id);
+                    } else {
+                      next.set(item.id, categoryId);
+                    }
+                    return next;
+                  });
+                }}
+              >
+                <option value="">-- Select category --</option>
+                {block.data.categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Result & explanation */}
       {submitted && (

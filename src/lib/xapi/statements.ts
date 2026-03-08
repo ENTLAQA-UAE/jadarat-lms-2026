@@ -310,6 +310,156 @@ export function createBlockInteractionStatement(
   };
 }
 
+// ============================================================
+// STATEMENT BUILDERS (simplified API using actor IDs)
+// ============================================================
+
+/**
+ * Build an xAPI statement for when a learner starts a course.
+ */
+export function buildCourseStartedStatement(
+  actorId: string,
+  courseId: string,
+  courseName: string,
+): XApiStatement {
+  return {
+    actor: {
+      mbox: `mailto:${actorId}`,
+      name: actorId,
+      objectType: 'Agent',
+    },
+    verb: XAPI_VERBS.launched,
+    object: {
+      id: `https://jadarat.app/courses/${courseId}`,
+      objectType: 'Activity',
+      definition: {
+        type: XAPI_ACTIVITY_TYPES.course,
+        name: { 'en-US': courseName },
+      },
+    },
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Build an xAPI statement for when a learner completes a lesson.
+ */
+export function buildLessonCompletedStatement(
+  actorId: string,
+  lessonId: string,
+  lessonName: string,
+  courseId: string,
+): XApiStatement {
+  return {
+    actor: {
+      mbox: `mailto:${actorId}`,
+      name: actorId,
+      objectType: 'Agent',
+    },
+    verb: XAPI_VERBS.completed,
+    object: {
+      id: `https://jadarat.app/courses/${courseId}/lessons/${lessonId}`,
+      objectType: 'Activity',
+      definition: {
+        type: XAPI_ACTIVITY_TYPES.lesson,
+        name: { 'en-US': lessonName },
+      },
+    },
+    result: {
+      completion: true,
+    },
+    timestamp: new Date().toISOString(),
+    context: {
+      contextActivities: {
+        parent: [
+          {
+            id: `https://jadarat.app/courses/${courseId}`,
+            objectType: 'Activity',
+          },
+        ],
+      },
+    },
+  };
+}
+
+/**
+ * Build an xAPI statement for when a learner answers a quiz question.
+ */
+export function buildQuizAnsweredStatement(
+  actorId: string,
+  questionId: string,
+  questionText: string,
+  response: string,
+  correct: boolean,
+  score: number,
+): XApiStatement {
+  return {
+    actor: {
+      mbox: `mailto:${actorId}`,
+      name: actorId,
+      objectType: 'Agent',
+    },
+    verb: XAPI_VERBS.answered,
+    object: {
+      id: `https://jadarat.app/questions/${questionId}`,
+      objectType: 'Activity',
+      definition: {
+        type: XAPI_ACTIVITY_TYPES.interaction,
+        name: { 'en-US': questionText },
+        interactionType: 'choice',
+      },
+    },
+    result: {
+      score: {
+        scaled: score,
+        raw: score,
+        min: 0,
+        max: 1,
+      },
+      success: correct,
+      response,
+    },
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Build an xAPI statement for when a learner completes a course.
+ */
+export function buildCourseCompletedStatement(
+  actorId: string,
+  courseId: string,
+  courseName: string,
+  score: number,
+  duration: string,
+): XApiStatement {
+  return {
+    actor: {
+      mbox: `mailto:${actorId}`,
+      name: actorId,
+      objectType: 'Agent',
+    },
+    verb: score >= 0.7 ? XAPI_VERBS.passed : XAPI_VERBS.completed,
+    object: {
+      id: `https://jadarat.app/courses/${courseId}`,
+      objectType: 'Activity',
+      definition: {
+        type: XAPI_ACTIVITY_TYPES.course,
+        name: { 'en-US': courseName },
+      },
+    },
+    result: {
+      score: {
+        scaled: score,
+      },
+      completion: true,
+      success: score >= 0.7,
+      duration,
+    },
+    timestamp: new Date().toISOString(),
+  };
+}
+
 /**
  * Convert seconds to ISO 8601 duration format (PT1H2M3S).
  */

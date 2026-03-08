@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { TabsBlock, CourseTheme } from '@/types/authoring';
@@ -24,6 +24,7 @@ export function TabsRenderer({
   const [viewedTabs, setViewedTabs] = useState<Set<string>>(
     () => new Set(block.data.tabs[0] ? [block.data.tabs[0].id] : [])
   );
+  const tabRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const handleTabClick = (tabId: string) => {
     setActiveTab(tabId);
@@ -33,6 +34,43 @@ export function TabsRenderer({
       return next;
     });
   };
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent, tabId: string) => {
+      const tabs = block.data.tabs;
+      const currentIndex = tabs.findIndex((t) => t.id === tabId);
+      const isVertical = block.data.style === 'vertical';
+
+      let nextIndex: number | null = null;
+
+      if (
+        (isVertical && e.key === 'ArrowDown') ||
+        (!isVertical && e.key === 'ArrowRight')
+      ) {
+        e.preventDefault();
+        nextIndex = (currentIndex + 1) % tabs.length;
+      } else if (
+        (isVertical && e.key === 'ArrowUp') ||
+        (!isVertical && e.key === 'ArrowLeft')
+      ) {
+        e.preventDefault();
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        nextIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        nextIndex = tabs.length - 1;
+      }
+
+      if (nextIndex !== null) {
+        const nextTab = tabs[nextIndex];
+        handleTabClick(nextTab.id);
+        tabRefs.current.get(nextTab.id)?.focus();
+      }
+    },
+    [block.data.tabs, block.data.style]
+  );
 
   // Complete when all tabs have been viewed
   useEffect(() => {
@@ -58,6 +96,9 @@ export function TabsRenderer({
     >
       {/* Tab headers */}
       <div
+        role="tablist"
+        aria-orientation={isVertical ? 'vertical' : 'horizontal'}
+        aria-label="Content tabs"
         className={cn(
           isVertical
             ? 'flex flex-col border-e min-w-[180px]'
@@ -70,6 +111,14 @@ export function TabsRenderer({
           return (
             <button
               key={tab.id}
+              ref={(el) => {
+                if (el) tabRefs.current.set(tab.id, el);
+              }}
+              role="tab"
+              id={`tab-${block.id}-${tab.id}`}
+              aria-selected={isActive}
+              aria-controls={`tabpanel-${block.id}-${tab.id}`}
+              tabIndex={isActive ? 0 : -1}
               className={cn(
                 'relative px-4 py-3 text-sm font-medium text-start whitespace-nowrap transition-all duration-200',
                 !isActive && 'text-muted-foreground hover:text-foreground hover:bg-accent/30',
@@ -83,6 +132,7 @@ export function TabsRenderer({
                   : undefined
               }
               onClick={() => handleTabClick(tab.id)}
+              onKeyDown={(e) => handleKeyDown(e, tab.id)}
             >
               {tab.icon && <span className="me-2">{tab.icon}</span>}
               {tab.label}
@@ -121,6 +171,10 @@ export function TabsRenderer({
           {activeContent && (
             <motion.div
               key={activeContent.id}
+              role="tabpanel"
+              id={`tabpanel-${block.id}-${activeContent.id}`}
+              aria-labelledby={`tab-${block.id}-${activeContent.id}`}
+              tabIndex={0}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}

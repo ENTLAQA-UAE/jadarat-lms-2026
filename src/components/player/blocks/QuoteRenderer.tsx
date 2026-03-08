@@ -34,11 +34,13 @@ export function QuoteRenderer({
 
   const isCarousel = block.data.carousel && quotes.length > 1;
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
 
   // Auto-play carousel
   useEffect(() => {
     if (!isCarousel) return;
     const interval = setInterval(() => {
+      setDirection(1);
       setCurrentIndex((prev) => (prev + 1) % quotes.length);
     }, 5000);
     return () => clearInterval(interval);
@@ -88,13 +90,17 @@ export function QuoteRenderer({
 
   // Carousel mode
   return (
-    <div className="relative">
-      <AnimatePresence mode="wait">
+    <div className="relative" role="region" aria-roledescription="carousel" aria-label="Quotes carousel">
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {`Quote ${currentIndex + 1} of ${quotes.length}`}
+      </div>
+      <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={currentIndex}
-          initial={{ opacity: 0, x: 30 }}
+          custom={direction}
+          initial={{ opacity: 0, x: direction > 0 ? 30 : -30 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -30 }}
+          exit={{ opacity: 0, x: direction > 0 ? -30 : 30 }}
           transition={{ duration: 0.3 }}
         >
           {renderQuote(currentQuote)}
@@ -104,17 +110,24 @@ export function QuoteRenderer({
       {/* Navigation arrows */}
       <div className="flex items-center justify-center gap-4 mt-4">
         <button
-          onClick={() => setCurrentIndex((prev) => (prev - 1 + quotes.length) % quotes.length)}
+          onClick={() => {
+            setDirection(-1);
+            setCurrentIndex((prev) => (prev - 1 + quotes.length) % quotes.length);
+          }}
+          aria-label="Previous quote"
           className="h-8 w-8 flex items-center justify-center rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
         </button>
 
         {/* Dots */}
-        <div className="flex gap-1.5">
+        <div className="flex gap-1.5" role="tablist" aria-label="Quote navigation">
           {quotes.map((_, idx) => (
             <button
               key={idx}
+              role="tab"
+              aria-selected={idx === currentIndex}
+              aria-label={`Go to quote ${idx + 1}`}
               onClick={() => goTo(idx)}
               className="h-2 w-2 rounded-full transition-all"
               style={{
@@ -127,10 +140,14 @@ export function QuoteRenderer({
         </div>
 
         <button
-          onClick={() => setCurrentIndex((prev) => (prev + 1) % quotes.length)}
+          onClick={() => {
+            setDirection(1);
+            setCurrentIndex((prev) => (prev + 1) % quotes.length);
+          }}
+          aria-label="Next quote"
           className="h-8 w-8 flex items-center justify-center rounded-full border border-border/50 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4 rtl:rotate-180" />
         </button>
       </div>
     </div>

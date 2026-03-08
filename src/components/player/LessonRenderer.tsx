@@ -205,8 +205,6 @@ export function LessonRenderer({
       {/* Blocks */}
       {sortedBlocks.map((block, index) => {
         const progress = blockProgress.get(block.id);
-        const isTextLike =
-          block.type === BlockType.TEXT || block.type === BlockType.DIVIDER;
 
         const blockElement = (
           <BlockRenderer
@@ -224,17 +222,16 @@ export function LessonRenderer({
           />
         );
 
-        // Wrap non-text blocks in animation if enabled
-        if (enableAnimations && !isTextLike) {
+        // Wrap ALL blocks in staggered fade-in animation when enabled
+        if (enableAnimations) {
           return (
             <motion.div
               key={block.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{
-                duration: 0.5,
-                delay: 0.1,
+                duration: 0.4,
+                delay: index * 0.05,
                 ease: [0.25, 0.46, 0.45, 0.94],
               }}
             >
