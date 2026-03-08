@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
 import { PlayerHeader } from './PlayerHeader';
 import { PlayerSidebar } from './PlayerSidebar';
@@ -40,9 +42,16 @@ export function CoursePlayer({
     () => new Map(initialProgress.map((p) => [p.block_id, p]))
   );
   const [showCertificate, setShowCertificate] = useState(false);
+  const [showLessonComplete, setShowLessonComplete] = useState(false);
 
   const currentModule = content.modules[currentModuleIndex];
   const currentLesson = currentModule?.lessons[currentLessonIndex];
+
+  // Calculate lesson numbering
+  const totalLessons = content.modules.reduce((sum, m) => sum + m.lessons.length, 0);
+  const currentLessonNumber = content.modules
+    .slice(0, currentModuleIndex)
+    .reduce((sum, m) => sum + m.lessons.length, 0) + currentLessonIndex + 1;
   const isSequential = content.settings.navigation === 'sequential';
 
   // Calculate overall progress
@@ -62,6 +71,23 @@ export function CoursePlayer({
       setShowCertificate(true);
     }
   }, [overallProgress, showCertificate]);
+
+  // Detect lesson completion for celebration
+  const currentLessonComplete = currentLesson && currentLesson.blocks.length > 0 &&
+    currentLesson.blocks.every(b => blockProgress.get(b.id)?.completed);
+
+  useEffect(() => {
+    if (currentLessonComplete && !showLessonComplete) {
+      setShowLessonComplete(true);
+      const timer = setTimeout(() => setShowLessonComplete(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentLessonComplete]);
+
+  // Reset when lesson changes
+  useEffect(() => {
+    setShowLessonComplete(false);
+  }, [currentModuleIndex, currentLessonIndex]);
 
   // Check if a specific lesson is complete
   const isLessonComplete = useCallback(
@@ -206,6 +232,8 @@ export function CoursePlayer({
         direction={content.settings.direction}
         onClose={handleClose}
         logoUrl={content.settings.theme.logo_url}
+        currentLessonNumber={currentLessonNumber}
+        totalLessons={totalLessons}
       />
 
       {/* Body: sidebar + content */}
@@ -231,29 +259,75 @@ export function CoursePlayer({
           className="flex-1 overflow-y-auto"
           style={{ backgroundColor: 'var(--player-bg)' }}
         >
+          {/* Lesson completion celebration */}
+          <AnimatePresence>
+            {showLessonComplete && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: [0, 1.2, 1] }}
+                  transition={{ duration: 0.6, ease: 'easeOut' }}
+                  className="flex flex-col items-center gap-3 rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm px-8 py-6 shadow-2xl border border-border/50"
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: 'spring', stiffness: 400 }}
+                    className="flex h-16 w-16 items-center justify-center rounded-full"
+                    style={{ backgroundColor: 'var(--player-primary)' }}
+                  >
+                    <CheckCircle2 className="h-8 w-8 text-white" />
+                  </motion.div>
+                  <p className="text-lg font-bold" style={{ color: 'var(--player-text)' }}>
+                    Lesson Complete!
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Great job! Move on to the next lesson.
+                  </p>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="max-w-3xl mx-auto p-6">
-            <LessonRenderer
-              lesson={currentLesson}
-              moduleId={currentModule.id}
-              moduleTitle={currentModule.title}
-              blockProgress={blockProgress}
-              onBlockComplete={(block, score, responseData) =>
-                handleBlockComplete(
-                  block,
-                  currentModule.id,
-                  currentLesson.id,
-                  score,
-                  responseData
-                )
-              }
-              onNextLesson={goToNextLesson}
-              onPreviousLesson={goToPreviousLesson}
-              isFirstLesson={isFirstLesson}
-              isLastLesson={isLastLesson}
-              theme={content.settings.theme}
-              direction={content.settings.direction}
-              settings={content.settings}
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${currentModuleIndex}-${currentLessonIndex}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <LessonRenderer
+                  lesson={currentLesson}
+                  moduleId={currentModule.id}
+                  moduleTitle={currentModule.title}
+                  blockProgress={blockProgress}
+                  onBlockComplete={(block, score, responseData) =>
+                    handleBlockComplete(
+                      block,
+                      currentModule.id,
+                      currentLesson.id,
+                      score,
+                      responseData
+                    )
+                  }
+                  onNextLesson={goToNextLesson}
+                  onPreviousLesson={goToPreviousLesson}
+                  isFirstLesson={isFirstLesson}
+                  isLastLesson={isLastLesson}
+                  theme={content.settings.theme}
+                  direction={content.settings.direction}
+                  settings={content.settings}
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </main>
       </div>

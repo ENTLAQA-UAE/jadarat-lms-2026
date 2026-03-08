@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import {
   Type,
   Image,
@@ -39,13 +39,24 @@ import {
   ArrowDown,
   ChevronLeft,
   Paperclip,
+  Loader2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { BlockType } from '@/types/authoring';
 import { useEditorStore } from '@/stores/editor.store';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 // ============================================================
 // BLOCK DEFINITIONS
@@ -192,8 +203,82 @@ interface BlockLibrarySidebarProps {
 
 export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps) {
   const setBlockLibraryOpen = useEditorStore((s) => s.setBlockLibraryOpen);
+  const language = useEditorStore((s) => s.content.settings.language) || 'ar';
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showAIDialog, setShowAIDialog] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const handleAIGenerate = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Please describe the content you want to generate');
+      return;
+    }
+
+    setAiLoading(true);
+    abortRef.current?.abort();
+    abortRef.current = new AbortController();
+
+    try {
+      const res = await fetch('/api/ai/refine-block', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: aiPrompt,
+          action: 'expand',
+          language,
+        }),
+        signal: abortRef.current.signal,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'AI generation failed');
+      }
+
+      // Read streaming response
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      let result = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          result += decoder.decode(value, { stream: true });
+        }
+      }
+
+      if (result.trim()) {
+        // Insert a TEXT block — the parent page's onInsertBlock creates
+        // a default block of the given type. We insert a TEXT block first,
+        // then the parent's addBlock will place it. We use a custom event
+        // so the EditorCanvas can populate the block with AI content.
+        onInsertBlock(BlockType.TEXT);
+
+        // Dispatch a custom event with the generated content so the
+        // most-recently-inserted text block can pick it up.
+        window.dispatchEvent(
+          new CustomEvent('ai-block-generated', {
+            detail: { content: result.trim() },
+          }),
+        );
+
+        toast.success('AI content generated and inserted');
+        setShowAIDialog(false);
+        setAiPrompt('');
+      }
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      toast.error('AI generation failed', {
+        description: error instanceof Error ? error.message : 'Unknown error',
+      });
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const searchResults = useMemo(() => {
     if (!search.trim()) return null;
@@ -327,9 +412,7 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
             <button
               type="button"
               className="group flex w-full items-center gap-3 px-4 py-2.5 text-start transition-all duration-150 hover:bg-accent/[0.04]"
-              onClick={() => {
-                // AI blocks can trigger the AI wizard
-              }}
+              onClick={() => setShowAIDialog(true)}
             >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg gradient-vivid shadow-sm shadow-primary/15">
                 <Sparkles className="h-3.5 w-3.5 text-white" />
@@ -371,6 +454,79 @@ export function BlockLibrarySidebar({ onInsertBlock }: BlockLibrarySidebarProps)
           </div>
         )}
       </ScrollArea>
+
+      {/* AI Block Generator Dialog */}
+      <Dialog open={showAIDialog} onOpenChange={(open) => {
+        if (!open) {
+          abortRef.current?.abort();
+          setAiLoading(false);
+        }
+        setShowAIDialog(open);
+      }}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              AI Block Generator
+            </DialogTitle>
+            <DialogDescription>
+              Describe the content you want and AI will generate a text block for you.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-2">
+            <Textarea
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder={
+                language === 'ar'
+                  ? 'صف المحتوى الذي تريد إنشاءه...'
+                  : 'Describe the content you want to generate...'
+              }
+              className="min-h-[120px] resize-none"
+              disabled={aiLoading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                  e.preventDefault();
+                  handleAIGenerate();
+                }
+              }}
+            />
+            <p className="mt-2 text-[11px] text-muted-foreground/60">
+              {language === 'ar'
+                ? 'اضغط Ctrl+Enter للإنشاء السريع'
+                : 'Press Ctrl+Enter to generate quickly'}
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowAIDialog(false)}
+              disabled={aiLoading}
+            >
+              {language === 'ar' ? 'إلغاء' : 'Cancel'}
+            </Button>
+            <Button
+              onClick={handleAIGenerate}
+              disabled={aiLoading || !aiPrompt.trim()}
+              className="gap-2"
+            >
+              {aiLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {language === 'ar' ? 'جارٍ الإنشاء...' : 'Generating...'}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  {language === 'ar' ? 'إنشاء' : 'Generate'}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

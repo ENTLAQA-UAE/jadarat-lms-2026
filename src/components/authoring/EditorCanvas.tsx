@@ -121,6 +121,7 @@ export function EditorCanvas() {
   const duplicateBlock = useEditorStore((s) => s.duplicateBlock);
   const toggleBlockVisibility = useEditorStore((s) => s.toggleBlockVisibility);
   const toggleBlockLock = useEditorStore((s) => s.toggleBlockLock);
+  const updateBlockStyle = useEditorStore((s) => s.updateBlockStyle);
   const selectBlock = useEditorStore((s) => s.selectBlock);
   const addBlock = useEditorStore((s) => s.addBlock);
 
@@ -370,6 +371,10 @@ export function EditorCanvas() {
                 }
                 onToggleLock={() =>
                   toggleBlockLock(selectedModuleId, selectedLessonId, block.id)
+                }
+                blockStyle={block.style}
+                onStyleChange={(style) =>
+                  updateBlockStyle(selectedModuleId, selectedLessonId, block.id, style)
                 }
               >
                 <LazyBlockContent>

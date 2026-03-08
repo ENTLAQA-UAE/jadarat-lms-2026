@@ -11,6 +11,8 @@ interface PlayerHeaderProps {
   direction: 'rtl' | 'ltr' | 'auto';
   onClose: () => void;
   logoUrl?: string;
+  currentLessonNumber?: number;
+  totalLessons?: number;
 }
 
 export function PlayerHeader({
@@ -21,6 +23,8 @@ export function PlayerHeader({
   direction,
   onClose,
   logoUrl,
+  currentLessonNumber,
+  totalLessons,
 }: PlayerHeaderProps) {
   return (
     <header
@@ -61,6 +65,17 @@ export function PlayerHeader({
             {moduleTitle} — {lessonTitle}
           </p>
         </div>
+        {currentLessonNumber != null && totalLessons != null && (
+          <span
+            className="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium hidden sm:inline-flex"
+            style={{
+              backgroundColor: 'color-mix(in srgb, var(--player-primary) 15%, transparent)',
+              color: 'var(--player-primary)',
+            }}
+          >
+            Lesson {currentLessonNumber} of {totalLessons}
+          </span>
+        )}
       </div>
 
       {/* Progress bar */}
