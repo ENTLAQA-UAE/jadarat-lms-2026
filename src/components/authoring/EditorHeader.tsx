@@ -54,9 +54,31 @@ export function EditorHeader({
   const blockLibraryOpen = useEditorStore((s) => s.blockLibraryOpen);
   const toggleBlockLibrary = useEditorStore((s) => s.toggleBlockLibrary);
 
+  const lastSavedAt = useEditorStore((s) => s.lastSavedAt);
+  const setLastSavedAt = useEditorStore((s) => s.setLastSavedAt);
+
   const [isSaveLoading, setIsSaveLoading] = useState(false);
   const [isPublishLoading, setIsPublishLoading] = useState(false);
   const [showSavedFeedback, setShowSavedFeedback] = useState(false);
+  const [lastSavedLabel, setLastSavedLabel] = useState<string | null>(null);
+
+  // Update relative time label every 30s
+  useEffect(() => {
+    if (!lastSavedAt) {
+      setLastSavedLabel(null);
+      return;
+    }
+    const updateLabel = () => {
+      const diff = Math.floor((Date.now() - new Date(lastSavedAt).getTime()) / 1000);
+      if (diff < 10) setLastSavedLabel('just now');
+      else if (diff < 60) setLastSavedLabel(`${diff}s ago`);
+      else if (diff < 3600) setLastSavedLabel(`${Math.floor(diff / 60)}m ago`);
+      else setLastSavedLabel(`${Math.floor(diff / 3600)}h ago`);
+    };
+    updateLabel();
+    const interval = setInterval(updateLabel, 30_000);
+    return () => clearInterval(interval);
+  }, [lastSavedAt]);
 
   useEffect(() => {
     if (showSavedFeedback) {
@@ -74,6 +96,7 @@ export function EditorHeader({
     setIsSaveLoading(true);
     try {
       await onSave();
+      setLastSavedAt(new Date().toISOString());
       setShowSavedFeedback(true);
     } finally {
       setIsSaveLoading(false);
@@ -195,6 +218,10 @@ export function EditorHeader({
               <span className="inline-flex items-center gap-1.5 rounded-full bg-warning/10 px-2.5 py-1 text-[11px] font-medium text-warning">
                 <span className="h-1.5 w-1.5 rounded-full bg-warning animate-pulse" />
                 <span className="hidden sm:inline">Unsaved</span>
+              </span>
+            ) : lastSavedLabel ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 px-2.5 py-1 text-[11px] font-medium text-muted-foreground/50">
+                <span className="hidden sm:inline">Saved {lastSavedLabel}</span>
               </span>
             ) : null}
           </div>

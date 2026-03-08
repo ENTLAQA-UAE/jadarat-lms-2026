@@ -3,10 +3,11 @@
 import { type CalloutBlock } from '@/types/authoring';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { TiptapEditor } from './TiptapEditor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { SafeHTML } from '@/components/shared/SafeHTML';
 import { Info, AlertTriangle, CheckCircle2, XCircle, MessageSquareWarning } from 'lucide-react';
 
 interface CalloutBlockEditorProps {
@@ -101,9 +102,9 @@ export function CalloutBlockEditor({
               {data.title || 'Callout title'}
             </p>
             {data.content && (
-              <div
+              <SafeHTML
+                html={data.content || '<p>Callout content</p>'}
                 className="mt-1 text-sm opacity-90 prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: data.content || '<p>Callout content</p>' }}
               />
             )}
           </div>
@@ -122,12 +123,11 @@ export function CalloutBlockEditor({
 
         {/* Content */}
         <div className="space-y-2">
-          <Label htmlFor={`callout-content-${block.id}`}>Content</Label>
-          <Textarea
-            id={`callout-content-${block.id}`}
-            value={data.content}
-            onChange={(e) => onChange({ content: e.target.value })}
-            placeholder="Callout body text (HTML supported)"
+          <Label>Content</Label>
+          <TiptapEditor
+            content={data.content}
+            onChange={(html) => onChange({ content: html })}
+            placeholder="Write callout content..."
             className="min-h-[100px]"
           />
         </div>

@@ -73,7 +73,7 @@ export function TrueFalseRenderer({
       </h3>
 
       {/* True / False buttons */}
-      <div className="flex gap-3">
+      <div className="flex gap-3" role="radiogroup" aria-label={block.data.statement}>
         {[true, false].map((value) => {
           const isSelected = selectedAnswer === value;
           const isCorrectAnswer = block.data.correct_answer === value;
@@ -82,6 +82,8 @@ export function TrueFalseRenderer({
           return (
             <button
               key={label}
+              role="radio"
+              aria-checked={isSelected}
               disabled={submitted}
               className={cn(
                 'flex-1 p-4 rounded-lg border-2 text-center font-medium transition-colors',

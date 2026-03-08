@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
@@ -10,6 +10,41 @@ import { PlayerSidebar } from './PlayerSidebar';
 import { LessonRenderer } from './LessonRenderer';
 import { getThemeCSSVars } from './theme-utils';
 import type { CourseContent, Block } from '@/types/authoring';
+
+/** Retry an async function with exponential backoff (1s, 2s, 4s). */
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxRetries - 1) {
+        const delay = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+  }
+  throw lastError;
+}
+
+interface QueuedSave {
+  params: {
+    p_user_id: string;
+    p_course_id: number;
+    p_module_id: string;
+    p_lesson_id: string;
+    p_block_id: string;
+    p_block_type: string;
+    p_completed: boolean;
+    p_score: number | null;
+    p_response_data: Record<string, unknown> | null;
+    p_time_spent: number;
+  };
+}
 
 export interface BlockProgress {
   block_id: string;
@@ -123,6 +158,42 @@ export function CoursePlayer({
     [isSequential, content.modules, isLessonComplete]
   );
 
+  // Queue for failed saves that will be retried
+  const saveQueueRef = useRef<QueuedSave[]>([]);
+  const isProcessingQueueRef = useRef(false);
+
+  const persistBlockProgress = useCallback(
+    async (params: QueuedSave['params']) => {
+      const supabase = createClient();
+      const { error } = await supabase.rpc('update_block_progress', params);
+      if (error) throw error;
+    },
+    []
+  );
+
+  const processQueue = useCallback(async () => {
+    if (isProcessingQueueRef.current || saveQueueRef.current.length === 0) return;
+    isProcessingQueueRef.current = true;
+
+    while (saveQueueRef.current.length > 0) {
+      const item = saveQueueRef.current[0];
+      try {
+        await withRetry(() => persistBlockProgress(item.params));
+        saveQueueRef.current.shift();
+      } catch {
+        // Still failing — leave in queue and retry later
+        break;
+      }
+    }
+
+    isProcessingQueueRef.current = false;
+
+    // If there are still items, schedule another attempt in 10s
+    if (saveQueueRef.current.length > 0) {
+      setTimeout(() => processQueue(), 10_000);
+    }
+  }, [persistBlockProgress]);
+
   const handleBlockComplete = useCallback(
     async (
       block: Block,
@@ -131,7 +202,7 @@ export function CoursePlayer({
       score?: number,
       responseData?: Record<string, unknown>
     ) => {
-      // Update local state
+      // Update local state immediately
       setBlockProgress((prev) => {
         const next = new Map(prev);
         next.set(block.id, {
@@ -143,9 +214,8 @@ export function CoursePlayer({
         return next;
       });
 
-      // Persist to database
-      const supabase = createClient();
-      await supabase.rpc('update_block_progress', {
+      // Persist to database with retry
+      const params: QueuedSave['params'] = {
         p_user_id: userId,
         p_course_id: courseId,
         p_module_id: moduleId,
@@ -156,9 +226,17 @@ export function CoursePlayer({
         p_score: score ?? null,
         p_response_data: responseData ?? null,
         p_time_spent: 0,
-      });
+      };
+
+      try {
+        await withRetry(() => persistBlockProgress(params));
+      } catch {
+        // All retries failed — queue for later
+        saveQueueRef.current.push({ params });
+        processQueue();
+      }
     },
-    [courseId, userId]
+    [courseId, userId, persistBlockProgress, processQueue]
   );
 
   const navigateToLesson = useCallback(

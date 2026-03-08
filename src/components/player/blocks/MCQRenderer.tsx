@@ -75,7 +75,7 @@ export function MCQRenderer({
       </h3>
 
       {/* Options */}
-      <div className="space-y-2">
+      <div className="space-y-2" role="radiogroup" aria-label={block.data.question}>
         {options.map((option) => {
           const isSelected = selectedOptionId === option.id;
           const showFeedback = submitted && isSelected;
@@ -83,6 +83,8 @@ export function MCQRenderer({
           return (
             <button
               key={option.id}
+              role="radio"
+              aria-checked={isSelected}
               disabled={submitted}
               className={cn(
                 'w-full flex items-start gap-3 p-3 rounded-lg border text-start transition-colors',

@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 import { getPlatformAIModel, checkRateLimit, logUsage, GatewayError, withRetry } from '@/lib/ai/gateway';
 import { generateText } from 'ai';
-import { OUTLINE_SYSTEM_PROMPT, OUTLINE_USER_PROMPT } from '@/lib/ai/prompts';
+import { OUTLINE_SYSTEM_PROMPT, OUTLINE_USER_PROMPT, sanitizeUserInput } from '@/lib/ai/prompts';
 import { z } from 'zod';
+import { repairJSON } from '@/lib/ai/json-repair';
 import type { CourseOutline } from '@/types/authoring';
 
 export const maxDuration = 120;
@@ -41,6 +42,8 @@ export async function POST(req: NextRequest) {
     }
 
     const params = parsed.data;
+    params.topic = sanitizeUserInput(params.topic);
+    params.audience = sanitizeUserInput(params.audience);
 
     // Rate limiting
     const rateLimit = await checkRateLimit(supabase, user.id, 'generate_outline');
@@ -87,17 +90,23 @@ export async function POST(req: NextRequest) {
 
     // Parse AI response as JSON
     let outline: CourseOutline;
+    const rawText = result.text;
     try {
-      let text = result.text.trim();
+      let text = rawText.trim();
       if (text.startsWith('```json')) text = text.slice(7);
       if (text.startsWith('```')) text = text.slice(3);
       if (text.endsWith('```')) text = text.slice(0, -3);
       outline = JSON.parse(text.trim());
     } catch {
-      return NextResponse.json(
-        { error: 'AI returned invalid JSON. Please try again.' },
-        { status: 502 }
-      );
+      // Attempt repair before giving up
+      try {
+        outline = JSON.parse(repairJSON(rawText));
+      } catch {
+        return NextResponse.json(
+          { error: 'AI returned invalid JSON. Please try again.' },
+          { status: 502 }
+        );
+      }
     }
 
     // Log AI usage (platform-level)

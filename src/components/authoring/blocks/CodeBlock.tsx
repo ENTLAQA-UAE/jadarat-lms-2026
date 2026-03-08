@@ -88,6 +88,31 @@ export function CodeBlockEditor({ block, onChange }: CodeBlockEditorProps) {
             />
           </div>
 
+          {/* Theme selector */}
+          <div className="space-y-2">
+            <Label>Code Theme</Label>
+            <div className="flex gap-1">
+              {([
+                { value: 'auto', label: 'Auto' },
+                { value: 'dark', label: 'Dark' },
+                { value: 'light', label: 'Light' },
+              ] as const).map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => onChange({ theme: opt.value })}
+                  className={`flex-1 rounded-md border px-2 py-1.5 text-xs font-medium transition-colors ${
+                    (data.theme ?? 'auto') === opt.value
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-border text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor={`code-caption-${block.id}`}>Caption (optional)</Label>
             <Input

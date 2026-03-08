@@ -176,6 +176,7 @@ export interface CodeBlock extends BaseBlock {
     language: string;                  // 'javascript', 'python', 'sql', etc.
     show_line_numbers: boolean;
     caption?: string;
+    theme?: 'light' | 'dark' | 'auto'; // Code block theme variant
   };
 }
 
@@ -658,6 +659,8 @@ export interface CourseTheme {
   cover_image_url?: string;
   logo_url?: string;                   // Course logo overlay on cover/header
   custom_fonts?: CustomFont[];         // User-uploaded brand fonts
+  success_color?: string;              // Semantic color for correct answers (defaults to green)
+  error_color?: string;                // Semantic color for incorrect answers (defaults to red)
 }
 
 export interface CustomFont {

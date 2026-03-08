@@ -1,6 +1,55 @@
 // src/lib/ai/prompts.ts -- Phase 3: AI Course Generation
 
 // ============================================================
+// PROMPT INJECTION GUARDRAILS
+// ============================================================
+
+/** Patterns that resemble prompt injection attempts (case-insensitive). */
+const INJECTION_PATTERNS = [
+  /ignore\s+(all\s+)?previous\s+instructions/gi,
+  /ignore\s+(all\s+)?above\s+instructions/gi,
+  /disregard\s+(all\s+)?previous/gi,
+  /forget\s+(all\s+)?previous/gi,
+  /override\s+(all\s+)?previous/gi,
+  /^system\s*:/gim,
+  /^assistant\s*:/gim,
+  /^user\s*:/gim,
+  /^you\s+are\b/gim,
+  /\bact\s+as\b/gi,
+  /\bpretend\s+(to\s+be|you\s+are)\b/gi,
+  /\brole\s*play\s+as\b/gi,
+  /\bdo\s+not\s+follow\b/gi,
+  /\bnew\s+instructions?\s*:/gi,
+  /\bsystem\s+prompt\b/gi,
+  /\binitial\s+prompt\b/gi,
+];
+
+/**
+ * Sanitize user-supplied input before interpolating it into AI prompts.
+ *
+ * - Strips control characters (keeps newlines \n, carriage returns \r, and tabs \t)
+ * - Truncates to maxLength
+ * - Strips sequences that look like prompt injection attempts
+ */
+export function sanitizeUserInput(input: string, maxLength: number = 5000): string {
+  // 1. Strip control characters (keep \n \r \t)
+  // eslint-disable-next-line no-control-regex
+  let sanitized = input.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+
+  // 2. Truncate to maxLength
+  if (sanitized.length > maxLength) {
+    sanitized = sanitized.slice(0, maxLength);
+  }
+
+  // 3. Strip prompt injection patterns
+  for (const pattern of INJECTION_PATTERNS) {
+    sanitized = sanitized.replace(pattern, '');
+  }
+
+  return sanitized.trim();
+}
+
+// ============================================================
 // COURSE DETAILS GENERATION PROMPT (Step 2 — from description)
 // ============================================================
 export const COURSE_DETAILS_SYSTEM_PROMPT = `You are an expert instructional designer specializing in Arabic and English e-learning courses for the MENA region.
