@@ -87,11 +87,11 @@ export function QuizPlayer({
         const drawnBlocks: Block[] = (data.questions ?? []).map(
           (q: { id: string; block_type: string; block_data: Record<string, unknown>; points: number }) => ({
             id: uuidv4(), // Fresh ID to avoid conflicts with inline blocks
-            type: q.block_type,
+            type: q.block_type as Block['type'],
             order: 0,
-            visible: true,
-            locked: false,
-            data: { ...q.block_data, points: q.points },
+            visible: true as const,
+            locked: false as const,
+            data: { ...q.block_data, points: q.points } as Block['data'],
             metadata: {
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),

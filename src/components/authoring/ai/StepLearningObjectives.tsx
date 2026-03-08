@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,11 +14,13 @@ import {
   ArrowLeft,
   ArrowRight,
   GripVertical,
+  Loader2,
   Plus,
   Sparkles,
   Trash2,
   Target,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   DndContext,
   closestCenter,
@@ -42,6 +44,9 @@ interface StepLearningObjectivesProps {
   onNext: () => void;
   onBack: () => void;
   isLoading: boolean;
+  topic: string;
+  audience: string;
+  language: string;
 }
 
 interface SortableObjectiveProps {
@@ -120,7 +125,12 @@ export function StepLearningObjectives({
   onNext,
   onBack,
   isLoading,
+  topic,
+  audience,
+  language,
 }: StepLearningObjectivesProps) {
+  const [isAILoading, setIsAILoading] = useState(false);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, {
@@ -162,6 +172,56 @@ export function StepLearningObjectives({
     onChange([...objectives, '']);
   };
 
+  const callWizardAssist = async (action: 'rewrite_objectives' | 'add_objectives') => {
+    setIsAILoading(true);
+    try {
+      const res = await fetch('/api/ai/wizard-assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action,
+          objectives,
+          context: {
+            topic,
+            audience,
+            language: language as 'ar' | 'en',
+          },
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'AI assist failed');
+      }
+
+      const data = await res.json();
+      const result = data.result as string[];
+
+      if (!Array.isArray(result) || result.length === 0) {
+        throw new Error('AI returned unexpected format');
+      }
+
+      if (action === 'rewrite_objectives') {
+        onChange(result);
+        toast.success('Objectives rewritten', {
+          description: `${result.length} objectives updated with AI suggestions.`,
+        });
+      } else {
+        onChange([...objectives, ...result]);
+        toast.success('Objectives added', {
+          description: `${result.length} new objectives added.`,
+        });
+      }
+    } catch (error) {
+      toast.error('AI assist failed', {
+        description:
+          error instanceof Error ? error.message : 'Please try again.',
+      });
+    } finally {
+      setIsAILoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -181,19 +241,34 @@ export function StepLearningObjectives({
           <CardTitle className="text-base">Learning Objectives</CardTitle>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Sparkles className="h-3.5 w-3.5" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                disabled={isAILoading}
+              >
+                {isAILoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5" />
+                )}
                 Edit with AI
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem
+                onClick={() => callWizardAssist('rewrite_objectives')}
+                disabled={isAILoading}
+              >
                 <Sparkles className="h-4 w-4 mr-2" />
-                Rewrite all objectives (coming soon)
+                Rewrite all objectives
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem
+                onClick={() => callWizardAssist('add_objectives')}
+                disabled={isAILoading}
+              >
                 <Plus className="h-4 w-4 mr-2" />
-                Add more objectives (coming soon)
+                Add more objectives
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

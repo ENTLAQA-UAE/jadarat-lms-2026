@@ -303,6 +303,9 @@ export function AICourseWizard({
           onNext={handleObjectivesNext}
           onBack={() => setStep('details')}
           isLoading={isGeneratingOutline}
+          topic={courseDetails.topic}
+          audience={courseDetails.audience}
+          language={sourceData.language}
         />
       )}
 
@@ -312,6 +315,10 @@ export function AICourseWizard({
           onChange={setOutline}
           onNext={() => setStep('options')}
           onBack={() => setStep('objectives')}
+          topic={courseDetails.topic}
+          audience={courseDetails.audience}
+          difficulty={courseDetails.difficulty}
+          language={sourceData.language}
         />
       )}
 
@@ -333,6 +340,7 @@ export function AICourseWizard({
           language={sourceData.language}
           difficulty={courseDetails.difficulty}
           audience={courseDetails.audience}
+          sourceChunks={sourceData.sourceChunks}
           onComplete={onComplete}
           onBack={() => setStep('options')}
         />

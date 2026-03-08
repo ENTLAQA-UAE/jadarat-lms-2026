@@ -23,6 +23,7 @@ import {
   Download,
   FileText,
   GripVertical,
+  Loader2,
   Plus,
   Sparkles,
   Trash2,
@@ -42,6 +43,10 @@ interface StepOutlineEditorProps {
   onChange: (outline: CourseOutline) => void;
   onNext: () => void;
   onBack: () => void;
+  topic: string;
+  audience: string;
+  difficulty: string;
+  language: string;
 }
 
 type Selection =
@@ -53,6 +58,10 @@ export function StepOutlineEditor({
   onChange,
   onNext,
   onBack,
+  topic,
+  audience,
+  difficulty,
+  language,
 }: StepOutlineEditorProps) {
   const [selection, setSelection] = useState<Selection>({
     type: 'lesson',
@@ -63,6 +72,7 @@ export function StepOutlineEditor({
     new Set(outline.modules.map((_, i) => i))
   );
   const [isExporting, setIsExporting] = useState(false);
+  const [isAILoading, setIsAILoading] = useState(false);
 
   const toggleModule = (index: number) => {
     setExpandedModules((prev) => {
@@ -215,15 +225,6 @@ export function StepOutlineEditor({
     });
   };
 
-  const addAILesson = async (mi: number) => {
-    // For now, add a blank lesson with a placeholder — AI generation will be wired later
-    addBlankLesson(mi);
-    toast.info('AI lesson generation coming soon', {
-      description:
-        'For now, a blank lesson was added. You can edit it manually.',
-    });
-  };
-
   const deleteLesson = (mi: number, li: number) => {
     if (outline.modules[mi].lessons.length <= 1) return;
     updateOutline((d) => {
@@ -232,6 +233,173 @@ export function StepOutlineEditor({
     });
     const newLi = Math.max(0, li - 1);
     setSelection({ type: 'lesson', moduleIndex: mi, lessonIndex: newLi });
+  };
+
+  // ── AI Assist helper ──────────────────────────────────────
+
+  const callWizardAssist = async (
+    body: Record<string, unknown>,
+    onSuccess: (result: unknown) => void,
+    successMessage: string
+  ) => {
+    setIsAILoading(true);
+    try {
+      const res = await fetch('/api/ai/wizard-assist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'AI assist failed');
+      }
+
+      const data = await res.json();
+      onSuccess(data.result);
+      toast.success(successMessage);
+    } catch (error) {
+      toast.error('AI assist failed', {
+        description:
+          error instanceof Error ? error.message : 'Please try again.',
+      });
+    } finally {
+      setIsAILoading(false);
+    }
+  };
+
+  // ── Outline-level AI actions ──────────────────────────────
+
+  const handleRestructureOutline = () => {
+    callWizardAssist(
+      { action: 'restructure_outline', outline, language },
+      (result) => {
+        const newOutline = result as CourseOutline;
+        newOutline.learning_outcomes = outline.learning_outcomes;
+        onChange(newOutline);
+      },
+      'Outline restructured'
+    );
+  };
+
+  const handleExpandOutline = () => {
+    callWizardAssist(
+      { action: 'expand_outline', outline, language },
+      (result) => {
+        const newOutline = result as CourseOutline;
+        newOutline.learning_outcomes = outline.learning_outcomes;
+        onChange(newOutline);
+      },
+      'Outline expanded with more detail'
+    );
+  };
+
+  const handleSimplifyOutline = () => {
+    callWizardAssist(
+      { action: 'simplify_outline', outline, language },
+      (result) => {
+        const newOutline = result as CourseOutline;
+        newOutline.learning_outcomes = outline.learning_outcomes;
+        onChange(newOutline);
+      },
+      'Outline simplified'
+    );
+  };
+
+  // ── Module-level AI actions ───────────────────────────────
+
+  const handleExpandModule = (mi: number) => {
+    callWizardAssist(
+      {
+        action: 'expand_module',
+        module: outline.modules[mi],
+        courseContext: { topic, audience, difficulty, language },
+      },
+      (result) => {
+        const expandedModule = result as CourseOutlineModule;
+        updateOutline((d) => {
+          d.modules[mi] = { ...expandedModule, order: mi };
+          d.modules[mi].lessons.forEach((l, i) => (l.order = i));
+        });
+      },
+      'Module expanded'
+    );
+  };
+
+  const handleAddAILessons = (mi: number) => {
+    callWizardAssist(
+      {
+        action: 'add_ai_lessons',
+        module: outline.modules[mi],
+        courseContext: { topic, audience, difficulty, language },
+      },
+      (result) => {
+        const newLessons = result as CourseOutlineLesson[];
+        if (!Array.isArray(newLessons) || newLessons.length === 0) {
+          toast.error('AI returned no lessons');
+          return;
+        }
+        updateOutline((d) => {
+          const existing = d.modules[mi].lessons;
+          newLessons.forEach((l, i) => {
+            l.order = existing.length + i;
+            if (!l.topics) l.topics = [];
+          });
+          d.modules[mi].lessons.push(...newLessons);
+        });
+        toast.success(`${newLessons.length} lessons added`);
+      },
+      '' // handled in onSuccess
+    );
+  };
+
+  // ── Lesson-level AI actions ───────────────────────────────
+
+  const handleRewriteDescription = (mi: number, li: number) => {
+    const lesson = outline.modules[mi].lessons[li];
+    const mod = outline.modules[mi];
+    callWizardAssist(
+      {
+        action: 'rewrite_description',
+        lesson: { title: lesson.title, description: lesson.description },
+        moduleTitle: mod.title,
+        language,
+      },
+      (result) => {
+        const parsed = result as { description: string };
+        const newDesc =
+          typeof parsed === 'string' ? parsed : parsed.description;
+        updateOutline((d) => {
+          d.modules[mi].lessons[li].description = newDesc;
+        });
+      },
+      'Description rewritten'
+    );
+  };
+
+  const handleSuggestTopics = (mi: number, li: number) => {
+    const lesson = outline.modules[mi].lessons[li];
+    const mod = outline.modules[mi];
+    callWizardAssist(
+      {
+        action: 'suggest_topics',
+        lesson: {
+          title: lesson.title,
+          description: lesson.description,
+          topics: lesson.topics || [],
+        },
+        moduleTitle: mod.title,
+        language,
+      },
+      (result) => {
+        const topics = result as string[];
+        if (!Array.isArray(topics)) return;
+        updateOutline((d) => {
+          d.modules[mi].lessons[li].topics = topics;
+        });
+      },
+      'Topics suggested'
+    );
   };
 
   // ── PDF Export ───────────────────────────────────────────
@@ -301,23 +469,41 @@ export function StepOutlineEditor({
           {/* Edit with AI dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Sparkles className="h-3.5 w-3.5" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                disabled={isAILoading}
+              >
+                {isAILoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5" />
+                )}
                 Edit with AI
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem
+                onClick={handleRestructureOutline}
+                disabled={isAILoading}
+              >
                 <Sparkles className="h-4 w-4 mr-2" />
-                Restructure outline (coming soon)
+                Restructure outline
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem
+                onClick={handleExpandOutline}
+                disabled={isAILoading}
+              >
                 <Sparkles className="h-4 w-4 mr-2" />
-                Add more detail (coming soon)
+                Add more detail
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem
+                onClick={handleSimplifyOutline}
+                disabled={isAILoading}
+              >
                 <Sparkles className="h-4 w-4 mr-2" />
-                Simplify outline (coming soon)
+                Simplify outline
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -437,10 +623,15 @@ export function StepOutlineEditor({
                         </button>
                         <button
                           type="button"
-                          onClick={() => addAILesson(mi)}
-                          className="flex items-center gap-1 px-3 py-2 text-xs text-muted-foreground hover:text-primary transition-colors border-s"
+                          onClick={() => handleAddAILessons(mi)}
+                          disabled={isAILoading}
+                          className="flex items-center gap-1 px-3 py-2 text-xs text-muted-foreground hover:text-primary transition-colors border-s disabled:opacity-50"
                         >
-                          <Sparkles className="h-3 w-3" />
+                          {isAILoading ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Sparkles className="h-3 w-3" />
+                          )}
                           Add with AI
                         </button>
                       </div>
@@ -481,19 +672,34 @@ export function StepOutlineEditor({
                         variant="ghost"
                         size="sm"
                         className="gap-1.5 text-xs"
+                        disabled={isAILoading}
                       >
-                        <Sparkles className="h-3 w-3" />
+                        {isAILoading ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Sparkles className="h-3 w-3" />
+                        )}
                         Edit with AI
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem disabled>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handleExpandModule(selectedModuleIndex)
+                        }
+                        disabled={isAILoading}
+                      >
                         <Sparkles className="h-4 w-4 mr-2" />
-                        Expand module (coming soon)
+                        Expand module
                       </DropdownMenuItem>
-                      <DropdownMenuItem disabled>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handleAddAILessons(selectedModuleIndex)
+                        }
+                        disabled={isAILoading}
+                      >
                         <Sparkles className="h-4 w-4 mr-2" />
-                        Add lessons with AI (coming soon)
+                        Add lessons with AI
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -586,19 +792,40 @@ export function StepOutlineEditor({
                         variant="ghost"
                         size="sm"
                         className="gap-1.5 text-xs"
+                        disabled={isAILoading}
                       >
-                        <Sparkles className="h-3 w-3" />
+                        {isAILoading ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Sparkles className="h-3 w-3" />
+                        )}
                         Edit with AI
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem disabled>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handleRewriteDescription(
+                            selectedModuleIndex,
+                            selectedLessonIndex
+                          )
+                        }
+                        disabled={isAILoading}
+                      >
                         <Sparkles className="h-4 w-4 mr-2" />
-                        Rewrite description (coming soon)
+                        Rewrite description
                       </DropdownMenuItem>
-                      <DropdownMenuItem disabled>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handleSuggestTopics(
+                            selectedModuleIndex,
+                            selectedLessonIndex
+                          )
+                        }
+                        disabled={isAILoading}
+                      >
                         <Sparkles className="h-4 w-4 mr-2" />
-                        Suggest topics (coming soon)
+                        Suggest topics
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

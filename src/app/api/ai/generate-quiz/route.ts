@@ -12,6 +12,7 @@ const requestSchema = z.object({
   lesson_contents: z.string().min(1),
   language: z.enum(['ar', 'en']),
   question_count: z.number().int().min(3).max(20).default(5),
+  source_chunks: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -69,6 +70,7 @@ export async function POST(req: NextRequest) {
           lessonContents: params.lesson_contents,
           language: params.language,
           questionCount: params.question_count,
+          sourceChunks: params.source_chunks,
         }),
         temperature: 0.7,
         maxOutputTokens: 4000,

@@ -48,9 +48,11 @@ export async function POST(request: NextRequest) {
     // Batch update usage_count for drawn questions
     const drawnIds = allQuestions.map((q: { id: string }) => q.id);
     if (drawnIds.length > 0) {
-      await supabase.rpc('increment_question_usage', { p_item_ids: drawnIds }).catch(() => {
+      try {
+        await supabase.rpc('increment_question_usage', { p_item_ids: drawnIds });
+      } catch {
         // Non-critical, don't fail the draw if usage tracking fails
-      });
+      }
     }
 
     return NextResponse.json({ questions: allQuestions });
