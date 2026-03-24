@@ -23,7 +23,6 @@ import {
   Activity,
   Percent,
 } from 'lucide-react'
-import SideNavMobile from '@/components/ui/SideNavMobile'
 
 import { cn } from '@/lib/utils'
 import CardSkeletonStatus from '@/components/app/home/skeletonAdmin/CardSkeletonStatus'
